@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>慶應SFC教授・授業評価 | Keio SFC Professor & Course Ratings</title>
+    <style>
+        /* ... (CSS stays the same as in the previous version) ... */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>慶應SFC教授・授業評価 | Keio SFC Professor & Course Ratings</h1>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#home">ホーム | Home</a></li>
+            <li><a href="#rate">評価する | Rate</a></li>
+            <li><a href="#search">検索 | Search</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="rating-form">
+                <h2>教授と授業を評価する | Rate a Professor and Course</h2>
+                <form id="ratingForm">
+                    <!-- ... (form fields stay the same as in the previous version) ... -->
+                </form>
+            </div>
+
+            <div class="ratings-display">
+                <h2>最新の評価 | Recent Ratings</h2>
+                <div id="recentRatings">
+                    <!-- Recent ratings will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load ratings from localStorage on page load
+        window.addEventListener('load', function() {
+            loadRatings();
+        });
+
+        document.getElementById('ratingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                professorName: document.getElementById('professorName').value,
+                courseName: document.getElementById('courseName').value,
+                faculty: document.getElementById('faculty').value,
+                difficulty: document.getElementById('difficulty').value,
+                quality: document.getElementById('quality').value,
+                attendance: document.getElementById('attendance').value,
+                grading: Array.from(document.getElementById('grading').selectedOptions).map(option => option.value),
+                textbook: document.getElementById('textbook').value,
+                grade: document.getElementById('grade').value,
+                comments: document.getElementById('comments').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Save rating to localStorage
+            saveRating(formData);
+
+            // Add rating to display
+            addRatingToDisplay(formData);
+
+            alert('評価が送信されました。この評価はローカルに保存されます。 | Rating submitted. This rating will be saved locally.');
+            
+            // Clear the form
+            this.reset();
+        });
+
+        function saveRating(rating) {
+            let ratings = JSON.parse(localStorage.getItem('ratings')) || [];
+            ratings.unshift(rating);  // Add new rating to the beginning of the array
+            localStorage.setItem('ratings', JSON.stringify(ratings));
+        }
+
+        function loadRatings() {
+            let ratings = JSON.parse(localStorage.getItem('ratings')) || [];
+            ratings.forEach(rating => addRatingToDisplay(rating));
+        }
+
+        function addRatingToDisplay(rating) {
+            const ratingHtml = `
+                <div class="rating-card">
+                    <h3>${rating.professorName} - ${rating.courseName}</h3>
+                    <p>学部 | Faculty: ${rating.faculty}</p>
+                    <p>難易度 | Difficulty: ${rating.difficulty}/5</p>
+                    <p>授業の質 | Quality: ${rating.quality}/5</p>
+                    <p>成績 | Grade: ${rating.grade}</p>
+                    <p>日時 | Timestamp: ${new Date(rating.timestamp).toLocaleString()}</p>
+                </div>
+            `;
+
+            const recentRatings = document.getElementById('recentRatings');
+            recentRatings.innerHTML = ratingHtml + recentRatings.innerHTML;
+        }
+    </script>
+</body>
+</html>
