@@ -5,7 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>慶應SFC教授・授業評価 | Keio SFC Professor & Course Ratings</title>
     <style>
-        /* ... (CSS stays the same as in the previous version) ... */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        nav {
+            background-color: #004080;
+            padding: 0.5em 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        .main-content {
+            display: flex;
+            margin-top: 20px;
+        }
+        .rating-form {
+            flex: 2;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-right: 20px;
+        }
+        .ratings-display {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #003366;
+        }
+        form {
+            background: #e6f2ff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .rating-group {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .rating-item {
+            flex-basis: 48%;
+        }
+        button {
+            background: #003366;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #004080;
+        }
+        .rating-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -26,7 +132,102 @@
             <div class="rating-form">
                 <h2>教授と授業を評価する | Rate a Professor and Course</h2>
                 <form id="ratingForm">
-                    <!-- ... (form fields stay the same as in the previous version) ... -->
+                    <div class="form-group">
+                        <label for="professorName">教授名 | Professor Name</label>
+                        <input type="text" id="professorName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseName">授業名 | Course Name</label>
+                        <input type="text" id="courseName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="faculty">学部 | Faculty</label>
+                        <select id="faculty" required>
+                            <option value="">選択してください | Select</option>
+                            <option value="policy">総合政策学部 | Faculty of Policy Management</option>
+                            <option value="environment">環境情報学部 | Faculty of Environment and Information Studies</option>
+                        </select>
+                    </div>
+
+                    <div class="rating-group">
+                        <div class="rating-item">
+                            <label for="difficulty">難易度 | Difficulty</label>
+                            <select id="difficulty" required>
+                                <option value="">選択 | Select</option>
+                                <option value="1">1 - とても簡単 | Very Easy</option>
+                                <option value="2">2 - 簡単 | Easy</option>
+                                <option value="3">3 - 普通 | Average</option>
+                                <option value="4">4 - 難しい | Difficult</option>
+                                <option value="5">5 - とても難しい | Very Difficult</option>
+                            </select>
+                        </div>
+
+                        <div class="rating-item">
+                            <label for="quality">授業の質 | Course Quality</label>
+                            <select id="quality" required>
+                                <option value="">選択 | Select</option>
+                                <option value="1">1 - 非常に悪い | Very Poor</option>
+                                <option value="2">2 - 悪い | Poor</option>
+                                <option value="3">3 - 普通 | Average</option>
+                                <option value="4">4 - 良い | Good</option>
+                                <option value="5">5 - 非常に良い | Excellent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attendance">出席 | Attendance</label>
+                        <select id="attendance" required>
+                            <option value="">選択 | Select</option>
+                            <option value="mandatory">必須 | Mandatory</option>
+                            <option value="optional">任意 | Optional</option>
+                            <option value="sometimes">時々取る | Sometimes Taken</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grading">成績評価方法 | Grading Method</label>
+                        <select id="grading" multiple>
+                            <option value="midterm">中間試験 | Midterm Exam</option>
+                            <option value="final">期末試験 | Final Exam</option>
+                            <option value="assignments">課題提出 | Assignments</option>
+                            <option value="participation">授業参加 | Class Participation</option>
+                            <option value="presentation">発表 | Presentation</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="textbook">教科書 | Textbook</label>
+                        <select id="textbook" required>
+                            <option value="">選択 | Select</option>
+                            <option value="required">必須 | Required</option>
+                            <option value="optional">任意 | Optional</option>
+                            <option value="not_used">使用しない | Not Used</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grade">取得した成績 | Grade Received</label>
+                        <select id="grade" required>
+                            <option value="">選択 | Select</option>
+                            <option value="S">S (秀 | Excellent)</option>
+                            <option value="A">A (優 | Very Good)</option>
+                            <option value="B">B (良 | Good)</option>
+                            <option value="C">C (可 | Fair)</option>
+                            <option value="D">D (不可 | Fail)</option>
+                            <option value="P">P (合格 | Pass)</option>
+                            <option value="F">F (不合格 | Fail)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">コメント | Comments</label>
+                        <textarea id="comments" rows="4"></textarea>
+                    </div>
+
+                    <button type="submit">提出 | Submit</button>
                 </form>
             </div>
 
