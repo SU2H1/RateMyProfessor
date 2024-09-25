@@ -112,6 +112,10 @@
             padding: 10px;
             margin-bottom: 10px;
         }
+        .grade-display {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
@@ -217,8 +221,6 @@
                             <option value="B">B (良 | Good)</option>
                             <option value="C">C (可 | Fair)</option>
                             <option value="D">D (不可 | Fail)</option>
-                            <option value="P">P (合格 | Pass)</option>
-                            <option value="F">F (不合格 | Fail)</option>
                         </select>
                     </div>
 
@@ -294,7 +296,7 @@
                     <p>学部 | Faculty: ${rating.faculty}</p>
                     <p>難易度 | Difficulty: ${rating.difficulty}/5</p>
                     <p>授業の質 | Quality: ${rating.quality}/5</p>
-                    <p>成績 | Grade: ${rating.grade}</p>
+                    <p>成績 | Grade: <span class="grade-display">${rating.grade}</span></p>
                     <p>日時 | Timestamp: ${new Date(rating.timestamp).toLocaleString()}</p>
                 </div>
             `;
