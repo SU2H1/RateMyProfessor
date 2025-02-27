@@ -1,0 +1,181 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    width: 400px;
+    padding: 20px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.help-block {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary:hover {
+    background-color: #152a60;
+}
+
+.btn-default {
+    background-color: #f8f9fa;
+    color: #212529;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+/* Message styles */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+
+.delete-account {
+    color: #dc3545 !important;
+    border-top: 1px solid #eee;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.delete-account:hover {
+    background-color: #ffebee !important;
+}
+
+/* User account menu styles */
+.user-account-section {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.account-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.account-option {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+}
+
+.account-option:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.account-option h4 {
+    margin-top: 0;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+.account-option p {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.account-option a {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #1e3a8a;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.account-option a:hover {
+    background-color: #152c6c;
+}
+
+.account-option.danger {
+    border-color: #ffcdd2;
+}
+
+.account-option.danger h4 {
+    color: #c62828;
+}
+
+.account-option.danger a {
+    background-color: #dc3545;
+}
+
+.account-option.danger a:hover {
+    background-color: #c82333;
+}
+
+/* Links */
+a {
+    color: #1e3a8a;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
