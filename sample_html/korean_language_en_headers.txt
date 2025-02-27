@@ -1,0 +1,19 @@
+HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Wed, 26 Feb 2025 03:23:50 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Link: </assets/application-750c4756d6fc1b3d8b8f4876a0c48d1b62cc99c5066f2c66c62faf8df043a9c0.css>; rel=preload; as=style; nopush,</packs/js/application-aa8858346bfe7697f6c5.js>; rel=preload; as=script; nopush
+Vary: Accept
+ETag: W/"cf42f61a9282fa448627254afe6dd58b"
+Cache-Control: max-age=0, private, must-revalidate
+Set-Cookie: _sfc_open_syllabus_session=hfiR0%2FP8%2FethTRRrkSqfX5WR%2F8mmBb6fNUKEZ89X%2FSPmbCsviCJZp2d%2BqlMySZ86xwONF7wRGMjyiypxvWBTQucoSqRmKY59czc25B9lJQ%2BxM7%2Bxds4i%2Bv5tH4GtUJsPKd36q%2B70tvMWo415FJeYHvnPzDdsLvnejwU2Z%2BUDMifDoUC0HR%2FwB7RaL8euBCQjwulSF917qg9fKKH7GQTQONihdskm37prgbISi2bc3KjhopMXl%2BcCsWifsEPk2pOkD8LTc8%2FadXI3DK2w7qVSJT9vnegYoQ%3D%3D--o%2BqtcvBF3LFkxDDj--Jxy3VBCUT9c%2F0jDtF7vEMA%3D%3D; path=/; HttpOnly; SameSite=Lax
+X-Request-Id: d7f90d89-0fd4-4d33-8150-ce87e714bcde
+X-Runtime: 0.234937
+
