@@ -1,0 +1,512 @@
+<?php
+/**
+ * Professor Detail Page Template
+ * This page displays detailed information about a specific professor
+ */
+
+// Include database configuration and rating calculation functions
+require_once 'config.php';
+require_once 'calculate_ratings.php';
+
+// Start session to check if user is logged in
+session_start();
+$isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
+
+// Debug information
+echo "<!-- Debug Information\n";
+echo "REQUEST: " . print_r($_GET, true) . "\n";
+echo "-->\n";
+
+// Load JSON data file
+$jsonFilePath = __DIR__ . '/sfc_courses.json';
+if (!file_exists($jsonFilePath)) {
+    echo "Error: JSON data file not found at: $jsonFilePath";
+    exit;
+}
+
+$jsonData = file_get_contents($jsonFilePath);
+if ($jsonData === false) {
+    echo "Error: Could not read JSON data file";
+    exit;
+}
+
+$data = json_decode($jsonData, true);
+if ($data === null) {
+    echo "Error: Could not parse JSON data. JSON error: " . json_last_error_msg();
+    exit;
+}
+
+// Get professor name from the URL
+$professorParam = isset($_GET['name']) ? $_GET['name'] : null;
+
+// Get language preference
+$lang = isset($_GET['lang']) && $_GET['lang'] === 'en' ? 'en' : 'ja';
+
+// Check if we have a professor name
+if (!$professorParam) {
+    echo "Professor name is required.";
+    exit;
+}
+
+// Find the professor in the data
+$professor = null;
+$professorCourses = [];
+$avgRating = 0.0;
+$ratingCount = 0;
+$hasRatings = false;
+$roundedRating = 0;
+
+// Iterate through courses to find professor
+foreach ($data['courses'] as $course) {
+    foreach ($course['professors'] as $prof) {
+        // Match by English name without spaces
+        $profNameNoSpaces = str_replace(' ', '', $prof['name']['en']);
+        if (strcasecmp($profNameNoSpaces, $professorParam) === 0) {
+            $professor = $prof;
+            $professorCourses[] = $course;
+        }
+    }
+}
+
+if (!$professor) {
+    echo "Professor not found.";
+    exit;
+}
+
+// Get professor display name based on language
+$professorName = $professor['name'][$lang];
+$department = $professor['department'][$lang];
+
+// Set page title
+$pageTitle = $professorName;
+
+// Initialize database connection
+$db = new SQLite3('database/ratemyteacher.db');
+
+// Try to find professor in the database by name
+$professorId = null;
+$professorNameNoSpaces = str_replace(' ', '', $professorParam);
+$stmt = $db->prepare("SELECT id FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like");
+$stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
+$stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
+$result = $stmt->execute();
+$row = $result->fetchArray(SQLITE3_ASSOC);
+if ($row) {
+    $professorId = $row['id'];
+}
+
+// Get ratings based on professor ID
+$avgContentQuality = 0;
+$avgDifficulty = 0;
+$reviewCount = 0;
+
+if ($professorId) {
+    // Use our calculation function to get average ratings across all courses
+    $ratings = calculateProfessorRatings($professorId, $db);
+    $avgContentQuality = $ratings['content_quality'];
+    $avgDifficulty = $ratings['difficulty'];
+    $reviewCount = $ratings['review_count'];
+} else {
+    // If professor not found in DB, try to aggregate ratings from JSON data
+    // This is a fallback but won't be as accurate
+    $allContentRatings = [];
+    $allDifficultyRatings = [];
+    
+    if (isset($data['ratings'])) {
+        foreach ($data['ratings'] as $rating) {
+            if (isset($rating['professor']) && 
+                strcasecmp(str_replace(' ', '', $rating['professor']), $professorNameNoSpaces) === 0) {
+                if (isset($rating['content_quality'])) {
+                    $allContentRatings[] = $rating['content_quality'];
+                }
+                if (isset($rating['difficulty'])) {
+                    $allDifficultyRatings[] = $rating['difficulty'];
+                }
+            }
+        }
+    }
+    
+    // Calculate averages if we have any ratings
+    if (count($allContentRatings) > 0) {
+        $avgContentQuality = round(array_sum($allContentRatings) / count($allContentRatings), 1);
+    }
+    if (count($allDifficultyRatings) > 0) {
+        $avgDifficulty = round(array_sum($allDifficultyRatings) / count($allDifficultyRatings), 1);
+    }
+    $reviewCount = count($allContentRatings);
+}
+
+// Set up category scores for display
+$categoryScores = [
+    'content' => [
+        'score' => $avgContentQuality, 
+        'percent' => $avgContentQuality * 20, // Convert to percentage (0-5 scale to 0-100%)
+        'label' => $lang === 'ja' ? '授業内容の質' : 'Content Quality'
+    ],
+    'difficulty' => [
+        'score' => $avgDifficulty, 
+        'percent' => $avgDifficulty * 20, // Convert to percentage
+        'label' => $lang === 'ja' ? '難易度' : 'Difficulty'
+    ]
+];
+
+// No sample reviews
+$reviews = [];
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $lang; ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $pageTitle; ?> - Rate My Teacher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #f0f4ff;
+            --secondary-color: #6c757d;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --hover-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --border-color: #f0f0f0;
+        }
+
+        /* Global Style Improvements */
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container Styles */
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Content Box Styling */
+        .content-box {
+            flex: 1;
+            background-color: white;
+            margin: 1rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Professor Header Styling */
+        .professor-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .professor-subtitle {
+            color: var(--secondary-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Rating Styles */
+        .overall-rating {
+            background-color: var(--primary-light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+
+        .rating-number {
+            color: var(--primary-color);
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .stars {
+            color: var(--warning-color);
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        /* Course Card Styling */
+        .course-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .course-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .course-department {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        /* Section Titles */
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* Review Cards */
+        .review-card {
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            margin-bottom: 10px;
+        }
+
+        /* Button Styles */
+        .add-review-btn, .primary-btn, #rateButton, #writeReviewButton {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 5px !important;
+            text-decoration: none !important;
+            font-weight: bold !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: background-color 0.3s !important;
+            display: inline-block !important;
+        }
+
+        .add-review-btn:hover, .primary-btn:hover, #rateButton:hover, #writeReviewButton:hover {
+            background-color: #2a4db0 !important;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 20px;
+            }
+            
+            .nav-links {
+                margin-top: 10px;
+            }
+            
+            .nav-links a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+            
+            .rating-overview {
+                flex-direction: column;
+            }
+            
+            .overall-rating {
+                flex: 0 0 auto;
+            }
+            
+            .professor-title {
+                font-size: 24px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #1e3a8a; color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; height: 60px;">
+        <div class="header-left" style="width: 25%;">
+            <div class="dropdown" style="position: relative; display: inline-block;">
+                <button class="dropbtn" style="background-color: transparent; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center;">Menu <span style="margin-left: 5px; font-size: 12px;">▼</span></button>
+                <div class="dropdown-content" style="position: absolute; background-color: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; display: none;">
+                    <?php if ($isLoggedIn): ?>
+                        <a href="my_account.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">My Account</a>
+                        <a href="logout.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Logout</a>
+                    <?php else: ?>
+                        <a href="login.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Login</a>
+                        <a href="register.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Register</a>
+                    <?php endif; ?>
+                    <a href="home.php#popular-professors" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Professors</a>
+                    <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Professors</a>
+                    <a href="home.php#top-courses" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Courses</a>
+                    <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Courses</a>
+                    <a href="tipsandtricks.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Tips and Tricks</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-center" style="width: 50%; text-align: center;">
+            <div class="logo" style="display: flex; flex-direction: column; align-items: center;">
+                <h1 style="font-size: 1.5rem; margin: 0;"><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
+            </div>
+        </div>
+        
+        <div class="header-right" style="width: 25%; display: flex; justify-content: flex-end; align-items: center;">
+            <?php if ($isLoggedIn): ?>
+                <span class="welcome-message" style="margin-right: 15px; font-size: 14px;">Welcome, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</span>
+            <?php endif; ?>
+            <div class="auth-links" style="margin-right: 15px;">
+                <?php if ($isLoggedIn): ?>
+                    <a href="logout.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Login</a>
+                    <a href="register.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Register</a>
+                <?php endif; ?>
+            </div>
+            <div class="language-toggle" style="display: flex; align-items: center;">
+                <a href="?name=<?php echo urlencode($professorParam); ?>&lang=en" style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; background:<?php echo $lang == 'en' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'en' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">English</a>
+                <a href="?name=<?php echo urlencode($professorParam); ?>&lang=ja" style="display:inline-block; width:80px; text-align:center; padding:8px 0; background:<?php echo $lang == 'ja' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'ja' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">日本語</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content-box">
+            <div class="professor-header">
+                <h1 class="professor-title" style="color: #1e3a8a; margin-bottom: 1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;"><?php echo htmlspecialchars($professorName); ?></h1>
+                <div class="professor-subtitle" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; color: #666;">
+                    <span style="display: flex; align-items: center;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
+                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 000 2.5v11a.5.5 0 00.707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 00.78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0016 13.5v-11a.5.5 0 00-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                        </svg>
+                        <?php echo htmlspecialchars($department); ?>
+                    </span>
+                </div>
+            </div>
+
+        <div class="rating-overview" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
+            <div class="rating-details" style="flex-grow: 1; min-width: 300px;">
+                <div class="rating-header" style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="font-weight: bold; color: #333;"><?php echo $lang === 'ja' ? '評価平均' : 'Rating Average'; ?></div>
+                    <div style="color: #666; font-size: 0.9em;">
+                        <?php echo $reviewCount; ?> <?php echo $lang === 'ja' ? 'レビュー' : 'reviews'; ?>
+                    </div>
+                </div>
+                <?php foreach ($categoryScores as $key => $category): ?>
+                <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;"><?php echo $category['label']; ?></div>
+                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 15px; overflow: hidden;">
+                        <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: #1e3a8a;"></div>
+                    </div>
+                    <div class="category-score" style="width: 40px; text-align: right; font-weight: bold; color: #1e3a8a;"><?php echo $category['score']; ?></div>
+                </div>
+                <?php endforeach; ?>
+                <div style="font-size: 0.85em; color: #666; margin-top: 10px;">
+                    <?php echo $lang === 'ja' ? '※ これは教授が教える全てのコースの平均評価です。' : '* This is the average rating across all courses taught by this professor.'; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="professor-courses" style="margin-bottom: 30px;">
+            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当コース' : 'Courses Taught'; ?></h2>
+            <div class="courses" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <?php if (empty($professorCourses)): ?>
+                    <p style="color: #666; font-style: italic;"><?php echo $lang === 'ja' ? 'コース情報はありません。' : 'No course information available.'; ?></p>
+                <?php else: ?>
+                    <?php foreach ($professorCourses as $course): ?>
+                        <div class="course-card" style="background-color: #f9f9f9; border-radius: 8px; padding: 15px; min-width: 200px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <a href="course_page_template.php?course=<?php echo urlencode($course['translations'][$lang]['name']); ?>&professor=<?php echo urlencode($professorParam); ?>&lang=<?php echo $lang; ?>" style="text-decoration: none; color: inherit;">
+                                <div class="course-name" style="font-weight: bold; font-size: 1.1em; color: #1e3a8a; margin-bottom: 5px;"><?php echo htmlspecialchars($course['translations'][$lang]['name']); ?></div>
+                            </a>
+                            <div class="course-field" style="color: #666; font-size: 0.9em; margin-bottom: 10px;"><?php echo htmlspecialchars($course['translations'][$lang]['field']); ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? 'レビュー' : 'Reviews'; ?></h2>
+            
+            <?php if (empty($reviews)): ?>
+                <div style="text-align: center; padding: 40px 20px; color: #666; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <div style="font-size: 64px; margin-bottom: 10px; color: #1e3a8a;">
+                        <i class="far fa-comment-dots"></i>
+                    </div>
+                    <h3 style="color: #1e3a8a; margin-bottom: 10px;"><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
+                    <p style="margin-bottom: 20px;"><?php echo $lang === 'ja' ? 'レビュー機能は現在準備中です' : 'Review functionality coming soon'; ?></p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($reviews as $review): ?>
+                    <div class="review-card" style="border-bottom: 1px solid #f0f0f0; padding: 20px 0; margin-bottom: 10px;">
+                        <div class="review-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="reviewer" style="font-weight: bold;"><?php echo htmlspecialchars($review['username']); ?></div>
+                            <div class="review-date" style="color: #666; font-size: 0.9em;"><?php echo $review['created_at']; ?></div>
+                        </div>
+                        <div class="review-rating" style="margin-bottom: 10px; color: #ffc107;">
+                            <?php echo str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']); ?>
+                        </div>
+                        <div class="review-content" style="margin-bottom: 10px;">
+                            <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
+                        </div>
+                        <div class="review-tags">
+                            <span class="tag" style="display: inline-block; background-color: #f0f4ff; color: #1e3a8a; padding: 3px 8px; border-radius: 3px; font-size: 0.8em;"><?php echo $lang === 'ja' ? '学生レビュー' : 'Student Review'; ?></span>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Review submission functionality is disabled -->
+      </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rate My Teacher - SU2H1. All rights reserved.</p>
+    </footer>
+
+    <style>
+        /* Add hover effect for dropdown menu */
+        .dropdown:hover .dropdown-content {
+            display: block !important;
+        }
+    </style>
+    <script>
+        // Review functionality is disabled
+    </script>
+</body>
+</html>

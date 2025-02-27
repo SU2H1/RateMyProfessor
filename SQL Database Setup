@@ -1,0 +1,56 @@
+-- Create database
+CREATE DATABASE IF NOT EXISTS su2h1_rating;
+USE su2h1_rating;
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_verified TINYINT(1) DEFAULT 0,
+    verification_token VARCHAR(64) DEFAULT NULL,
+    token_expiry TIMESTAMP NULL DEFAULT NULL
+);
+
+-- User profiles table
+CREATE TABLE IF NOT EXISTS user_profiles (
+    user_id INT PRIMARY KEY,
+    display_name VARCHAR(100),
+    major VARCHAR(100),
+    year_of_study VARCHAR(20),
+    bio TEXT,
+    avatar VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Ratings table (for future use)
+CREATE TABLE IF NOT EXISTS ratings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    professor_id INT NOT NULL,
+    course_id INT NOT NULL,
+    rating DECIMAL(3,1) NOT NULL,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Professors table (for future use)
+CREATE TABLE IF NOT EXISTS professors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    department VARCHAR(100),
+    bio TEXT
+);
+
+-- Courses table (for future use)
+CREATE TABLE IF NOT EXISTS courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    course_code VARCHAR(50),
+    description TEXT,
+    professor_id INT,
+    FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE SET NULL
+);

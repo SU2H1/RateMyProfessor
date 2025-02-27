@@ -1,0 +1,1978 @@
+<?php
+/**
+ * Course Detail Page Template
+ * This page displays detailed information about a specific course
+ */
+
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Set up an error handler to catch fatal errors
+function fatal_error_handler() {
+    $error = error_get_last();
+    if ($error !== NULL && $error['type'] === E_ERROR) {
+        echo "<h1>Fatal Error</h1>";
+        echo "<pre>";
+        print_r($error);
+        echo "</pre>";
+        
+        // If we have a database connection, close it properly
+        global $db;
+        if ($db) {
+            $db->close();
+        }
+    }
+}
+register_shutdown_function('fatal_error_handler');
+
+// Include database configuration
+require_once 'config.php';
+
+// Start session to check if user is logged in
+session_start();
+$isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
+
+// Debug information - uncomment to see on page
+echo "<!-- Debug Information\n";
+echo "REQUEST: " . print_r($_GET, true) . "\n";
+echo "-->\n";
+
+// Also output to error log
+error_log("REQUEST: " . print_r($_GET, true));
+
+// Load JSON data file
+$jsonFilePath = __DIR__ . '/sfc_courses.json';
+if (!file_exists($jsonFilePath)) {
+    echo "Error: JSON data file not found at: $jsonFilePath";
+    exit;
+}
+
+$jsonData = file_get_contents($jsonFilePath);
+if ($jsonData === false) {
+    echo "Error: Could not read JSON data file";
+    exit;
+}
+
+$data = json_decode($jsonData, true);
+if ($data === null) {
+    echo "Error: Could not parse JSON data. JSON error: " . json_last_error_msg();
+    exit;
+}
+
+// Get course parameters from the URL
+$courseParam = isset($_GET['course']) ? urldecode($_GET['course']) : null;
+$professorParam = isset($_GET['professor']) ? $_GET['professor'] : null;
+$year = isset($_GET['year']) ? $_GET['year'] : null;
+
+// Force a clean reload if we're viewing from a review submission
+if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
+    // Set a no-cache header
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+}
+
+// Debug output
+error_log("Course: " . ($courseParam ?? 'none'));
+error_log("Professor: " . ($professorParam ?? 'none'));
+error_log("Year: " . ($year ?? 'none'));
+
+// Default to Japanese, but allow language switching
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'ja';
+// Convert "jp" to "ja" for internal consistency
+if ($lang === 'jp') $lang = 'ja';
+
+// Legacy support for course_id param
+$courseId = isset($_GET['id']) ? $_GET['id'] : null;
+
+// We need at least course name or ID
+if (!$courseParam && !$courseId) {
+    echo "Course name or ID is required.";
+    exit;
+}
+
+// Debug info for URL parameters
+error_log("URL Parameters - course: " . ($courseParam ?? 'null') . ", professor: " . ($professorParam ?? 'null') . ", year: " . ($year ?? 'null') . ", id: " . ($courseId ?? 'null'));
+echo "<!-- Debug info: Course param: " . htmlspecialchars($courseParam ?? 'null') . " -->";
+echo "<!-- Debug info: Professor param: " . htmlspecialchars($professorParam ?? 'null') . " -->";
+
+// Special handling if we have a new_review parameter
+if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
+    error_log("New review detected! Review ID: " . ($_GET['review_id'] ?? 'unknown'));
+    echo "<!-- New review detected! Review ID: " . ($_GET['review_id'] ?? 'unknown') . " -->";
+}
+
+// Find the course in our JSON data
+$course = null;
+
+// First try to find by course_id (legacy support)
+if ($courseId) {
+    error_log("Searching for course by ID: $courseId");
+    foreach ($data['courses'] as $c) {
+        if ($c['course_id'] === $courseId && ($year === null || $c['year'] === $year)) {
+            $course = $c;
+            error_log("Found course by ID: " . ($c['translations']['en']['name'] ?? 'Unknown'));
+            break;
+        }
+    }
+}
+
+// If not found by ID, try to find by course name, professor, and year
+if (!$course && $courseParam) {
+    error_log("Searching for course by parameters");
+    foreach ($data['courses'] as $c) {
+        $matchesCourseName = false;
+        $matchesProfessor = !$professorParam; // If no professor specified, count as match
+        
+        // Debug to find the course we're looking for
+        error_log("Checking course: " . ($c['translations']['en']['name'] ?? 'Unknown'));
+        error_log("Looking for: $courseParam");
+        
+        // Check course name in both languages - exact match with the param
+        if (isset($c['translations']['ja']['name']) && 
+            $c['translations']['ja']['name'] === $courseParam) {
+            $matchesCourseName = true;
+            error_log("Found matching course name (JA)");
+        } else if (isset($c['translations']['en']['name']) && 
+            $c['translations']['en']['name'] === $courseParam) {
+            $matchesCourseName = true;
+            error_log("Found matching course name (EN)");
+        }
+        
+        // Check professor name if specified - exact match with professor's English name without spaces
+        if ($professorParam) {
+            foreach ($c['professors'] as $prof) {
+                // Clean up professor's English name to match URL format
+                $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                error_log("Comparing professor: '$profNameUrl' with '$professorParam'");
+                if ($profNameUrl === $professorParam) {
+                    $matchesProfessor = true;
+                    error_log("Found matching professor");
+                    break;
+                }
+            }
+        }
+        
+        // Check year match
+        $yearMatches = ($year === null || $c['year'] === $year);
+        error_log("Year match: " . ($yearMatches ? 'Yes' : 'No') . " (Looking for: $year, Course year: {$c['year']})");
+        
+        // If all parameters match, this is our course
+        if ($matchesCourseName && $matchesProfessor && $yearMatches) {
+            $course = $c;
+            error_log("FOUND MATCHING COURSE!");
+            break;
+        }
+    }
+    
+    // If still not found, try a less strict search (partial course name match)
+    if (!$course) {
+        error_log("No exact match found, trying partial match");
+        foreach ($data['courses'] as $c) {
+            $matchesProfessor = !$professorParam; // If no professor specified, count as match
+            
+            // Check if course name contains the search term
+            $courseNameJa = $c['translations']['ja']['name'] ?? '';
+            $courseNameEn = $c['translations']['en']['name'] ?? '';
+            
+            $containsCourseName = 
+                (stripos($courseNameJa, $courseParam) !== false) || 
+                (stripos($courseNameEn, $courseParam) !== false);
+                
+            if ($containsCourseName) {
+                error_log("Found partial course name match: $courseNameEn");
+            }
+            
+            // Check professor name if specified
+            if ($professorParam) {
+                foreach ($c['professors'] as $prof) {
+                    $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                    if ($profNameUrl === $professorParam) {
+                        $matchesProfessor = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Check year match
+            $yearMatches = ($year === null || $c['year'] === $year);
+            
+            // If all parameters match, this is our course
+            if ($containsCourseName && $matchesProfessor && $yearMatches) {
+                $course = $c;
+                error_log("FOUND COURSE BY PARTIAL MATCH!");
+                break;
+            }
+        }
+    }
+}
+
+// If course not found, show error with more information
+if (!$course) {
+    echo "<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Course Not Found</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .error-container { background: #f8d7da; border: 1px solid #f5c6cb; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .debug-container { background: #e2e3e5; border: 1px solid #d6d8db; padding: 20px; border-radius: 5px; margin-top: 20px; }
+        h1 { color: #721c24; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class=\"error-container\">
+        <h1>Course Not Found</h1>
+        <p>Sorry, we couldn't find the requested course with the provided parameters.</p>
+        <p>Please check the URL and try again.</p>
+        <p><a href=\"home.php\">Return to Home Page</a></p>
+    </div>
+    
+    <div class=\"debug-container\">
+        <h2>Debug Information</h2>
+        <h3>Parameters Received:</h3>
+        <pre>Course: " . htmlspecialchars($courseParam ?? 'Not provided') . "
+Professor: " . htmlspecialchars($professorParam ?? 'Not provided') . "
+Year: " . htmlspecialchars($year ?? 'Not provided') . "
+Language: " . htmlspecialchars($lang ?? 'Not provided') . "</pre>
+        
+        <h3>First 5 Courses in Database:</h3>
+        <pre>";
+    $count = 0;
+    foreach ($data['courses'] as $c) {
+        if ($count++ >= 5) break;
+        echo "ID: " . htmlspecialchars($c['course_id'] ?? 'Unknown') . "\n";
+        echo "Year: " . htmlspecialchars($c['year'] ?? 'Unknown') . "\n";
+        echo "Name (EN): " . htmlspecialchars($c['translations']['en']['name'] ?? 'Unknown') . "\n";
+        echo "Name (JA): " . htmlspecialchars($c['translations']['ja']['name'] ?? 'Unknown') . "\n";
+        echo "Professors: ";
+        foreach ($c['professors'] as $prof) {
+            echo htmlspecialchars($prof['name']['en'] ?? 'Unknown') . ", ";
+        }
+        echo "\n\n";
+    }
+    echo "</pre>
+    </div>
+</body>
+</html>";
+    exit;
+}
+
+// Language was already set above
+
+// Get translation for this language
+$translation = $course['translations'][$lang] ?? null;
+if (!$translation) {
+    echo "Translation not available for selected language.";
+    exit;
+}
+
+// Connect to database to get ratings
+try {
+    error_log("Attempting to connect to database");
+    $db = new SQLite3('database/ratemyteacher.db');
+    error_log("Database connection successful");
+
+    // Let's check database structure to avoid errors
+    $tables = [];
+    $result = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
+    while ($table = $result->fetchArray(SQLITE3_ASSOC)) {
+        $tables[] = $table['name'];
+    }
+    
+    // Debug info
+    error_log("Database tables: " . implode(", ", $tables));
+    
+    // Only proceed if courses table exists
+    $dbCourse = null;
+    if (in_array('courses', $tables)) {
+        // Check columns in courses table to avoid "no such column" errors
+        $columns = [];
+        $result = $db->query("PRAGMA table_info(courses)");
+        while ($column = $result->fetchArray(SQLITE3_ASSOC)) {
+            $columns[] = $column['name'];
+        }
+        
+        error_log("Courses table columns: " . implode(", ", $columns));
+        
+        // Attempt to find the course in the database using appropriate columns
+        if (in_array('course_id', $columns)) {
+            // If course_id exists in the table
+            $stmt = $db->prepare("SELECT id FROM courses WHERE course_id = :course_id LIMIT 1");
+            $stmt->bindValue(':course_id', $courseId, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
+        } else if (in_array('name', $columns)) {
+            // Try matching by name instead
+            $stmt = $db->prepare("SELECT id FROM courses WHERE name = :name LIMIT 1");
+            $stmt->bindValue(':name', $translation['name'], SQLITE3_TEXT);
+            $result = $stmt->execute();
+            $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
+        } else {
+            error_log("Could not find appropriate column to match course in database");
+        }
+    } else {
+        error_log("Courses table not found in database");
+    }
+} catch (Exception $e) {
+    error_log("Database error: " . $e->getMessage());
+    $dbCourse = null;
+    $db = null;
+}
+
+$hasRatings = false;
+$avgRating = 0;
+$ratingCount = 0;
+$reviews = [];
+
+// If course exists in the database and database is connected, get ratings
+if ($dbCourse && $db) {
+    try {
+        $courseDbId = $dbCourse['id'];
+        
+        // Check if ratings table exists
+        $tablesResult = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='ratings'");
+        $ratingsTableExists = $tablesResult->fetchArray(SQLITE3_ASSOC) !== false;
+        
+        if ($ratingsTableExists) {
+            // Check columns in ratings table
+            $columns = [];
+            $result = $db->query("PRAGMA table_info(ratings)");
+            while ($column = $result->fetchArray(SQLITE3_ASSOC)) {
+                $columns[] = $column['name'];
+            }
+            
+            error_log("Ratings table columns: " . implode(", ", $columns));
+            
+            // Only proceed if needed columns exist
+            if (in_array('course_id', $columns) && in_array('rating', $columns)) {
+                // For debugging purposes, check if there are any ratings at all
+                $checkStmt = $db->prepare("SELECT COUNT(*) as total FROM ratings");
+                $checkResult = $checkStmt->execute();
+                $totalRatings = $checkResult->fetchArray(SQLITE3_ASSOC)['total'];
+                error_log("DEBUG: Total ratings in database: $totalRatings");
+                echo "<!-- DEBUG: Total ratings in database: $totalRatings -->";
+                
+                // Get average rating and count
+                $stmt = $db->prepare("
+                    SELECT AVG(rating) as avg_rating, COUNT(id) as rating_count 
+                    FROM ratings 
+                    WHERE course_id = :course_id
+                ");
+                $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                $result = $stmt->execute();
+                $ratingData = $result->fetchArray(SQLITE3_ASSOC);
+                
+                error_log("DEBUG: Found " . ($ratingData ? $ratingData['rating_count'] : 0) . " ratings for course ID: $courseDbId");
+                echo "<!-- DEBUG: Rating data for courseDbId $courseDbId: " . print_r($ratingData, true) . " -->";
+                
+                if ($ratingData && $ratingData['rating_count'] > 0) {
+                    $hasRatings = true;
+                    $avgRating = number_format((float)$ratingData['avg_rating'], 1);
+                    $ratingCount = $ratingData['rating_count'];
+                    
+                    // Wrap this section in a try/catch to isolate errors
+                    try {
+                        // Get reviews if user is logged in
+                        // Debug reviews
+                        error_log("Fetching reviews for course ID: $courseDbId");
+                        
+                        // Always try to fetch reviews (not just when logged in)
+                        // Check users table
+                        $usersTableExists = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")->fetchArray(SQLITE3_ASSOC) !== false;
+                        
+                        if ($usersTableExists) {
+                            // First, check how many raw ratings we have for this course
+                            $countStmt = $db->prepare("SELECT COUNT(*) as count FROM ratings WHERE course_id = :course_id");
+                            $countStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                            $countResult = $countStmt->execute();
+                            $ratingCount = $countResult->fetchArray(SQLITE3_ASSOC)['count'];
+                            
+                            error_log("DEBUG: Found $ratingCount ratings for course ID $courseDbId");
+                            echo "<!-- DEBUG: Found $ratingCount ratings for course ID $courseDbId -->";
+                            
+                            // Simplify the process - just get raw ratings
+                            error_log("Fetching raw ratings for course ID: $courseDbId");
+                            
+                            try {
+                                // Create simple reviews with minimal error potential
+                                $reviews = [];
+                                
+                                // Get ratings without any joins
+                                $simpleStmt = $db->prepare("SELECT id, rating, comment, created_at FROM ratings WHERE course_id = :course_id ORDER BY created_at DESC");
+                                $simpleStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                                $simpleResult = $simpleStmt->execute();
+                                
+                                // Process each rating
+                                while ($row = $simpleResult->fetchArray(SQLITE3_ASSOC)) {
+                                    // Format the date if possible
+                                    $formattedDate = 'Unknown Date';
+                                    if (!empty($row['created_at'])) {
+                                        try {
+                                            $timestamp = strtotime($row['created_at']);
+                                            if ($timestamp !== false) {
+                                                $formattedDate = date('F j, Y', $timestamp);
+                                            }
+                                        } catch (Exception $dateEx) {
+                                            error_log("Error formatting date: " . $dateEx->getMessage());
+                                        }
+                                    }
+                                    
+                                    // Add to reviews array with default username and user_id for deletion
+                                    $reviews[] = [
+                                        'id' => $row['id'],
+                                        'rating' => $row['rating'] ?? 3, // Default to 3 if missing
+                                        'comment' => $row['comment'] ?? '',
+                                        'created_at' => $formattedDate,
+                                        'username' => 'Student', // Simple default username
+                                        'user_id' => $row['user_id'] ?? 0  // Include user_id for permission checking
+                                    ];
+                                }
+                                
+                                error_log("DEBUG: Processed " . count($reviews) . " reviews for display");
+                            } catch (Exception $ratingEx) {
+                                error_log("Error processing ratings: " . $ratingEx->getMessage());
+                                // Create a sample review to show the error
+                                $reviews = [[
+                                    'id' => 0,
+                                    'rating' => 3,
+                                    'comment' => 'Error loading reviews: ' . $ratingEx->getMessage(),
+                                    'created_at' => date('F j, Y'),
+                                    'username' => 'System'
+                                ]];
+                            }
+                        } else {
+                            error_log("Users table not found in database");
+                        }
+                    } catch (Exception $reviewEx) {
+                        error_log("Error in review section: " . $reviewEx->getMessage());
+                        // Create a fallback review to display the error
+                        $reviews = [[
+                            'id' => 0, 
+                            'rating' => 3,
+                            'comment' => 'Error loading reviews section: ' . $reviewEx->getMessage(),
+                            'created_at' => date('F j, Y'),
+                            'username' => 'System'
+                        ]];
+                    }
+                }
+            } else {
+                error_log("Required columns not found in ratings table");
+            }
+        } else {
+            error_log("Ratings table not found in database");
+        }
+    } catch (Exception $e) {
+        error_log("Error fetching ratings: " . $e->getMessage());
+    }
+}
+
+// Create the star rating display
+function generateStarRating($rating) {
+    $fullStars = floor($rating);
+    $halfStar = $rating - $fullStars >= 0.5;
+    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+    
+    $html = '';
+    
+    // Full stars
+    for ($i = 0; $i < $fullStars; $i++) {
+        $html .= '★';
+    }
+    
+    // Half star
+    if ($halfStar) {
+        $html .= '★';
+    }
+    
+    // Empty stars
+    for ($i = 0; $i < $emptyStars; $i++) {
+        $html .= '☆';
+    }
+    
+    return $html;
+}
+
+// Get the opposite language for language switcher
+$oppositeLang = $lang === 'ja' ? 'en' : 'ja';
+$oppositeLabel = $lang === 'ja' ? 'English' : '日本語';
+
+// Page title based on course name
+$pageTitle = htmlspecialchars($translation['name']);
+
+// Get semester info
+$semester = $lang === 'ja' ? '春学期' : 'Spring Semester'; // Default value
+if (isset($course['semester'])) {
+    $semester = $course['semester'][$lang] ?? ($lang === 'ja' ? '春学期' : 'Spring Semester');
+}
+
+// Set up category scores for display
+$categoryScores = [
+    'content' => ['score' => 0, 'percent' => 0, 'label' => $lang === 'ja' ? '授業内容の質' : 'Content Quality'],
+    'difficulty' => ['score' => 0, 'percent' => 0, 'label' => $lang === 'ja' ? '難易度' : 'Difficulty']
+];
+
+// Initialize grade distribution and count variables
+$gradeDistribution = [
+    'S' => 0,
+    'A' => 0,
+    'B' => 0,
+    'C' => 0,
+    'D' => 0,
+    'F' => 0,
+    'P' => 0
+];
+$totalGradeCount = 0;
+$failureCount = 0;
+$failureRate = 0;
+
+// If we have a database connection and course ID, get grade distribution data
+if ($dbCourse && $db) {
+    try {
+        $courseDbId = $dbCourse['id'];
+        
+        // Check if the ratings table has a grade column
+        $hasGradeColumn = false;
+        $ratingColumns = [];
+        $columnsResult = $db->query("PRAGMA table_info('ratings')");
+        while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+            $ratingColumns[] = $col['name'];
+            if ($col['name'] === 'grade') {
+                $hasGradeColumn = true;
+            }
+        }
+        error_log("Rating columns: " . implode(", ", $ratingColumns));
+        echo "<!-- Rating columns: " . implode(", ", $ratingColumns) . " -->";
+        
+        // Only attempt to query grades if the column exists
+        if ($hasGradeColumn) {
+            // Get grade distribution
+            $stmt = $db->prepare("
+                SELECT grade, COUNT(*) as count
+                FROM ratings
+                WHERE course_id = :course_id AND grade IS NOT NULL AND grade != ''
+                GROUP BY grade
+            ");
+            $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+        } else {
+            error_log("No grade column in ratings table, skipping grade distribution");
+            // Skip grade distribution calculation
+        }
+        
+        // Process each grade group if we have grade data
+        if ($hasGradeColumn && isset($result)) {
+            while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                $grade = $row['grade'];
+                $count = $row['count'];
+                
+                // Only count valid grades
+                if (isset($gradeDistribution[$grade])) {
+                    $gradeDistribution[$grade] = $count;
+                    $totalGradeCount += $count;
+                    
+                    // Count failures (D and F)
+                    if ($grade === 'D' || $grade === 'F') {
+                        $failureCount += $count;
+                    }
+                }
+            }
+            
+            // Calculate failure rate if we have any grades
+            if ($totalGradeCount > 0) {
+                $failureRate = round(($failureCount / $totalGradeCount) * 100);
+            }
+            
+            // Convert counts to percentages for display
+            if ($totalGradeCount > 0) {
+                foreach ($gradeDistribution as $grade => $count) {
+                    // Calculate percentage and round to nearest whole number
+                    $gradeDistribution[$grade] = round(($count / $totalGradeCount) * 100);
+                }
+            }
+        } else {
+            // No grade data available, leave all values at 0
+            error_log("No grade data available for distribution");
+        }
+    } catch (Exception $e) {
+        error_log("Error calculating grade distribution: " . $e->getMessage());
+    }
+}
+
+// No sample reviews
+$sampleReviews = [];
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $lang; ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $pageTitle; ?> - Rate My Teacher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #6c757d;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .language-toggle {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        
+        .language-toggle button {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .language-toggle button.active {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        .course-header {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .course-title {
+            font-size: 32px;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+        }
+        
+        .course-subtitle {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .course-subtitle span {
+            display: flex;
+            align-items: center;
+        }
+        
+        .course-subtitle svg {
+            margin-right: 5px;
+        }
+        
+        .rating-overview {
+            display: flex;
+            margin: 30px 0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .overall-rating {
+            flex: 0 0 200px;
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .rating-number {
+            font-size: 64px;
+            font-weight: bold;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+        
+        .stars {
+            color: var(--warning-color);
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        
+        .rating-label {
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+        
+        .rating-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .rating-category {
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-name {
+            flex: 0 0 150px;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            flex: 1;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .category-score {
+            flex: 0 0 40px;
+            text-align: right;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .professor-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--dark-gray);
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+        
+        .professors {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .professor-card {
+            flex: 1 0 200px;
+            max-width: 300px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            background-color: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .professor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .professor-card a {
+            text-decoration: none;
+            color: var(--dark-gray);
+        }
+        
+        .professor-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .professor-department {
+            color: var(--secondary-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .professor-rating {
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .professor-rating .stars {
+            font-size: 16px;
+            margin: 0 5px 0 0;
+        }
+        
+        .reviews {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .review-card {
+            border-bottom: 1px solid var(--light-gray);
+            padding: 20px 0;
+            margin-bottom: 10px;
+        }
+        
+        .review-card:last-child {
+            border-bottom: none;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .reviewer {
+            font-weight: bold;
+        }
+        
+        .review-date {
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+        
+        .review-rating {
+            color: var(--warning-color);
+            margin: 10px 0;
+        }
+        
+        .review-content {
+            line-height: 1.6;
+        }
+        
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            background-color: var(--light-gray);
+            color: var(--secondary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .add-review-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .add-review-btn:hover {
+            background-color: #3a70c5;
+        }
+        
+        .course-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .info-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+        
+        .info-content {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .grades-chart {
+            display: flex;
+            height: 200px;
+            align-items: flex-end;
+            margin-top: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .grade-bar {
+            flex: 1;
+            margin: 0 5px;
+            background-color: var(--primary-color);
+            position: relative;
+        }
+        
+        .grade-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+        
+        .grade-percentage {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        footer {
+            background-color: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        
+        .professor-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        
+        .professor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .professor-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+        
+        .professor-department {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .professor-rating {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .stars {
+            color: #ffc107;
+            font-size: 0.9em;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 20px;
+            }
+            
+            .nav-links {
+                margin-top: 10px;
+            }
+            
+            .nav-links a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+            
+            .rating-overview {
+                flex-direction: column;
+            }
+            
+            .overall-rating {
+                flex: 0 0 auto;
+            }
+            
+            .course-title {
+                font-size: 24px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+        }
+        
+        /* Unified Color Scheme */
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #f0f4ff;
+            --secondary-color: #6c757d;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --hover-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --border-color: #f0f0f0;
+        }
+
+        /* Global Style Improvements */
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Content Box Styling */
+        .content-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Course Header Styling */
+        .course-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .course-subtitle {
+            color: var(--secondary-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Rating Styles */
+        .overall-rating {
+            background-color: var(--primary-light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+
+        .rating-number {
+            color: var(--primary-color);
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .stars {
+            color: var(--warning-color);
+        }
+
+        /* Professor Card Styling */
+        .professor-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .professor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .professor-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .professor-department {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        /* Section Titles */
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* Review Cards */
+        .review-card {
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            margin-bottom: 10px;
+        }
+
+        /* Button Styles */
+        .add-review-btn, .primary-btn, #rateButton, #writeReviewButton {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 5px !important;
+            text-decoration: none !important;
+            font-weight: bold !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: background-color 0.3s !important;
+            display: inline-block !important;
+        }
+
+        .add-review-btn:hover, .primary-btn:hover, #rateButton:hover, #writeReviewButton:hover {
+            background-color: #2a4db0 !important;
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #1e3a8a; color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; height: 60px;">
+        <div class="header-left" style="width: 25%;">
+            <div class="dropdown" style="position: relative; display: inline-block;">
+                <button class="dropbtn" style="background-color: transparent; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center;">Menu <span style="margin-left: 5px; font-size: 12px;">▼</span></button>
+                <div class="dropdown-content" style="position: absolute; background-color: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; display: none;">
+                    <?php if ($isLoggedIn): ?>
+                        <a href="my_account.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">My Account</a>
+                        <a href="logout.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Logout</a>
+                    <?php else: ?>
+                        <a href="login.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Login</a>
+                        <a href="register.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Register</a>
+                    <?php endif; ?>
+                    <a href="home.php#popular-professors" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Professors</a>
+                    <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Professors</a>
+                    <a href="home.php#top-courses" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Courses</a>
+                    <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Courses</a>
+                    <a href="tipsandtricks.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Tips and Tricks</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-center" style="width: 50%; text-align: center;">
+            <div class="logo" style="display: flex; flex-direction: column; align-items: center;">
+                <h1 style="font-size: 1.5rem; margin: 0;"><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
+            </div>
+        </div>
+        
+        <div class="header-right" style="width: 25%; display: flex; justify-content: flex-end; align-items: center;">
+            <?php if ($isLoggedIn): ?>
+                <span class="welcome-message" style="margin-right: 15px; font-size: 14px;">Welcome, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</span>
+            <?php endif; ?>
+            <div class="auth-links" style="margin-right: 15px;">
+                <?php if ($isLoggedIn): ?>
+                    <a href="logout.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Login</a>
+                    <a href="register.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Register</a>
+                <?php endif; ?>
+            </div>
+            <div class="language-toggle" style="display: flex; align-items: center;">
+                <a href="?<?php $queryParams = $_GET; $queryParams['lang'] = 'en'; echo http_build_query($queryParams); ?>" style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; background:<?php echo $lang == 'en' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'en' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">English</a>
+                <a href="?<?php $queryParams = $_GET; $queryParams['lang'] = 'ja'; echo http_build_query($queryParams); ?>" style="display:inline-block; width:80px; text-align:center; padding:8px 0; background:<?php echo $lang == 'ja' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'ja' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">日本語</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="width: 100%; min-height: 100vh; display: flex; flex-direction: column; max-width: 1200px; margin: 0 auto; padding: 2rem;">
+        <div class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <div class="course-header">
+                <h1 class="course-title" style="color: #1e3a8a; margin-bottom: 1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;"><?php echo htmlspecialchars($translation['name']); ?></h1>
+                <div class="course-subtitle" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; color: #666;">
+                    <span style="display: flex; align-items: center;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
+                            <path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 11a5 5 0 110-10 5 5 0 010 10z"/>
+                            <path d="M8 4a.5.5 0 01.5.5v3.5H11a.5.5 0 010 1H8a.5.5 0 01-.5-.5V4.5A.5.5 0 018 4z"/>
+                        </svg>
+                        <?php echo $semester; ?>
+                    </span>
+                    <span style="display: flex; align-items: center;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
+                            <path d="M3.5 0a.5.5 0 01.5.5V1h8V.5a.5.5 0 011 0V1h1a2 2 0 012 2v11a2 2 0 01-2 2H2a2 2 0 01-2-2V3a2 2 0 012-2h1V.5a.5.5 0 01.5-.5zM2 2a1 1 0 00-1 1v11a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1H2z"/>
+                            <path d="M2.5 4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/>
+                        </svg>
+                        <?php echo htmlspecialchars($course['year']); ?>
+                    </span>
+                    <span style="display: flex; align-items: center;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
+                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 000 2.5v11a.5.5 0 00.707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 00.78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0016 13.5v-11a.5.5 0 00-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                        </svg>
+                        <?php echo htmlspecialchars($translation['field']); ?>
+                    </span>
+                </div>
+            </div>
+
+        <div class="rating-overview" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
+            <div class="rating-details" style="flex-grow: 1; min-width: 300px;">
+                <?php foreach ($categoryScores as $key => $category): ?>
+                <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;"><?php echo $category['label']; ?></div>
+                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 15px; overflow: hidden;">
+                        <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: #1e3a8a;"></div>
+                    </div>
+                    <div class="category-score" style="width: 40px; text-align: right; font-weight: bold; color: #1e3a8a;"><?php echo $category['score']; ?></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <div class="professor-info" style="margin-bottom: 30px;">
+            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当教員' : 'Professors'; ?></h2>
+            <div class="professors">
+                <?php foreach ($course['professors'] as $professor): ?>
+                <div class="professor-card">
+                    <a href="professor.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>">
+                        <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
+                    </a>
+                    <div class="professor-department"><?php echo htmlspecialchars($professor['department'][$lang]); ?></div>
+                    <div class="professor-rating">
+                        <div class="stars">☆☆☆☆☆</div>
+                        <span>-</span>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <div class="course-info">
+            <div class="info-card">
+                <h3 class="info-title"><?php echo $lang === 'ja' ? '成績分布' : 'Grade Distribution'; ?></h3>
+                <?php if ($totalGradeCount > 0): ?>
+                <div class="grades-chart" style="display: flex; height: 200px; align-items: flex-end; margin-top: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--light-gray);">
+                    <?php foreach ($gradeDistribution as $grade => $percent): ?>
+                    <?php if ($grade !== 'P'): ?> <!-- Skip P grade in main distribution -->
+                    <div class="grade-bar" style="flex: 1; margin: 0 5px; background-color: <?php echo ($grade === 'F' || $grade === 'D') ? '#e57373' : '#1e3a8a'; ?>; height: <?php echo max(5, $percent * 2); ?>px; position: relative;">
+                        <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: bold; color: #1e3a8a;">
+                            <?php echo $percent; ?>%
+                        </div>
+                        <div class="grade-label" style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-weight: bold;">
+                            <?php echo $grade; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+                    <?php echo $lang === 'ja' ? '総回答数' : 'Total responses'; ?>: <?php echo $totalGradeCount; ?>
+                </div>
+                <?php else: ?>
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="color: #6c757d; font-size: 18px;">
+                        <?php echo $lang === 'ja' ? 'まだ成績データがありません' : 'No grade data available yet'; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+            <div class="info-card">
+                <h3 class="info-title"><?php echo $lang === 'ja' ? '落単率' : 'Failure Rate'; ?></h3>
+                <?php if ($totalGradeCount > 0): ?>
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="font-size: 64px; font-weight: bold; color: <?php echo $failureRate > 30 ? '#e57373' : ($failureRate > 15 ? '#ff9800' : '#4caf50'); ?>;">
+                        <?php echo $failureRate; ?>%
+                    </div>
+                    <div style="font-size: 16px; color: #666; margin-top: 10px;">
+                        <?php echo $lang === 'ja' ? 'D または F の割合' : 'Percentage of D or F grades'; ?>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="font-size: 64px; font-weight: bold; color: #4a86e8;">-</div>
+                    <div style="font-size: 16px; color: #6c757d; margin-top: 10px;">
+                        <?php echo $lang === 'ja' ? 'データなし' : 'No data available'; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="reviews">
+            <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
+            <?php if (!empty($reviews)): ?>
+                <?php foreach ($reviews as $review): ?>
+                <div class="review-card" id="review-<?php echo $review['id']; ?>">
+                    <div class="review-header">
+                        <div class="reviewer"><?php echo htmlspecialchars($review['username']); ?></div>
+                        <div class="review-date">
+                            <?php echo $review['created_at']; ?>
+                            
+                            <?php if ($isLoggedIn && isset($_SESSION['id']) && $_SESSION['id'] === $review['user_id']): ?>
+                            <!-- Delete button only shown for the user's own reviews -->
+                            <button onclick="deleteReview(<?php echo $review['id']; ?>)" class="delete-review-btn" style="margin-left: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">
+                                <?php echo $lang === 'ja' ? '削除' : 'Delete'; ?>
+                            </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Overall Rating -->
+                    <div class="review-rating" style="margin-bottom: 15px;">
+                        <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
+                            <?php echo $lang === 'ja' ? '総合評価:' : 'Overall Rating:'; ?> 
+                            <span style="color: #1e3a8a; font-size: 18px;"><?php echo $review['rating']; ?>/5</span>
+                        </div>
+                        <div style="color: #ffc107; font-size: 18px;">
+                            <?php echo generateStarRating($review['rating']); ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Content -->
+                    <?php if (!empty($review['comment'])): ?>
+                    <div class="review-content" style="margin-bottom: 10px;">
+                        <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div class="review-tags">
+                        <span class="tag"><?php echo $lang === 'ja' ? '学生レビュー' : 'Student Review'; ?></span>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div style="text-align: center; padding: 40px 20px; color: var(--secondary-color); background-color: white; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="font-size: 64px; margin-bottom: 10px;">
+                        <i class="far fa-comment-dots"></i>
+                    </div>
+                    <h3><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
+                    <p><?php echo $lang === 'ja' ? 'この講義の最初のレビューを投稿しましょう！' : 'Be the first to review this course!'; ?></p>
+                </div>
+            <?php endif; ?>
+            
+            <a href="#rating-form" class="add-review-btn">
+                <?php echo $lang === 'ja' ? 'レビューを投稿する' : 'Post a Review'; ?>
+            </a>
+        </div>
+        
+        <?php if ($isLoggedIn): ?>
+        <div class="info-card" style="margin-top: 20px;" id="rating-form">
+            <h3 class="info-title"><?php echo $lang === 'ja' ? 'この講義を評価する' : 'Rate This Course'; ?></h3>
+            
+            <?php if (isset($_GET['error'])): ?>
+            <div style="background-color: #ffebee; color: #c62828; padding: 12px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #c62828;">
+                <strong><?php echo $lang === 'ja' ? 'エラー:' : 'Error:'; ?></strong> 
+                <?php 
+                    $errorMessage = '';
+                    switch($_GET['error']) {
+                        case 'submission_failed':
+                            $errorMessage = $lang === 'ja' ? 'レビューの送信に失敗しました。もう一度お試しください。' : 'Failed to submit your review. Please try again.';
+                            break;
+                        case 'database_error':
+                            $errorMessage = $lang === 'ja' ? 'データベースエラーが発生しました。管理者にお問い合わせください。' : 'A database error occurred. Please contact the administrator.';
+                            break;
+                        default:
+                            $errorMessage = $lang === 'ja' ? '不明なエラーが発生しました。' : 'An unknown error occurred.';
+                    }
+                    echo $errorMessage;
+                ?>
+            </div>
+            <?php endif; ?>
+            <form action="submit_rating.php" method="post" style="padding: 15px 0;">
+                <input type="hidden" name="course_id" value="<?php echo $courseId ?? $course['course_id'] ?? ''; ?>">
+                <!-- Store current URL for redirect after submission -->
+                <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                <!-- Debug info -->
+                <input type="hidden" name="debug_info" value="<?php echo htmlspecialchars(json_encode(['course_id' => $courseId, 'course_name' => $translation['name'] ?? ''])); ?>">
+                
+
+                <!-- Content and Difficulty Ratings -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                            <?php echo $lang === 'ja' ? '授業内容の質:' : 'Content Quality:'; ?>
+                        </label>
+                        <select name="content_rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
+                            <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
+                            <?php for($i = 5; $i >= 1; $i--): ?>
+                            <option value="<?php echo $i; ?>">
+                                <?php echo $i; ?> - <?php echo $lang === 'ja' ? 
+                                    match($i) {
+                                        5 => '非常に良い',
+                                        4 => '良い',
+                                        3 => '普通',
+                                        2 => 'やや悪い',
+                                        1 => '悪い',
+                                        default => '',
+                                    } : 
+                                    match($i) {
+                                        5 => 'Excellent',
+                                        4 => 'Good',
+                                        3 => 'Average',
+                                        2 => 'Below Average',
+                                        1 => 'Poor',
+                                        default => '',
+                                    }; 
+                                ?>
+                            </option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                            <?php echo $lang === 'ja' ? '授業難易度:' : 'Difficulty:'; ?>
+                        </label>
+                        <select name="difficulty_rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
+                            <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
+                            <option value="5"><?php echo $lang === 'ja' ? '非常に難しい' : 'Very Difficult'; ?></option>
+                            <option value="4"><?php echo $lang === 'ja' ? '難しい' : 'Difficult'; ?></option>
+                            <option value="3"><?php echo $lang === 'ja' ? '普通' : 'Average'; ?></option>
+                            <option value="2"><?php echo $lang === 'ja' ? '簡単' : 'Easy'; ?></option>
+                            <option value="1"><?php echo $lang === 'ja' ? '非常に簡単' : 'Very Easy'; ?></option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Attendance -->
+                <div style="margin-bottom: 30px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                        <?php echo $lang === 'ja' ? '出席確認:' : 'Takes Attendance:'; ?>
+                    </label>
+                    <select name="attendance_check" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
+                        <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
+                        <option value="always"><?php echo $lang === 'ja' ? '毎回取る' : 'Always'; ?></option>
+                        <option value="sometimes"><?php echo $lang === 'ja' ? '時々取る' : 'Sometimes'; ?></option>
+                        <option value="never"><?php echo $lang === 'ja' ? '取らない' : 'Never'; ?></option>
+                    </select>
+                </div>
+
+                <!-- Grade Received -->
+                <div style="margin-bottom: 30px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                        <?php echo $lang === 'ja' ? '成績:' : 'Grade Received:'; ?>
+                    </label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <?php foreach(['S', 'A', 'B', 'C', 'D', 'F', 'P'] as $grade): ?>
+                        <label style="cursor: pointer; display: inline-block; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; transition: all 0.3s;">
+                            <input type="radio" name="grade" value="<?php echo $grade; ?>" style="margin-right: 5px;" required>
+                            <?php echo $grade; ?>
+                        </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Course Attributes -->
+                <div style="margin-bottom: 30px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                        <?php echo $lang === 'ja' ? '授業の特徴:' : 'Course Attributes:'; ?>
+                    </label>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p style="margin-bottom: 10px; font-weight: 500;"><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></p>
+                        <div style="display: flex; gap: 15px;">
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="radio" name="textbook" value="required" required>
+                                <?php echo $lang === 'ja' ? '必須' : 'Required'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="radio" name="textbook" value="recommended">
+                                <?php echo $lang === 'ja' ? '推奨' : 'Recommended'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="radio" name="textbook" value="not_needed">
+                                <?php echo $lang === 'ja' ? '不要' : 'Not needed'; ?>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin-bottom: 10px; font-weight: 500;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="first_half[]" value="report">
+                                <?php echo $lang === 'ja' ? 'レポート' : 'Report'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="first_half[]" value="test">
+                                <?php echo $lang === 'ja' ? 'テスト' : 'Test'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="first_half[]" value="presentation">
+                                <?php echo $lang === 'ja' ? '発表' : 'Presentation'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="first_half[]" value="project">
+                                <?php echo $lang === 'ja' ? 'プロジェクト' : 'Project'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="first_half[]" value="nothing">
+                                <?php echo $lang === 'ja' ? 'なし' : 'Nothing'; ?>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p style="margin-bottom: 10px; font-weight: 500;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="second_half[]" value="report">
+                                <?php echo $lang === 'ja' ? 'レポート' : 'Report'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="second_half[]" value="test">
+                                <?php echo $lang === 'ja' ? 'テスト' : 'Test'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="second_half[]" value="presentation">
+                                <?php echo $lang === 'ja' ? '発表' : 'Presentation'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="second_half[]" value="project">
+                                <?php echo $lang === 'ja' ? 'プロジェクト' : 'Project'; ?>
+                            </label>
+                            <label style="cursor: pointer; display: inline-block;">
+                                <input type="checkbox" name="second_half[]" value="nothing">
+                                <?php echo $lang === 'ja' ? 'なし' : 'Nothing'; ?>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comment (Optional) -->
+                <div style="margin-bottom: 30px;">
+                    <label for="comment" style="display: block; margin-bottom: 10px; font-weight: 500;">
+                        <?php echo $lang === 'ja' ? 'コメント (任意):' : 'Comment (Optional):'; ?>
+                    </label>
+                    <textarea name="comment" id="comment" rows="5" 
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"
+                        placeholder="<?php echo $lang === 'ja' ? 'この講義についての感想や意見を書いてください...' : 'Share your thoughts about this course...'; ?>"></textarea>
+                </div>
+                
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="add-review-btn" style="border: none; cursor: pointer;">
+                        <?php echo $lang === 'ja' ? '評価を送信' : 'Submit Rating'; ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <style>
+        /* Add hover effect for dropdown menu */
+        .dropdown:hover .dropdown-content {
+            display: block !important;
+        }
+    </style>
+    <script>
+    </script>
+
+    <footer>
+        <p>&copy; 2025 Rate My Teacher - SU2H1. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Function to handle review deletion
+        function deleteReview(reviewId) {
+            if (!confirm('<?php echo $lang === "ja" ? "このレビューを削除してもよろしいですか？" : "Are you sure you want to delete this review?"; ?>')) {
+                return; // User cancelled
+            }
+            
+            // Send AJAX request to delete the review
+            fetch('delete_review.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'review_id=' + reviewId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the review from the page
+                    const reviewElement = document.getElementById('review-' + reviewId);
+                    if (reviewElement) {
+                        reviewElement.style.backgroundColor = '#ffebee';
+                        reviewElement.style.opacity = '0.5';
+                        reviewElement.innerHTML = '<div style="padding: 20px; text-align: center;">' + 
+                            '<?php echo $lang === "ja" ? "レビューが削除されました" : "Review has been deleted"; ?>' +
+                            '</div>';
+                        
+                        // After a short delay, remove the element entirely
+                        setTimeout(() => {
+                            reviewElement.style.display = 'none';
+                        }, 2000);
+                    }
+                } else {
+                    // Show error message
+                    alert(data.error || '<?php echo $lang === "ja" ? "レビューの削除中にエラーが発生しました" : "An error occurred while deleting the review"; ?>');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('<?php echo $lang === "ja" ? "エラーが発生しました" : "An error occurred"; ?>');
+            });
+        }
+        
+        // Debug function to help identify search issues
+        function debug(message) {
+            console.log(`[Search Debug] ${message}`);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event to review button if not logged in
+            const reviewBtn = document.querySelector('.add-review-btn');
+            if (reviewBtn && !reviewBtn.getAttribute('href').startsWith('#')) {
+                reviewBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('<?php echo $lang === 'ja' ? 'レビューを投稿するにはログインが必要です。' : 'You need to log in to post a review.'; ?>');
+                    window.location.href = 'login.php';
+                });
+            }
+
+            // Rating form enhancements for logged in users
+            const ratingInputs = document.querySelectorAll('input[name="rating"]');
+            if (ratingInputs.length > 0) {
+                ratingInputs.forEach(input => {
+                    const label = input.closest('label');
+                    label.addEventListener('click', function() {
+                        // Reset all labels
+                        ratingInputs.forEach(inp => {
+                            inp.closest('label').style.backgroundColor = '';
+                            inp.closest('label').style.borderColor = '#ddd';
+                        });
+                        // Highlight selected label
+                        this.style.backgroundColor = '#f8f9fa';
+                        this.style.borderColor = '#4a86e8';
+                    });
+                });
+            }
+
+            // Grade selection enhancement
+            const gradeInputs = document.querySelectorAll('input[name="grade"]');
+            if (gradeInputs.length > 0) {
+                gradeInputs.forEach(input => {
+                    const label = input.closest('label');
+                    label.addEventListener('click', function() {
+                        // Reset all labels
+                        gradeInputs.forEach(inp => {
+                            inp.closest('label').style.backgroundColor = '';
+                            inp.closest('label').style.borderColor = '#ddd';
+                        });
+                        // Highlight selected label
+                        this.style.backgroundColor = '#f8f9fa';
+                        this.style.borderColor = '#4a86e8';
+                    });
+                });
+            }
+            
+            // Live search functionality
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            
+            if (searchInput && searchResults) {
+                let searchTimeout;
+                
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+                    
+                    debug(`Search input event: query="${query}"`);
+                    
+                    if (query.length < 2) {
+                        searchResults.style.display = 'none';
+                        debug("Query too short, hiding results");
+                        return;
+                    }
+                    
+                    searchTimeout = setTimeout(function() {
+                        const url = `search.php?query=${encodeURIComponent(query)}&limit=true&lang=<?php echo $lang; ?>`;
+                        debug(`Making fetch request to: ${url}`);
+                        
+                        fetch(url)
+                            .then(response => {
+                                debug(`Received response: status=${response.status}`);
+                                return response.text(); // Get raw text first for debugging
+                            })
+                            .then(text => {
+                                try {
+                                    debug(`Response text: ${text.substring(0, 100)}...`);
+                                    const data = JSON.parse(text);
+                                    debug(`Parsed JSON: ${data.professors.length} professors, ${data.courses.length} courses`);
+                                    return data;
+                                } catch (e) {
+                                    debug(`ERROR parsing JSON: ${e.message}`);
+                                    console.error("Full response text:", text);
+                                    return { professors: [], courses: [] };
+                                }
+                            })
+                            .then(data => {
+                                searchResults.innerHTML = '';
+                                
+                                if (data.professors.length === 0 && data.courses.length === 0) {
+                                    searchResults.innerHTML = `<p style="padding: 10px; text-align: center; color: #666;"><?php echo $lang === 'ja' ? '結果が見つかりませんでした' : 'No results found'; ?></p>`;
+                                    searchResults.style.display = 'block';
+                                    return;
+                                }
+                                
+                                // Display professors
+                                if (data.professors.length > 0) {
+                                    const profSection = document.createElement('div');
+                                    profSection.innerHTML = `<h3 style="margin: 10px; font-size: 16px; color: #666;"><?php echo $lang === 'ja' ? '教授' : 'Professors'; ?> (${data.professors.length})</h3>`;
+                                    
+                                    data.professors.forEach(prof => {
+                                        const item = document.createElement('div');
+                                        item.style.padding = '10px';
+                                        item.style.borderBottom = '1px solid #eee';
+                                        item.style.cursor = 'pointer';
+                                        
+                                        // Use Japanese name if in Japanese mode and available
+                                        const displayName = '<?php echo $lang; ?>' === 'ja' && prof.name_ja ? prof.name_ja : prof.name;
+                                        const displayDept = '<?php echo $lang; ?>' === 'ja' && prof.department_ja ? prof.department_ja : prof.department;
+                                        
+                                        // For debug purposes, show both names during development
+                                        item.innerHTML = `
+                                            <div style="font-weight: bold;">${displayName}</div>
+                                            <div style="font-size: 13px; color: #666;">${displayDept || ''}</div>
+                                            <div style="font-size: 10px; color: #999; margin-top: 4px;">
+                                                EN: ${prof.name || ''} | JA: ${prof.name_ja || ''}
+                                            </div>
+                                        `;
+                                        
+                                        item.addEventListener('click', () => {
+                                            // Make sure to remove all spaces from professor name for URL
+                                            const nameForUrl = prof.name.replace(/\s+/g, '');
+                                            window.location.href = `professor.php?name=${encodeURIComponent(nameForUrl)}&lang=<?php echo $lang; ?>`;
+                                            debug(`Navigating to professor: ${nameForUrl}`);
+                                        });
+                                        
+                                        profSection.appendChild(item);
+                                    });
+                                    
+                                    searchResults.appendChild(profSection);
+                                }
+                                
+                                // Display courses
+                                if (data.courses.length > 0) {
+                                    const courseSection = document.createElement('div');
+                                    courseSection.innerHTML = `<h3 style="margin: 10px; font-size: 16px; color: #666;"><?php echo $lang === 'ja' ? 'コース' : 'Courses'; ?> (${data.courses.length})</h3>`;
+                                    
+                                    data.courses.forEach(course => {
+                                        const item = document.createElement('div');
+                                        item.style.padding = '10px';
+                                        item.style.borderBottom = '1px solid #eee';
+                                        item.style.cursor = 'pointer';
+                                        
+                                        // Use Japanese name if in Japanese mode and available
+                                        const displayName = '<?php echo $lang; ?>' === 'ja' && course.name_ja ? course.name_ja : course.name;
+                                        const displayProf = '<?php echo $lang; ?>' === 'ja' && course.professor_name_ja ? course.professor_name_ja : course.professor_name;
+                                        
+                                        item.innerHTML = `
+                                            <div style="font-weight: bold;">${displayName}</div>
+                                            <div style="font-size: 13px; color: #666;">
+                                                ${displayProf ? ('<?php echo $lang === 'ja' ? '担当教員: ' : 'Taught by: '; ?>' + displayProf) : ''}
+                                            </div>
+                                            <div style="font-size: 10px; color: #999; margin-top: 4px;">
+                                                EN: ${course.name || ''} | JA: ${course.name_ja || ''}
+                                            </div>
+                                        `;
+                                        
+                                        item.addEventListener('click', () => {
+                                            // Use the name in the matching language
+                                            const nameForUrl = '<?php echo $lang; ?>' === 'ja' && course.name_ja ? course.name_ja : course.name;
+                                            // Add professor if available
+                                            let url = `course_page_template.php?course=${encodeURIComponent(nameForUrl)}`;
+                                            if (course.professor_name) {
+                                                // Remove spaces from professor name for URL
+                                                const profNameForUrl = course.professor_name.replace(/\s+/g, '');
+                                                url += `&professor=${encodeURIComponent(profNameForUrl)}`;
+                                            }
+                                            url += `&lang=<?php echo $lang; ?>`;
+                                            window.location.href = url;
+                                            debug(`Navigating to course: ${nameForUrl}`);
+                                        });
+                                        
+                                        courseSection.appendChild(item);
+                                    });
+                                    
+                                    searchResults.appendChild(courseSection);
+                                }
+                                
+                                // Add "See all results" link
+                                const footer = document.createElement('div');
+                                footer.style.padding = '10px';
+                                footer.style.textAlign = 'center';
+                                footer.style.borderTop = '1px solid #eee';
+                                
+                                const link = document.createElement('a');
+                                link.href = `search.php?q=${encodeURIComponent(query)}&lang=<?php echo $lang; ?>`;
+                                link.style.color = '#4a86e8';
+                                link.style.textDecoration = 'none';
+                                link.style.fontWeight = 'bold';
+                                link.textContent = '<?php echo $lang === 'ja' ? 'すべての結果を表示' : 'See all results'; ?>';
+                                
+                                footer.appendChild(link);
+                                searchResults.appendChild(footer);
+                                
+                                searchResults.style.display = 'block';
+                            })
+                            .catch(error => {
+                                console.error('Error fetching search results:', error);
+                            });
+                    }, 300);
+                });
+                
+                // Hide search results when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
+                
+                // Hide search results when pressing Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        searchResults.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
