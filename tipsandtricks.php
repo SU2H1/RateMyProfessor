@@ -404,7 +404,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
                 <li><a href="https://addons.mozilla.org/en-US/firefox/addon/grammarly-1/" target="_blank">Grammarly (Firefox)</a></li>
                 <li><a href="https://chrome.google.com/webstore/detail/grammar-and-spell-checker/oldceeleldhonbafppcapldpdifcinji" target="_blank">LanguageTool (Chromium) - Open Source</a></li>
                 <li><a href="https://addons.mozilla.org/en-US/firefox/addon/languagetool/" target="_blank">LanguageTool (Firefox) - Open Source</a></li>
-                <li><a href="https://github.com/search?q=Quillbot+Premium+Unlocker" target="_blank">Quillbot Premium Unlocker</a> ← Enable via Userscript manager (ie. Tampermonkey/Violentmonkey)</li>
+                <li><a href="https://greasyfork.org/en/scripts/465276-quillbot-premium-unlocker">Quillbot Premium Unlocker</a> ← Enable via Userscript manager (ie. Tampermonkey/Violentmonkey)</li>
             </ul>
             
             <h3><?php echo $t['sub_dark']; ?></h3>
@@ -419,7 +419,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
                 <li><a href="https://addons.mozilla.org/en-US/firefox/addon/deepl-translator/" target="_blank">DeepL (Firefox)</a></li>
                 <li><a href="https://chrome.google.com/webstore/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb" target="_blank">Google Translate (Chromium)</a></li>
                 <li><a href="https://addons.mozilla.org/en-US/firefox/addon/to-google-translate/" target="_blank">Google Translate (Firefox)</a></li>
-                <li><a href="https://github.com/search?q=Quillbot+Premium+Unlocker" target="_blank">Quillbot Premium Unlocker</a></li>
+                <li><a href="https://greasyfork.org/en/scripts/465276-quillbot-premium-unlocker" target="_blank">Quillbot Premium Unlocker</a></li>
             </ul>
             
             <h3><?php echo $t['sub_discount']; ?></h3>
