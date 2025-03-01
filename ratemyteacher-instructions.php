@@ -168,6 +168,8 @@ $sortedProfessors = $sortedProfessorsByCount;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
+    crossorigin="anonymous"></script>
     <title>Rate My Teacher - SU2H1</title>
     <link rel="stylesheet" href="css/style.css">
     <?php echo $scrollToSection; ?>
