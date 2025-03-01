@@ -1,5 +1,5 @@
 <?php
-// Redirect to instructions page
-header("Location: ratemyteacher-instructions.php");
+// Redirect to home page instead
+header("Location: home.php");
 exit;
 ?>

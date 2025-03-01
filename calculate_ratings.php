@@ -64,9 +64,11 @@ function calculateProfessorRatings($professor_id, $db) {
         }
         
         // Step 2: Get ratings for each course and calculate the professor's average
+        // We'll treat each course equally regardless of number of reviews
         $totalContentQuality = 0;
         $totalDifficulty = 0;
         $totalRatingCount = 0;
+        $coursesWithRatings = 0;
         
         // Determine which columns exist in the ratings table
         $ratingsColumns = [];
@@ -90,8 +92,9 @@ function calculateProfessorRatings($professor_id, $db) {
         }
         
         // Determine field names for the query
-        $contentField = $hasContentQuality ? 'content_quality' : ($hasContentRating ? 'content_rating' : 'rating');
-        $difficultyField = $hasDifficulty ? 'difficulty' : ($hasDifficultyRating ? 'difficulty_rating' : 'rating');
+        // Always prioritize content_rating in the ratings table as that's what submit_rating.php uses
+        $contentField = $hasContentRating ? 'content_rating' : ($hasContentQuality ? 'content_quality' : 'rating');
+        $difficultyField = $hasDifficultyRating ? 'difficulty_rating' : ($hasDifficulty ? 'difficulty' : 'rating');
         
         foreach ($coursesIds as $courseId) {
             $stmt = $db->prepare("
@@ -107,16 +110,18 @@ function calculateProfessorRatings($professor_id, $db) {
             $ratings = $ratingResult->fetchArray(SQLITE3_ASSOC);
             
             if ($ratings && $ratings['rating_count'] > 0) {
-                $totalContentQuality += $ratings['avg_content_quality'] * $ratings['rating_count'];
-                $totalDifficulty += $ratings['avg_difficulty'] * $ratings['rating_count'];
+                // Each course counts as one unit (not weighted by number of reviews)
+                $totalContentQuality += $ratings['avg_content_quality'];
+                $totalDifficulty += $ratings['avg_difficulty'];
                 $totalRatingCount += $ratings['rating_count'];
+                $coursesWithRatings++;
             }
         }
         
-        // Calculate weighted averages
-        if ($totalRatingCount > 0) {
-            $result['content_quality'] = round($totalContentQuality / $totalRatingCount, 1);
-            $result['difficulty'] = round($totalDifficulty / $totalRatingCount, 1);
+        // Calculate average based on number of courses (not weighted by review count)
+        if ($coursesWithRatings > 0) {
+            $result['content_quality'] = round($totalContentQuality / $coursesWithRatings, 1);
+            $result['difficulty'] = round($totalDifficulty / $coursesWithRatings, 1);
             $result['overall'] = round(($result['content_quality'] + $result['difficulty']) / 2, 1);
             $result['review_count'] = $totalRatingCount;
         }
@@ -168,8 +173,9 @@ function calculateCourseRatings($course_id, $db) {
         }
         
         // Determine field names for the query
-        $contentField = $hasContentQuality ? 'content_quality' : ($hasContentRating ? 'content_rating' : 'rating');
-        $difficultyField = $hasDifficulty ? 'difficulty' : ($hasDifficultyRating ? 'difficulty_rating' : 'rating');
+        // Always prioritize content_rating in the ratings table as that's what submit_rating.php uses
+        $contentField = $hasContentRating ? 'content_rating' : ($hasContentQuality ? 'content_quality' : 'rating');
+        $difficultyField = $hasDifficultyRating ? 'difficulty_rating' : ($hasDifficulty ? 'difficulty' : 'rating');
         
         $stmt = $db->prepare("
             SELECT 

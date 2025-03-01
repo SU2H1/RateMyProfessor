@@ -208,8 +208,44 @@ if (!$course && $courseParam) {
     }
 }
 
-// If course not found, show error with more information
-if (!$course) {
+// Initialize dbCourse variable
+$dbCourse = null;
+
+// Try to connect to database to find course info
+try {
+    error_log("Attempting to connect to database");
+    $db = new SQLite3('database/ratemyteacher.db');
+    error_log("Database connection successful");
+
+    // Check database structure
+    $tables = [];
+    $result = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
+    while ($table = $result->fetchArray(SQLITE3_ASSOC)) {
+        $tables[] = $table['name'];
+    }
+    
+    // Debug info
+    error_log("Database tables: " . implode(", ", $tables));
+    
+    // Look for course in database if we have numeric ID
+    if ($courseId && is_numeric($courseId) && in_array('courses', $tables)) {
+        $stmt = $db->prepare("SELECT id FROM courses WHERE id = :id LIMIT 1");
+        $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
+        error_log("Looking for course by direct ID: $courseId, found: " . ($dbCourse ? "yes" : "no"));
+    }
+} catch (Exception $e) {
+    error_log("Database error: " . $e->getMessage());
+    $dbCourse = null;
+    $db = null;
+}
+
+// When coming directly from account page via ID, we can skip the JSON data lookup
+$skipJsonRequirement = ($courseId && is_numeric($courseId) && $dbCourse);
+
+// If course not found and not viewing by direct ID, show error with more information
+if (!$course && !$skipJsonRequirement) {
     echo "<!DOCTYPE html>
 <html>
 <head>
@@ -238,7 +274,8 @@ if (!$course) {
         <pre>Course: " . htmlspecialchars($courseParam ?? 'Not provided') . "
 Professor: " . htmlspecialchars($professorParam ?? 'Not provided') . "
 Year: " . htmlspecialchars($year ?? 'Not provided') . "
-Language: " . htmlspecialchars($lang ?? 'Not provided') . "</pre>
+Language: " . htmlspecialchars($lang ?? 'Not provided') . "
+ID: " . htmlspecialchars($courseId ?? 'Not provided') . "</pre>
         
         <h3>First 5 Courses in Database:</h3>
         <pre>";
@@ -262,6 +299,39 @@ Language: " . htmlspecialchars($lang ?? 'Not provided') . "</pre>
     exit;
 }
 
+// If viewing from account page (direct ID), create a minimal course object for display
+if ($skipJsonRequirement && !$course) {
+    // Get course details from database
+    try {
+        $stmt = $db->prepare("SELECT name FROM courses WHERE id = :id LIMIT 1");
+        $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        $courseDetails = $result->fetchArray(SQLITE3_ASSOC);
+        
+        if ($courseDetails) {
+            // Create a minimal course object
+            $course = [
+                'course_id' => $courseId,
+                'year' => date('Y'),
+                'translations' => [
+                    'en' => ['name' => $courseDetails['name'], 'field' => 'N/A'],
+                    'ja' => ['name' => $courseDetails['name'], 'field' => 'N/A']
+                ],
+                'professors' => [] // Empty professors array
+            ];
+            
+            // Set translation to current language
+            $translation = $course['translations'][$lang];
+            
+            error_log("Created minimal course object for DB ID: $courseId, Name: {$courseDetails['name']}");
+        } else {
+            error_log("Failed to get course details for ID: $courseId");
+        }
+    } catch (Exception $e) {
+        error_log("Error getting course details: " . $e->getMessage());
+    }
+}
+
 // Language was already set above
 
 // Get translation for this language
@@ -271,25 +341,36 @@ if (!$translation) {
     exit;
 }
 
-// Connect to database to get ratings
-try {
-    error_log("Attempting to connect to database");
-    $db = new SQLite3('database/ratemyteacher.db');
-    error_log("Database connection successful");
-
-    // Let's check database structure to avoid errors
-    $tables = [];
-    $result = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
-    while ($table = $result->fetchArray(SQLITE3_ASSOC)) {
-        $tables[] = $table['name'];
+// Connect to database to get ratings (only if we don't already have a connection)
+if (!isset($db) || $db === null) {
+    try {
+        error_log("Attempting to connect to database");
+        $db = new SQLite3('database/ratemyteacher.db');
+        error_log("Database connection successful");
+    } catch (Exception $e) {
+        error_log("Database connection error: " . $e->getMessage());
+        $db = null;
     }
-    
-    // Debug info
-    error_log("Database tables: " . implode(", ", $tables));
-    
-    // Only proceed if courses table exists
-    $dbCourse = null;
-    if (in_array('courses', $tables)) {
+} 
+
+// If we have a database connection, proceed with querying
+if ($db) {
+    try {
+        error_log("Using database connection");
+        
+        // Let's check database structure to avoid errors
+        $tables = [];
+        $result = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
+        while ($table = $result->fetchArray(SQLITE3_ASSOC)) {
+            $tables[] = $table['name'];
+        }
+        
+        // Debug info
+        error_log("Database tables: " . implode(", ", $tables));
+        
+        // Only proceed if courses table exists
+        $dbCourse = null;
+        if (in_array('courses', $tables)) {
         // Check columns in courses table to avoid "no such column" errors
         $columns = [];
         $result = $db->query("PRAGMA table_info(courses)");
@@ -300,28 +381,44 @@ try {
         error_log("Courses table columns: " . implode(", ", $columns));
         
         // Attempt to find the course in the database using appropriate columns
-        if (in_array('course_id', $columns)) {
-            // If course_id exists in the table
+        // First try to find by direct ID match (when linked from account page)
+        if ($courseId && is_numeric($courseId)) {
+            $stmt = $db->prepare("SELECT id FROM courses WHERE id = :id LIMIT 1");
+            $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
+            error_log("Looking up course by direct ID: $courseId, found: " . ($dbCourse ? "yes" : "no"));
+        }
+        
+        // If not found by direct ID, try course_id field
+        if (!$dbCourse && in_array('course_id', $columns) && $courseId) {
             $stmt = $db->prepare("SELECT id FROM courses WHERE course_id = :course_id LIMIT 1");
             $stmt->bindValue(':course_id', $courseId, SQLITE3_TEXT);
             $result = $stmt->execute();
             $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-        } else if (in_array('name', $columns)) {
-            // Try matching by name instead
+            error_log("Looking up course by course_id field: $courseId, found: " . ($dbCourse ? "yes" : "no"));
+        } 
+        
+        // If still not found, try by name
+        if (!$dbCourse && in_array('name', $columns) && isset($translation['name'])) {
             $stmt = $db->prepare("SELECT id FROM courses WHERE name = :name LIMIT 1");
             $stmt->bindValue(':name', $translation['name'], SQLITE3_TEXT);
             $result = $stmt->execute();
             $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-        } else {
-            error_log("Could not find appropriate column to match course in database");
+            error_log("Looking up course by name: " . $translation['name'] . ", found: " . ($dbCourse ? "yes" : "no"));
+        } 
+        
+        if (!$dbCourse) {
+            error_log("Could not find course in database. Course ID: $courseId");
         }
     } else {
         error_log("Courses table not found in database");
     }
-} catch (Exception $e) {
-    error_log("Database error: " . $e->getMessage());
-    $dbCourse = null;
-    $db = null;
+    } catch (Exception $e) {
+        error_log("Database error: " . $e->getMessage());
+        $dbCourse = null;
+        $db = null;
+    }
 }
 
 $hasRatings = false;
@@ -329,6 +426,7 @@ $avgRating = 0;
 $ratingCount = 0;
 $reviews = [];
 
+// If course exists in the database and database is connected, get ratings
 // If course exists in the database and database is connected, get ratings
 if ($dbCourse && $db) {
     try {
@@ -402,8 +500,32 @@ if ($dbCourse && $db) {
                                 // Create simple reviews with minimal error potential
                                 $reviews = [];
                                 
-                                // Get ratings without any joins
-                                $simpleStmt = $db->prepare("SELECT id, rating, comment, created_at FROM ratings WHERE course_id = :course_id ORDER BY created_at DESC");
+                                // First check what columns are available in the ratings table
+                                $availableColumns = $columns; // We already have this from earlier PRAGMA query
+                                
+                                // Build the SQL query based on available columns
+                                $selectColumns = "id, rating"; // These should always exist
+                                
+                                // Add optional columns if they exist
+                                if (in_array('content_rating', $availableColumns)) $selectColumns .= ", content_rating";
+                                if (in_array('difficulty_rating', $availableColumns)) $selectColumns .= ", difficulty_rating";
+                                if (in_array('grade', $availableColumns)) $selectColumns .= ", grade";
+                                if (in_array('comment', $availableColumns)) $selectColumns .= ", comment";
+                                if (in_array('user_id', $availableColumns)) $selectColumns .= ", user_id";
+                                if (in_array('created_at', $availableColumns)) $selectColumns .= ", created_at";
+                                
+                                $sql = "SELECT $selectColumns FROM ratings WHERE course_id = :course_id ORDER BY created_at DESC";
+                                error_log("SQL Query: $sql");
+                                
+                                // Get ratings without any joins but get all rating fields
+                                $simpleStmt = $db->prepare($sql);
+                                
+                                // Check if prepare was successful
+                                if ($simpleStmt === false) {
+                                    error_log("Error preparing statement: " . $db->lastErrorMsg());
+                                    throw new Exception("Database prepare error: " . $db->lastErrorMsg());
+                                }
+                                
                                 $simpleStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
                                 $simpleResult = $simpleStmt->execute();
                                 
@@ -411,7 +533,7 @@ if ($dbCourse && $db) {
                                 while ($row = $simpleResult->fetchArray(SQLITE3_ASSOC)) {
                                     // Format the date if possible
                                     $formattedDate = 'Unknown Date';
-                                    if (!empty($row['created_at'])) {
+                                    if (isset($row['created_at']) && !empty($row['created_at'])) {
                                         try {
                                             $timestamp = strtotime($row['created_at']);
                                             if ($timestamp !== false) {
@@ -423,14 +545,21 @@ if ($dbCourse && $db) {
                                     }
                                     
                                     // Add to reviews array with default username and user_id for deletion
-                                    $reviews[] = [
+                                    $reviewData = [
                                         'id' => $row['id'],
                                         'rating' => $row['rating'] ?? 3, // Default to 3 if missing
-                                        'comment' => $row['comment'] ?? '',
                                         'created_at' => $formattedDate,
                                         'username' => 'Student', // Simple default username
-                                        'user_id' => $row['user_id'] ?? 0  // Include user_id for permission checking
+                                        'user_id' => isset($row['user_id']) ? $row['user_id'] : 0  // Include user_id for permission checking
                                     ];
+                                    
+                                    // Add optional fields if they exist
+                                    if (isset($row['content_rating'])) $reviewData['content_rating'] = $row['content_rating'];
+                                    if (isset($row['difficulty_rating'])) $reviewData['difficulty_rating'] = $row['difficulty_rating'];
+                                    if (isset($row['grade'])) $reviewData['grade'] = $row['grade'];
+                                    if (isset($row['comment'])) $reviewData['comment'] = $row['comment'];
+                                    
+                                    $reviews[] = $reviewData;
                                 }
                                 
                                 error_log("DEBUG: Processed " . count($reviews) . " reviews for display");
@@ -516,6 +645,28 @@ $categoryScores = [
     'difficulty' => ['score' => 0, 'percent' => 0, 'label' => $lang === 'ja' ? '難易度' : 'Difficulty']
 ];
 
+// If we have reviews, calculate average content and difficulty ratings
+if (!empty($reviews)) {
+    $totalContent = 0;
+    $totalDifficulty = 0;
+    $reviewsWithRatings = 0;
+    
+    foreach ($reviews as $review) {
+        if (isset($review['content_rating'])) {
+            $totalContent += $review['content_rating'];
+            $totalDifficulty += $review['difficulty_rating'] ?? $review['content_rating'];
+            $reviewsWithRatings++;
+        }
+    }
+    
+    if ($reviewsWithRatings > 0) {
+        $categoryScores['content']['score'] = round($totalContent / $reviewsWithRatings, 1);
+        $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
+        $categoryScores['difficulty']['score'] = round($totalDifficulty / $reviewsWithRatings, 1);
+        $categoryScores['difficulty']['percent'] = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
+    }
+}
+
 // Initialize grade distribution and count variables
 $gradeDistribution = [
     'S' => 0,
@@ -535,68 +686,97 @@ if ($dbCourse && $db) {
     try {
         $courseDbId = $dbCourse['id'];
         
-        // Check if the ratings table has a grade column
-        $hasGradeColumn = false;
-        $ratingColumns = [];
-        $columnsResult = $db->query("PRAGMA table_info('ratings')");
-        while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
-            $ratingColumns[] = $col['name'];
-            if ($col['name'] === 'grade') {
-                $hasGradeColumn = true;
-            }
-        }
-        error_log("Rating columns: " . implode(", ", $ratingColumns));
-        echo "<!-- Rating columns: " . implode(", ", $ratingColumns) . " -->";
-        
-        // Only attempt to query grades if the column exists
-        if ($hasGradeColumn) {
-            // Get grade distribution
-            $stmt = $db->prepare("
-                SELECT grade, COUNT(*) as count
-                FROM ratings
-                WHERE course_id = :course_id AND grade IS NOT NULL AND grade != ''
-                GROUP BY grade
-            ");
-            $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-            $result = $stmt->execute();
-        } else {
-            error_log("No grade column in ratings table, skipping grade distribution");
-            // Skip grade distribution calculation
-        }
-        
-        // Process each grade group if we have grade data
-        if ($hasGradeColumn && isset($result)) {
-            while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-                $grade = $row['grade'];
-                $count = $row['count'];
-                
-                // Only count valid grades
-                if (isset($gradeDistribution[$grade])) {
-                    $gradeDistribution[$grade] = $count;
-                    $totalGradeCount += $count;
+        // If we have reviews, use them to calculate grade distribution
+        // This ensures we display the data immediately after review submission
+        if (!empty($reviews)) {
+            foreach ($reviews as $review) {
+                if (!empty($review['grade']) && isset($gradeDistribution[$review['grade']])) {
+                    $gradeDistribution[$review['grade']]++;
+                    $totalGradeCount++;
                     
-                    // Count failures (D and F)
-                    if ($grade === 'D' || $grade === 'F') {
-                        $failureCount += $count;
+                    // Count failures
+                    if ($review['grade'] === 'D' || $review['grade'] === 'F') {
+                        $failureCount++;
                     }
                 }
             }
             
-            // Calculate failure rate if we have any grades
+            // Calculate failure rate
             if ($totalGradeCount > 0) {
                 $failureRate = round(($failureCount / $totalGradeCount) * 100);
-            }
-            
-            // Convert counts to percentages for display
-            if ($totalGradeCount > 0) {
+                
+                // Convert counts to percentages
                 foreach ($gradeDistribution as $grade => $count) {
-                    // Calculate percentage and round to nearest whole number
                     $gradeDistribution[$grade] = round(($count / $totalGradeCount) * 100);
                 }
             }
         } else {
-            // No grade data available, leave all values at 0
-            error_log("No grade data available for distribution");
+            // As a fallback, check if the ratings table has a grade column
+            $hasGradeColumn = false;
+            $ratingColumns = [];
+            $columnsResult = $db->query("PRAGMA table_info('ratings')");
+            while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+                $ratingColumns[] = $col['name'];
+                if ($col['name'] === 'grade') {
+                    $hasGradeColumn = true;
+                }
+            }
+            
+            error_log("Rating columns: " . implode(", ", $ratingColumns));
+            echo "<!-- Rating columns: " . implode(", ", $ratingColumns) . " -->";
+            
+            // Only attempt to query grades if the column exists
+            if ($hasGradeColumn) {
+                // Get grade distribution
+                $stmt = $db->prepare("
+                    SELECT grade, COUNT(*) as count
+                    FROM ratings
+                    WHERE course_id = :course_id AND grade IS NOT NULL AND grade != ''
+                    GROUP BY grade
+                ");
+                $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                $result = $stmt->execute();
+            } else {
+                error_log("No grade column in ratings table, skipping grade distribution");
+                // Skip grade distribution calculation
+            }
+            
+            // Process each grade group if we have grade data
+            if ($hasGradeColumn && isset($result)) {
+                while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                    $grade = $row['grade'];
+                    $count = $row['count'];
+                    
+                    // Only count valid grades
+                    if (isset($gradeDistribution[$grade])) {
+                        $gradeDistribution[$grade] = $count;
+                        $totalGradeCount += $count;
+                        
+                        // Count failures (D and F)
+                        if ($grade === 'D' || $grade === 'F') {
+                            $failureCount += $count;
+                        }
+                    }
+                }
+                
+                // Calculate failure rate if we have any grades
+                if ($totalGradeCount > 0) {
+                    $failureRate = round(($failureCount / $totalGradeCount) * 100);
+                }
+                
+                // Convert counts to percentages for display
+                if ($totalGradeCount > 0) {
+                    foreach ($gradeDistribution as $grade => $count) {
+                        // Calculate percentage and round to nearest whole number
+                        $gradeDistribution[$grade] = round(($count / $totalGradeCount) * 100);
+                    }
+                }
+            } else {
+                // No grade data available from database query, but we might have data from reviews
+                if (empty($reviews)) {
+                    error_log("No grade data available for distribution");
+                }
+            }
         }
     } catch (Exception $e) {
         error_log("Error calculating grade distribution: " . $e->getMessage());
@@ -611,6 +791,8 @@ $sampleReviews = [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
+    crossorigin="anonymous"></script>
     <title><?php echo $pageTitle; ?> - Rate My Teacher</title>
     <style>
         * {
@@ -1452,8 +1634,9 @@ $sampleReviews = [];
                         </div>
                     </div>
                     
-                    <!-- Overall Rating -->
+                    <!-- Ratings Section -->
                     <div class="review-rating" style="margin-bottom: 15px;">
+                        <!-- Overall Rating -->
                         <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
                             <?php echo $lang === 'ja' ? '総合評価:' : 'Overall Rating:'; ?> 
                             <span style="color: #1e3a8a; font-size: 18px;"><?php echo $review['rating']; ?>/5</span>
@@ -1461,6 +1644,32 @@ $sampleReviews = [];
                         <div style="color: #ffc107; font-size: 18px;">
                             <?php echo generateStarRating($review['rating']); ?>
                         </div>
+                        
+                        <!-- Content & Difficulty Ratings -->
+                        <?php if (isset($review['content_rating']) || isset($review['difficulty_rating'])): ?>
+                        <div style="display: flex; gap: 20px; margin-top: 10px; font-size: 14px;">
+                            <?php if (isset($review['content_rating'])): ?>
+                            <div>
+                                <span><?php echo $lang === 'ja' ? '授業内容:' : 'Content:'; ?></span>
+                                <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['content_rating']; ?>/5</span>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (isset($review['difficulty_rating'])): ?>
+                            <div>
+                                <span><?php echo $lang === 'ja' ? '難易度:' : 'Difficulty:'; ?></span>
+                                <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['difficulty_rating']; ?>/5</span>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($review['grade'])): ?>
+                            <div>
+                                <span><?php echo $lang === 'ja' ? '成績:' : 'Grade:'; ?></span>
+                                <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['grade']; ?></span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     
                     <!-- Review Content -->

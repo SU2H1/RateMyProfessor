@@ -477,11 +477,11 @@ if ($result) {
     error_log("Rating committed successfully! New rating ID: $newRatingId for course ID: $courseDbId");
     echo "Rating committed successfully! New rating ID: $newRatingId <br>";
     
+    // Include the rating calculation functions
+    require_once 'calculate_ratings.php';
+    
     // Update the professor's average ratings
     if (isset($professorDbId) && $professorDbId) {
-        // Include the rating calculation functions
-        require_once 'calculate_ratings.php';
-        
         // Check if the professors table has rating columns
         $hasRatingColumns = false;
         $columnsResult = $db->query("PRAGMA table_info(professors)");
@@ -507,31 +507,49 @@ if ($result) {
         
         // Update the ratings if columns exist
         if ($hasRatingColumns) {
-            // Calculate the ratings
-            $ratings = calculateProfessorRatings($professorDbId, $db);
-            
-            // Update the professor record
-            $stmt = $db->prepare("
-                UPDATE professors
-                SET avg_content_quality = :content_quality,
-                    avg_difficulty = :difficulty,
-                    overall_rating = :overall,
-                    review_count = :review_count
-                WHERE id = :professor_id
-            ");
-            $stmt->bindValue(':content_quality', $ratings['content_quality'], SQLITE3_FLOAT);
-            $stmt->bindValue(':difficulty', $ratings['difficulty'], SQLITE3_FLOAT);
-            $stmt->bindValue(':overall', $ratings['overall'], SQLITE3_FLOAT);
-            $stmt->bindValue(':review_count', $ratings['review_count'], SQLITE3_INTEGER);
-            $stmt->bindValue(':professor_id', $professorDbId, SQLITE3_INTEGER);
-            
-            if ($stmt->execute()) {
+            // Update professor ratings
+            if (updateStoredProfessorRatings($professorDbId, $db)) {
                 echo "Professor ratings updated successfully<br>";
             } else {
                 echo "Failed to update professor ratings<br>";
             }
         }
+    }
     
+    // Update the course's average ratings
+    if (isset($courseDbId) && $courseDbId) {
+        // Check if the courses table has rating columns
+        $hasCourseRatingColumns = false;
+        $columnsResult = $db->query("PRAGMA table_info(courses)");
+        while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+            if ($col['name'] === 'avg_content_quality') {
+                $hasCourseRatingColumns = true;
+                break;
+            }
+        }
+        
+        // If the columns don't exist, try to add them
+        if (!$hasCourseRatingColumns) {
+            try {
+                $db->exec("ALTER TABLE courses ADD COLUMN avg_content_quality REAL DEFAULT 0");
+                $db->exec("ALTER TABLE courses ADD COLUMN avg_difficulty REAL DEFAULT 0");
+                $db->exec("ALTER TABLE courses ADD COLUMN review_count INTEGER DEFAULT 0");
+                $hasCourseRatingColumns = true;
+            } catch (Exception $e) {
+                echo "Note: Could not add rating columns to courses table. " . $e->getMessage() . "<br>";
+            }
+        }
+        
+        // Update the ratings if columns exist
+        if ($hasCourseRatingColumns) {
+            // Update course ratings
+            if (updateStoredCourseRatings($courseDbId, $db)) {
+                echo "Course ratings updated successfully<br>";
+            } else {
+                echo "Failed to update course ratings<br>";
+            }
+        }
+    }
     // Double-check that the rating is actually in the database
     $verifyStmt = $db->prepare("SELECT * FROM ratings WHERE id = :id");
     $verifyStmt->bindValue(':id', $newRatingId, SQLITE3_INTEGER);
