@@ -933,10 +933,24 @@ elseif (!isset($_COOKIE['language'])) {
                     <?php endif; ?>
                 </div>
                 <div class="language-toggle">
-                    <a href="?lang=en" class="<?php echo (!isset($_COOKIE['language']) || $_COOKIE['language'] == 'en') ? 'active' : ''; ?>" style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; background:<?php echo (!isset($_COOKIE['language']) || $_COOKIE['language'] == 'en') ? 'white' : 'transparent'; ?>; color:<?php echo (!isset($_COOKIE['language']) || $_COOKIE['language'] == 'en') ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">English</a>
-                    <a href="?lang=ja" class="<?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? 'active' : ''; ?>" style="display:inline-block; width:80px; text-align:center; padding:8px 0; background:<?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? 'white' : 'transparent'; ?>; color:<?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">日本語</a>
+                    <a href="?lang=en" class="<?php echo (!isset($_COOKIE['language']) || $_COOKIE['language'] == 'en') ? 'active' : ''; ?>" 
+                    style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; 
+                            background:<?php echo (!isset($_COOKIE['language']) || $_COOKIE['language'] == 'en') ? 'white' : 'transparent'; ?>; 
+                            color:<?php echo (!isset($_COOKIE['language']) || $_COOKIE['language'] == 'en') ? '#1e3a8a' : 'white'; ?>; 
+                            text-decoration:none; border:1px solid white; border-radius:4px;"
+                    onclick="document.cookie='language=en; path=/; max-age=2592000'; return true;">
+                    English
+                    </a>
+                    <a href="?lang=ja" class="<?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? 'active' : ''; ?>" 
+                    style="display:inline-block; width:80px; text-align:center; padding:8px 0; 
+                            background:<?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? 'white' : 'transparent'; ?>; 
+                            color:<?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? '#1e3a8a' : 'white'; ?>; 
+                            text-decoration:none; border:1px solid white; border-radius:4px;"
+                    onclick="document.cookie='language=ja; path=/; max-age=2592000'; return true;">
+                    日本語
+                    </a>
                 </div>
-            </div>
+
         </header>
         
         <div class="search-container">
@@ -957,7 +971,7 @@ elseif (!isset($_COOKIE['language'])) {
                     <div class="professor-item" data-id="<?php echo $isLoggedIn ? (isset($professor['id']) ? $professor['id'] : "prof" . ($index + 1)) : 'login-required'; ?>">
                         <div>
                             <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
-                            <p><?php echo htmlspecialchars(isset($professor['department']) ? $professor['department'] : 'Department not specified'); ?></p>
+                            <p><?php echo htmlspecialchars(isset($professor['department']) ? $professor['department'] : ($currentLang == 'ja' ? '学部未指定' : 'Department not specified')); ?></p>
                         </div>
                         <div class="rating">
                             <?php 
@@ -988,7 +1002,7 @@ elseif (!isset($_COOKIE['language'])) {
                     <div class="course-item" data-id="<?php echo $isLoggedIn ? (isset($course['id']) ? $course['id'] : "course" . ($index + 1)) : 'login-required'; ?>">
                         <div>
                             <h3><?php echo htmlspecialchars(isset($course['course_name']) ? $course['course_name'] : $course['name']); ?></h3>
-                            <p><?php echo htmlspecialchars(isset($course['professor_name']) ? $course['professor_name'] : 'Unknown Professor'); ?></p>
+                            <p><?php echo htmlspecialchars(isset($course['professor_name']) ? $course['professor_name'] : ($currentLang == 'ja' ? '不明な教授' : 'Unknown Professor')); ?></p>
                         </div>
                         <div class="rating">
                             <?php 
@@ -1098,42 +1112,45 @@ elseif (!isset($_COOKIE['language'])) {
             const profItems = document.querySelectorAll('.professor-item');
             console.log(`Found ${profItems.length} professor items`);
             profItems.forEach((item, i) => {
-                console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
-                item.style.border = "1px solid blue"; // Visual indicator that handlers are attached
+        console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
+        
+        // Add click event handler
+        item.addEventListener('click', () => {
+            const profId = item.getAttribute('data-id');
+            console.log("Professor clicked, ID:", profId);
+            
+            // Check if login is required
+            if (profId === 'login-required') {
+                showLoginPrompt();
+                return;
+            }
+            
+            // Check if it's a real professor ID (numeric) or a placeholder
+            if (!isNaN(profId)) {
+                console.log("Redirecting professor with ID:", profId);
                 
-                // Add click event handler
-                item.addEventListener('click', () => {
-                    const profId = item.getAttribute('data-id');
-                    console.log("Professor clicked, ID:", profId);
-                    
-                    // Check if login is required
-                    if (profId === 'login-required') {
-                        showLoginPrompt();
-                        return;
-                    }
-                    
-                    // Check if it's a real professor ID (numeric) or a placeholder
-                    if (!isNaN(profId)) {
-                        console.log("Redirecting professor with ID:", profId);
-                        
-                        // Get current language from cookie for the redirect
-                        const lang = currentLanguage === 'japanese' ? 'ja' : 'en';
-                        console.log("Language for redirect:", lang);
-                        
-                        // Get professor name from the HTML
-                        const profName = item.querySelector('h3').textContent;
-                        console.log("Professor name from HTML:", profName);
-                        
-                        // Remove spaces for the URL
-                        const profNameNoSpaces = profName.replace(/\s+/g, '');
-                        
-                        // Create the redirect URL
-                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profNameNoSpaces)}&id=${profId}&lang=${lang}`;
-                        console.log("Redirecting to:", redirectUrl);
-                        
-                        // Perform the redirect
-                        window.location.href = redirectUrl;
-                        return;
+                // Get current language directly from the cookie instead of the variable
+                const currentLang = document.cookie.split('; ')
+                    .find(row => row.startsWith('language='))
+                    ?.split('=')[1] || 'en';
+                
+                console.log("Language for redirect (from cookie):", currentLang);
+                
+                // Get professor name from the HTML
+                const profName = item.querySelector('h3').textContent;
+                console.log("Professor name from HTML:", profName);
+                
+                // Remove spaces for the URL
+                const profNameNoSpaces = profName.replace(/\s+/g, '');
+                
+                // Create the redirect URL with the current language
+                const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profNameNoSpaces)}&id=${profId}&lang=${currentLang}`;
+                console.log("Redirecting to:", redirectUrl);
+                
+                // Perform the redirect
+                window.location.href = redirectUrl;
+                return;
+        }
                     }
                     
                     // Fall back to placeholder data for demo professors
@@ -1158,7 +1175,6 @@ elseif (!isset($_COOKIE['language'])) {
             console.log(`Found ${courseItems.length} course items`);
             courseItems.forEach((item, i) => {
                 console.log(`Course item ${i+1} id: ${item.getAttribute('data-id')}`);
-                item.style.border = "1px solid green"; // Visual indicator that handlers are attached
                 
                 // Add click event handler
                 item.addEventListener('click', () => {
@@ -1175,16 +1191,19 @@ elseif (!isset($_COOKIE['language'])) {
                     if (!isNaN(courseId)) {
                         console.log("Redirecting course with ID:", courseId);
                         
-                        // Get current language from cookie for the redirect
-                        const lang = currentLanguage === 'japanese' ? 'ja' : 'en';
-                        console.log("Language for redirect:", lang);
+                        // Get current language directly from the cookie instead of the variable
+                        const currentLang = document.cookie.split('; ')
+                            .find(row => row.startsWith('language='))
+                            ?.split('=')[1] || 'en';
+                            
+                        console.log("Language for redirect (from cookie):", currentLang);
                         
                         // Get course name from the HTML
                         const courseName = item.querySelector('h3').textContent;
                         console.log("Course name from HTML:", courseName);
                         
-                        // Create the redirect URL
-                        const redirectUrl = `course_page_template.php?course=${encodeURIComponent(courseName)}&id=${courseId}&lang=${lang}`;
+                        // Create the redirect URL with the current language
+                        const redirectUrl = `course_page_template.php?course=${encodeURIComponent(courseName)}&id=${courseId}&lang=${currentLang}`;
                         console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect
@@ -1407,13 +1426,16 @@ elseif (!isset($_COOKIE['language'])) {
             }
         };
         
-        // Get current language from cookie
-        let currentLanguage = <?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? "'japanese'" : "'english'"; ?>;
+        // Get current language from cookie - match PHP naming convention
+        let currentLanguage = <?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? "'ja'" : "'en'"; ?>;
+        
+        // For backwards compatibility with existing translations object
+        let translationLanguage = currentLanguage === 'ja' ? 'japanese' : 'english';
         
         // Function to update UI elements based on current language
         function updateUILanguage() {
             console.log("Updating UI for language:", currentLanguage);
-            const translation = translations[currentLanguage];
+            const translation = translations[translationLanguage];
             
             // Update dropdown menu
             if (document.querySelector('.dropbtn')) {
@@ -2202,6 +2224,28 @@ elseif (!isset($_COOKIE['language'])) {
                 searchResults.style.display = 'none';
             }
         });
+        function updateLanguageVariables() {
+        // Read cookie directly
+        const languageCookie = document.cookie.split('; ')
+            .find(row => row.startsWith('language='));
+        
+        if (languageCookie) {
+            currentLanguage = languageCookie.split('=')[1];
+            translationLanguage = currentLanguage === 'ja' ? 'japanese' : 'english';
+            console.log("Language variables updated:", currentLanguage, translationLanguage);
+        }
+    }
+
+    // Add event listener for language toggle links
+    document.querySelectorAll('.language-toggle a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // After click, update language variables after a short delay to allow cookie to set
+            setTimeout(updateLanguageVariables, 100);
+        });
+    });
+
+    // Also update language variables when page loads
+    document.addEventListener('DOMContentLoaded', updateLanguageVariables);
     </script>
 </body>
 </html>
