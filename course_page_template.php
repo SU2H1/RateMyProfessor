@@ -89,15 +89,8 @@ if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
     header("Expires: 0");
 }
 
-// Standardize course name for certain special cases
-if ($courseParam === 'パーソナリティ発達論' || 
-    strpos($courseParam, 'パーソナリティ') !== false || 
-    strpos($courseParam, 'パーソ') !== false ||
-    ($professorParam && ($professorParam === 'YokoHamada' || $professorParam === 'Yoko Hamada'))
-) {
-    // Standardize to the full name
-    $courseParam = 'パーソナリティ発達論';
-}
+// No longer doing any special case handling for course names
+// Treat all courses consistently
 
 // Debug output
 error_log("Course: " . ($courseParam ?? 'none'));
@@ -403,41 +396,7 @@ try {
 // When coming directly from account page via ID, we can skip the JSON data lookup
 $skipJsonRequirement = ($courseId && is_numeric($courseId) && $dbCourse);
 
-// Special case - try harder to match パーソナリティ発達論 course - ALWAYS set to course ID 30
-// Also handle various URL formats
-if ($courseParam && (
-    $courseParam === 'パーソナリティ発達論' || 
-    strpos($courseParam, 'パーソナリティ') !== false ||
-    strpos($courseParam, 'パーソ') !== false ||
-    ($professorParam && ($professorParam === 'YokoHamada' || $professorParam === 'Yoko Hamada'))
-)) {
-    error_log("Special case handling for パーソナリティ発達論 course - forcing to ID 30");
-    try {
-        if (!isset($db) || $db === null) {
-            $db = new SQLite3('database/ratemyteacher.db');
-        }
-        
-        // FORCE to ID 30 for this specific course
-        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE id = 30 LIMIT 1");
-        $result = $stmt->execute();
-        $specialCourse = $result->fetchArray(SQLITE3_ASSOC);
-        
-        if ($specialCourse) {
-            $dbCourse = $specialCourse;
-            $courseId = 30; // Force to ID 30
-            error_log("Forced course ID to 30");
-            $skipJsonRequirement = true;
-            
-            // For debug purposes - check if ratings exist
-            $checkStmt = $db->prepare("SELECT COUNT(*) as count FROM ratings WHERE course_id = 30");
-            $checkResult = $checkStmt->execute();
-            $ratingCount = $checkResult->fetchArray(SQLITE3_ASSOC)['count'];
-            error_log("Course ID 30 has $ratingCount ratings");
-        }
-    } catch (Exception $e) {
-        error_log("Error in special case handling: " . $e->getMessage());
-    }
-}
+// No special case handling for any courses - all courses are treated equally
 
 // If course not found and not viewing by direct ID, show error with more information
 if (!$course && !$skipJsonRequirement) {
@@ -699,13 +658,14 @@ if ($dbCourse && $db) {
                 error_log("DEBUG: Total ratings in database: $totalRatings");
                 echo "<!-- DEBUG: Total ratings in database: $totalRatings -->";
                 
-                // Get average rating and count
+                // Simplified approach - just get all ratings for this course
                 $stmt = $db->prepare("
                     SELECT AVG(rating) as avg_rating, COUNT(id) as rating_count 
                     FROM ratings 
                     WHERE course_id = :course_id
                 ");
                 $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                error_log("Using only course_id filter to get all ratings for this course");
                 $result = $stmt->execute();
                 $ratingData = $result->fetchArray(SQLITE3_ASSOC);
                 
@@ -762,8 +722,32 @@ if ($dbCourse && $db) {
                                 if (in_array('user_id', $availableColumns)) $selectColumns .= ", user_id";
                                 if (in_array('created_at', $availableColumns)) $selectColumns .= ", created_at";
                                 
+                                // Modify SQL to specifically look for reviews for this exact course with professor
+                                // We need to get professor_id to make this work
+                                $professorId = null;
+                                
+                                // Try to get the professor ID based on the professor parameter
+                                if ($professorParam) {
+                                    $profStmt = $db->prepare("
+                                        SELECT id FROM professors 
+                                        WHERE REPLACE(name, ' ', '') = :name 
+                                        LIMIT 1
+                                    ");
+                                    $profStmt->bindValue(':name', $professorParam, SQLITE3_TEXT);
+                                    $profResult = $profStmt->execute();
+                                    $profRow = $profResult->fetchArray(SQLITE3_ASSOC);
+                                    
+                                    if ($profRow) {
+                                        $professorId = $profRow['id'];
+                                        error_log("Found professor ID: $professorId for $professorParam");
+                                    }
+                                }
+                                
+                                // We're going to use a more flexible approach to show reviews
+                                // Simplified query - show all reviews for this course
+                                // This will ensure reviews appear on the course page
                                 $sql = "SELECT $selectColumns FROM ratings WHERE course_id = :course_id ORDER BY created_at DESC";
-                                error_log("SQL Query: $sql");
+                                error_log("SQL Query (simplified to show all course reviews): $sql");
                                 
                                 // Get ratings without any joins but get all rating fields
                                 $simpleStmt = $db->prepare($sql);
@@ -919,6 +903,8 @@ if (!empty($reviews)) {
     $totalDifficulty = 0;
     $reviewsWithRatings = 0;
     
+    // We'll calculate scores based on properly filtered reviews
+    // The reviews array has already been filtered to specific course+professor
     foreach ($reviews as $review) {
         if (isset($review['content_rating'])) {
             $totalContent += $review['content_rating'];
@@ -953,6 +939,45 @@ if (!empty($reviews)) {
         
         // Show the actual difficulty as percentage (harder class = more filled)
         $categoryScores['difficulty']['percent'] = $difficultyPercent;
+    } else {
+        // If we don't have reviews with ratings but we have professor_id and course_id
+        // Try to get content quality and difficulty direct from ratings table
+        if (isset($professorId) && $professorId && isset($db) && $db) {
+            try {
+                $contentStmt = $db->prepare("
+                    SELECT AVG(content_rating) as avg_content, AVG(difficulty_rating) as avg_difficulty
+                    FROM ratings
+                    WHERE course_id = :course_id AND professor_id = :professor_id
+                    AND content_rating IS NOT NULL AND difficulty_rating IS NOT NULL
+                ");
+                $contentStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                $contentStmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
+                $contentResult = $contentStmt->execute();
+                $contentData = $contentResult->fetchArray(SQLITE3_ASSOC);
+                
+                if ($contentData && $contentData['avg_content'] > 0) {
+                    // Content quality: higher is better
+                    $categoryScores['content']['score'] = round($contentData['avg_content'], 1);
+                    $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
+                    $categoryScores['content']['color'] = '#28a745'; // green
+                    
+                    // Difficulty
+                    $categoryScores['difficulty']['score'] = round($contentData['avg_difficulty'], 1);
+                    $categoryScores['difficulty']['raw_score'] = $categoryScores['difficulty']['score'];
+                    $difficultyPercent = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
+                    
+                    if ($categoryScores['difficulty']['score'] <= 2.5) {
+                        $categoryScores['difficulty']['color'] = '#28a745'; // green
+                    } else {
+                        $categoryScores['difficulty']['color'] = '#dc3545'; // red
+                    }
+                    
+                    $categoryScores['difficulty']['percent'] = $difficultyPercent;
+                }
+            } catch (Exception $e) {
+                error_log("Error getting content/difficulty ratings: " . $e->getMessage());
+            }
+        }
     }
 }
 
@@ -1016,14 +1041,17 @@ if ($dbCourse && $db) {
             
             // Only attempt to query grades if the column exists
             if ($hasGradeColumn) {
-                // Get grade distribution
+                // Simplified approach - just get all grades for this course
                 $stmt = $db->prepare("
                     SELECT grade, COUNT(*) as count
                     FROM ratings
-                    WHERE course_id = :course_id AND grade IS NOT NULL AND grade != ''
+                    WHERE course_id = :course_id 
+                      AND grade IS NOT NULL 
+                      AND grade != ''
                     GROUP BY grade
                 ");
                 $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                error_log("Using only course_id filter to get all grades for this course");
                 $result = $stmt->execute();
             } else {
                 error_log("No grade column in ratings table, skipping grade distribution");

@@ -8,7 +8,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 
-require_once "config.php";
+require_once __DIR__ . "/config.php";
 
 // Initialize variables
 $username = $_SESSION["username"];
@@ -1125,5 +1125,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php
 // Include footer
-include_once "footer.php";
+include_once __DIR__ . "/footer.php";
 ?>
