@@ -1978,76 +1978,102 @@ $sampleReviews = [];
             </div>
         </div>
 
-        <div class="course-info">
-            <div class="info-card" style="background: transparent; box-shadow: none;">
-                <h3 class="info-title"><?php echo $lang === 'ja' ? '成績分布' : 'Grade Distribution'; ?></h3>
-                <?php if ($totalGradeCount > 0): ?>
-                <div class="grades-chart" style="display: flex; height: 200px; align-items: flex-end; margin-top: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--light-gray);">
-                    <?php 
-                    // Define grade colors
-                    $gradeColors = [
-                        'S' => '#FFD700', // Yellow
-                        'A' => '#28a745', // Green
-                        'B' => '#1e3a8a', // Blue
-                        'C' => '#fd7e14', // Orange
-                        'D' => '#dc3545', // Red
-                        'P' => '#1e3a8a', // Blue
-                        'F' => '#dc3545', // Red
-                    ];
-                    
-                    foreach ($gradeDistribution as $grade => $percent): 
-                        // Calculate bar height (minimum 5px for visibility even at 0%)
-                        $barHeight = max(5, $percent * 2);
-                    ?>
-                    <div class="grade-bar" data-grade="<?php echo $grade; ?>" style="flex: 1; margin: 0 5px; background-color: <?php echo $gradeColors[$grade]; ?>; height: <?php echo $barHeight; ?>px; position: relative; display: flex; justify-content: center; align-items: center;">
-                        <?php if ($barHeight > 20): // Only show percentage inside if bar is tall enough ?>
-                            <div class="grade-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);">
-                                <?php echo $percent; ?>%
-                            </div>
-                        <?php else: // Show percentage above the bar if it's too small ?>
-                            <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: <?php echo $gradeColors[$grade]; ?>; font-weight: bold;">
-                                <?php echo $percent; ?>%
-                            </div>
-                        <?php endif; ?>
+        <!-- Replace your existing course-info grid with this centered layout -->
+        <div style="text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
+            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; width: 100%; text-align: center;">
+                <?php echo $lang === 'ja' ? '成績分布と落単率' : 'Grade Distribution and Failure Rate'; ?>
+            </h2>
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; width: 100%; max-width: 1000px;">
+                <!-- Grade Distribution -->
+                <div style="flex: 1; min-width: 300px; max-width: 500px;">
+                    <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--dark-gray); text-align: center;">
+                        <?php echo $lang === 'ja' ? '成績分布' : 'Grade Distribution'; ?>
+                    </h3>
+                    <?php if ($totalGradeCount > 0): ?>
+                    <div style="display: flex; height: 200px; align-items: flex-end; margin-top: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--light-gray);">
+                        <?php 
+                        // Define grade colors
+                        $gradeColors = [
+                            'S' => '#FFD700', // Yellow
+                            'A' => '#28a745', // Green
+                            'B' => '#1e3a8a', // Blue
+                            'C' => '#fd7e14', // Orange
+                            'D' => '#dc3545', // Red
+                            'P' => '#1e3a8a', // Blue
+                            'F' => '#dc3545', // Red
+                        ];
                         
-                        <div class="grade-label" style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-weight: bold;">
-                            <?php echo $grade; ?>
+                        foreach ($gradeDistribution as $grade => $percent): 
+                            // Calculate bar height (minimum 5px for visibility even at 0%)
+                            $barHeight = max(5, $percent * 2);
+                        ?>
+                        <div class="grade-bar" data-grade="<?php echo $grade; ?>" style="flex: 1; margin: 0 5px; background-color: <?php echo $gradeColors[$grade]; ?>; height: <?php echo $barHeight; ?>px; position: relative; display: flex; justify-content: center; align-items: center;">
+                            <?php if ($barHeight > 20): // Only show percentage inside if bar is tall enough ?>
+                                <div class="grade-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5); background-color: transparent; padding: 0; box-shadow: none; border: none;">
+                                    <?php echo $percent; ?>%
+                                </div>
+                            <?php else: // Show percentage above the bar if it's too small ?>
+                                <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: <?php echo $gradeColors[$grade]; ?>; font-weight: bold; background-color: transparent; padding: 0; box-shadow: none; border: none;">
+                                    <?php echo $percent; ?>%
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="grade-label" style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-weight: bold;">
+                                <?php echo $grade; ?>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+                        <?php echo $lang === 'ja' ? '総回答数' : 'Total responses'; ?>: <?php echo $totalGradeCount; ?>
+                    </div>
+                    <?php else: ?>
+                    <div style="text-align: center; padding: 40px 0;">
+                        <div style="color: #6c757d; font-size: 18px;">
+                            <?php echo $lang === 'ja' ? 'まだ成績データがありません' : 'No grade data available yet'; ?>
                         </div>
                     </div>
-                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-                <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
-                    <?php echo $lang === 'ja' ? '総回答数' : 'Total responses'; ?>: <?php echo $totalGradeCount; ?>
-                </div>
-                <?php else: ?>
-                <div style="text-align: center; padding: 40px 0;">
-                    <div style="color: #6c757d; font-size: 18px;">
-                        <?php echo $lang === 'ja' ? 'まだ成績データがありません' : 'No grade data available yet'; ?>
+
+                <!-- Failure Rate -->
+                <div style="flex: 1; min-width: 300px; max-width: 500px;">
+                    <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--dark-gray); text-align: center;">
+                        <?php echo $lang === 'ja' ? '落単率' : 'Failure Rate'; ?>
+                    </h3>
+                    <?php if ($totalGradeCount > 0): ?>
+                    <div style="text-align: center; padding: 40px 0;">
+                        <div style="font-size: 64px; font-weight: bold; color: <?php 
+                            if ($failureRate <= 25) {
+                                echo '#e74c3c'; // Red for low failure rate (0-25%)
+                            } elseif ($failureRate <= 50) {
+                                echo '#f39c12'; // Orange for medium-low failure rate (26-50%)
+                            } elseif ($failureRate <= 75) {
+                                echo '#3498db'; // Blue for medium-high failure rate (51-75%)
+                            } else {
+                                echo '#2ecc71'; // Green for high failure rate (76-100%)
+                            }
+                        ?>;">
+                            <?php echo $failureRate; ?>%
+                        </div>
+                        <div style="font-size: 16px; color: #666; margin-top: 10px;">
+                            <?php echo $lang === 'ja' ? 'D または F の割合' : 'Percentage of D or F grades'; ?>
+                        </div>
                     </div>
-                </div>
-                <?php endif; ?>
-            </div>
-            <div class="info-card">
-                <h3 class="info-title"><?php echo $lang === 'ja' ? '落単率' : 'Failure Rate'; ?></h3>
-                <?php if ($totalGradeCount > 0): ?>
-                <div style="text-align: center; padding: 40px 0;">
-                    <div style="font-size: 64px; font-weight: bold; color: <?php echo $failureRate > 30 ? '#e57373' : ($failureRate > 15 ? '#ff9800' : '#4caf50'); ?>;">
-                        <?php echo $failureRate; ?>%
+                    <?php else: ?>
+                    <div style="text-align: center; padding: 40px 0;">
+                        <div style="font-size: 64px; font-weight: bold; color: #4a86e8;">-</div>
+                        <div style="font-size: 16px; color: #6c757d; margin-top: 10px;">
+                            <?php echo $lang === 'ja' ? 'データなし' : 'No data available'; ?>
+                        </div>
                     </div>
-                    <div style="font-size: 16px; color: #666; margin-top: 10px;">
-                        <?php echo $lang === 'ja' ? 'D または F の割合' : 'Percentage of D or F grades'; ?>
-                    </div>
+                    <?php endif; ?>
                 </div>
-                <?php else: ?>
-                <div style="text-align: center; padding: 40px 0;">
-                    <div style="font-size: 64px; font-weight: bold; color: #4a86e8;">-</div>
-                    <div style="font-size: 16px; color: #6c757d; margin-top: 10px;">
-                        <?php echo $lang === 'ja' ? 'データなし' : 'No data available'; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
+
+<!-- Student Reviews section follows after the grade distribution and failure rate -->
 
         <div class="reviews">
             <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
