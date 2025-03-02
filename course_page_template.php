@@ -917,27 +917,33 @@ if (!empty($reviews)) {
         // Content quality: higher is better
         $categoryScores['content']['score'] = round($totalContent / $reviewsWithRatings, 1);
         $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
-        // Green for good content quality
-        $categoryScores['content']['color'] = '#28a745'; // green
+        
+        // Content quality colors: Red (bad) -> Orange (average) -> Green (good)
+        if ($categoryScores['content']['score'] >= 3.5) {
+            $categoryScores['content']['color'] = '#28a745'; // green for good quality (3.5-5)
+        } else if ($categoryScores['content']['score'] >= 2.5) {
+            $categoryScores['content']['color'] = '#fd7e14'; // orange for average quality (2.5-3.5)
+        } else {
+            $categoryScores['content']['color'] = '#dc3545'; // red for poor quality (1-2.5)
+        }
         
         // Difficulty: for difficulty, higher score = more difficult = worse
         $categoryScores['difficulty']['score'] = round($totalDifficulty / $reviewsWithRatings, 1);
         $categoryScores['difficulty']['raw_score'] = $categoryScores['difficulty']['score'];
         
-        // Calculate both display values - the actual value and the color
+        // For difficulty, show the actual percentage of difficulty (1/5 = 20% filled, 5/5 = 100% filled)
         $difficultyPercent = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
         
-        // For difficulty, calculate a color from red to green based on difficulty
-        // Lower difficulty (easier) = more green, Higher difficulty (harder) = more red
+        // Difficulty colors: Green (easy) -> Orange (medium) -> Red (hard)
         if ($categoryScores['difficulty']['score'] <= 2.5) {
-            // Easy courses (score 0-2.5) should be green
-            $categoryScores['difficulty']['color'] = '#28a745'; // green
+            $categoryScores['difficulty']['color'] = '#28a745'; // green for easy (1-2.5)
+        } else if ($categoryScores['difficulty']['score'] <= 3.5) {
+            $categoryScores['difficulty']['color'] = '#fd7e14'; // orange for medium (2.5-3.5)
         } else {
-            // Hard courses (score 2.5-5) should be red
-            $categoryScores['difficulty']['color'] = '#dc3545'; // red
+            $categoryScores['difficulty']['color'] = '#dc3545'; // red for hard (3.5-5)
         }
         
-        // Show the actual difficulty as percentage (harder class = more filled)
+        // Show the actual difficulty percentage (1 = 20% filled, 5 = 100% filled)
         $categoryScores['difficulty']['percent'] = $difficultyPercent;
     } else {
         // If we don't have reviews with ratings but we have professor_id and course_id
@@ -959,19 +965,33 @@ if (!empty($reviews)) {
                     // Content quality: higher is better
                     $categoryScores['content']['score'] = round($contentData['avg_content'], 1);
                     $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
-                    $categoryScores['content']['color'] = '#28a745'; // green
+                    
+                    // Content quality colors: Red (bad) -> Orange (average) -> Green (good)
+                    if ($categoryScores['content']['score'] >= 3.5) {
+                        $categoryScores['content']['color'] = '#28a745'; // green for good quality (3.5-5)
+                    } else if ($categoryScores['content']['score'] >= 2.5) {
+                        $categoryScores['content']['color'] = '#fd7e14'; // orange for average quality (2.5-3.5)
+                    } else {
+                        $categoryScores['content']['color'] = '#dc3545'; // red for poor quality (1-2.5)
+                    }
                     
                     // Difficulty
                     $categoryScores['difficulty']['score'] = round($contentData['avg_difficulty'], 1);
                     $categoryScores['difficulty']['raw_score'] = $categoryScores['difficulty']['score'];
+                    
+                    // For difficulty, show the actual percentage of difficulty (1/5 = 20% filled, 5/5 = 100% filled)
                     $difficultyPercent = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
                     
+                    // Difficulty colors: Green (easy) -> Orange (medium) -> Red (hard)
                     if ($categoryScores['difficulty']['score'] <= 2.5) {
-                        $categoryScores['difficulty']['color'] = '#28a745'; // green
+                        $categoryScores['difficulty']['color'] = '#28a745'; // green for easy (1-2.5)
+                    } else if ($categoryScores['difficulty']['score'] <= 3.5) {
+                        $categoryScores['difficulty']['color'] = '#fd7e14'; // orange for medium (2.5-3.5)
                     } else {
-                        $categoryScores['difficulty']['color'] = '#dc3545'; // red
+                        $categoryScores['difficulty']['color'] = '#dc3545'; // red for hard (3.5-5)
                     }
                     
+                    // Show the actual difficulty percentage (1 = 20% filled, 5 = 100% filled)
                     $categoryScores['difficulty']['percent'] = $difficultyPercent;
                 }
             } catch (Exception $e) {
