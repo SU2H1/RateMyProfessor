@@ -233,16 +233,39 @@ function updateStoredCourseRatings($course_id, $db) {
         
         // Only update if the table has the right columns
         if ($hasRatingColumns) {
-            $stmt = $db->prepare("
-                UPDATE courses 
-                SET 
+            // Check if the overall_rating column exists
+            $hasOverallRating = false;
+            $columnsResult = $db->query("PRAGMA table_info(courses)");
+            while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+                if ($col['name'] === 'overall_rating') {
+                    $hasOverallRating = true;
+                    break;
+                }
+            }
+            
+            // Add overall_rating column if it doesn't exist
+            if (!$hasOverallRating) {
+                try {
+                    $db->exec("ALTER TABLE courses ADD COLUMN overall_rating REAL DEFAULT 0");
+                    $hasOverallRating = true;
+                } catch (Exception $e) {
+                    error_log("Error adding overall_rating column to courses: " . $e->getMessage());
+                }
+            }
+            
+            $sql = "UPDATE courses SET 
                     avg_content_quality = :content_quality,
                     avg_difficulty = :difficulty,
+                    " . ($hasOverallRating ? "overall_rating = :overall," : "") . "
                     review_count = :review_count
-                WHERE id = :course_id
-            ");
+                    WHERE id = :course_id";
+                    
+            $stmt = $db->prepare($sql);
             $stmt->bindValue(':content_quality', $ratings['content_quality'], SQLITE3_FLOAT);
             $stmt->bindValue(':difficulty', $ratings['difficulty'], SQLITE3_FLOAT);
+            if ($hasOverallRating) {
+                $stmt->bindValue(':overall', $ratings['overall'], SQLITE3_FLOAT);
+            }
             $stmt->bindValue(':review_count', $ratings['review_count'], SQLITE3_INTEGER);
             $stmt->bindValue(':course_id', $course_id, SQLITE3_INTEGER);
             return $stmt->execute() !== false;

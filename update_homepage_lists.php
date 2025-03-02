@@ -152,6 +152,7 @@ $query = "
         c.course_code,
         r.professor_id,
         p.name as professor_name, 
+        c.overall_rating,
         c.avg_content_quality as avg_rating,
         c.review_count as rating_count
     FROM courses c
@@ -159,7 +160,7 @@ $query = "
     JOIN professors p ON r.professor_id = p.id
     WHERE c.review_count > 0
     GROUP BY c.id
-    ORDER BY c.avg_content_quality DESC, c.review_count DESC
+    ORDER BY c.overall_rating DESC, c.review_count DESC
     LIMIT 5
 ";
 $result = $db->query($query);

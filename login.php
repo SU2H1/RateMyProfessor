@@ -19,7 +19,14 @@ require_once 'config.php';
 
 // Check if the user is already logged in, if yes then redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-    header("location: " . SITE_URL . "/home.php");
+    // If there's a redirect, send there, otherwise to home page
+    if (isset($_GET['redirect']) && !empty($_GET['redirect'])) {
+        error_log("Already logged in - redirecting to: " . $_GET['redirect']);
+        header("Location: " . $_GET['redirect']);
+    } else {
+        error_log("Already logged in - redirecting to home.php");
+        header("Location: home.php");
+    }
     exit;
 }
 
@@ -82,10 +89,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         error_log("Setting session variables: " . print_r($_SESSION, true));
                         
                         // Make sure session data is saved
+                        session_regenerate_id(true); // Regenerate the session ID for security
                         session_write_close();
                         
-                        // Redirect user to home page
-                        header("location: " . SITE_URL . "/home.php");
+                        // Check if there's a redirect parameter
+                        if (isset($_POST['redirect']) && !empty($_POST['redirect'])) {
+                            $redirect = $_POST['redirect'];
+                            error_log("Redirecting to: " . $redirect);
+                            
+                            // If the redirect URL is relative (doesn't start with http), prepend the site URL
+                            if (strpos($redirect, 'http') !== 0) {
+                                // Just use the redirect value directly for any local path
+                                $redirect = ltrim($redirect, '/');
+                                error_log("Using relative path: $redirect");
+                            }
+                            
+                            error_log("Final redirect URL: " . $redirect);
+                            header("Location: " . $redirect);
+                        } else {
+                            // Redirect user to home page
+                            error_log("Redirecting to home page");
+                            header("Location: home.php");
+                        }
                         exit();
                     } else {
                         // Password is not valid
@@ -163,7 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }        
         ?>
 
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?><?php echo isset($_GET['redirect']) ? '?redirect=' . htmlspecialchars(urlencode($_GET['redirect'])) : ''; ?>" method="post">
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email" class="form-control" value="<?php echo $email; ?>">
@@ -174,6 +199,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" name="password" class="form-control">
                 <span class="help-block"><?php echo $password_err; ?></span>
             </div>
+            <?php if (isset($_GET['redirect'])): ?>
+                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_GET['redirect']); ?>">
+            <?php endif; ?>
             <div class="form-group">
                 <input type="submit" class="btn-primary" value="Login">
             </div>

@@ -628,6 +628,7 @@ if ($result) {
             try {
                 $db->exec("ALTER TABLE courses ADD COLUMN avg_content_quality REAL DEFAULT 0");
                 $db->exec("ALTER TABLE courses ADD COLUMN avg_difficulty REAL DEFAULT 0");
+                $db->exec("ALTER TABLE courses ADD COLUMN overall_rating REAL DEFAULT 0");
                 $db->exec("ALTER TABLE courses ADD COLUMN review_count INTEGER DEFAULT 0");
                 $hasCourseRatingColumns = true;
             } catch (Exception $e) {

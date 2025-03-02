@@ -7,6 +7,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Debug session information
+error_log('HOME.PHP - Session ID: ' . session_id());
+error_log('HOME.PHP - Session data: ' . print_r($_SESSION, true));
+error_log('HOME.PHP - REQUEST_URI: ' . $_SERVER['REQUEST_URI']);
+
 // Check if user is logged in
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 
@@ -978,62 +983,64 @@ elseif (!isset($_COOKIE['language'])) {
             <div id="popular-professors" class="content-box">
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
-                    <?php foreach ($topProfessors as $index => $professor): ?>
-                    <div class="professor-item" data-id="<?php echo $isLoggedIn ? (isset($professor['id']) ? $professor['id'] : "prof" . ($index + 1)) : 'login-required'; ?>">
-                        <div>
-                            <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
-                            <p><?php echo htmlspecialchars(isset($professor['department']) ? $professor['department'] : ($currentLang == 'ja' ? '学部未指定' : 'Department not specified')); ?></p>
+                    <?php foreach ($topProfessors as $professor): ?>
+                    <a href="professor_page_template.php?professor=<?php echo urlencode(str_replace(' ', '', $professor['name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                        <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
+                            <div>
+                                <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
+                                <p><?php echo htmlspecialchars($professor['department'] ?? 'Unknown Department'); ?></p>
+                            </div>
+                            <div class="rating">
+                                <?php 
+                                if ($professor['avg_rating'] !== 'N/A' && $professor['avg_rating'] > 0) {
+                                    $fullStars = floor($professor['avg_rating']);
+                                    $hasHalfStar = $professor['avg_rating'] - $fullStars >= 0.5;
+                                    echo str_repeat('★', $fullStars);
+                                    echo $hasHalfStar ? '½' : '';
+                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                                    echo ' <span>' . $professor['avg_rating'] . '</span>';
+                                } else {
+                                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                                }
+                                ?>
+                            </div>
                         </div>
-                        <div class="rating">
-                            <?php 
-                            // Generate star rating
-                            if ($professor['avg_rating'] !== 'N/A') {
-                                $rating = floatval($professor['avg_rating']);
-                                $fullStars = floor($rating);
-                                $halfStar = ($rating - $fullStars) >= 0.5;
-                                
-                                echo str_repeat('★', $fullStars);
-                                if ($halfStar) echo '½';
-                                echo str_repeat('☆', 5 - $fullStars - ($halfStar ? 1 : 0));
-                                echo '<span>' . $professor['avg_rating'] . '</span>';
-                            } else {
-                                echo '<span class="no-rating">' . ($currentLang == 'ja' ? '未評価' : 'Not yet rated') . '</span>';
-                            }
-                            ?>
-                        </div>
-                    </div>
+                    </a>
                     <?php endforeach; ?>
+                </div>
+            </div>
                 </div>
             </div>
             
             <div id="top-courses" class="content-box">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
                 <div class="course-list">
-                    <?php foreach ($topCourses as $index => $course): ?>
-                    <div class="course-item" data-id="<?php echo $isLoggedIn ? (isset($course['id']) ? $course['id'] : "course" . ($index + 1)) : 'login-required'; ?>">
-                        <div>
-                            <h3><?php echo htmlspecialchars(isset($course['course_name']) ? $course['course_name'] : $course['name']); ?></h3>
-                            <p><?php echo htmlspecialchars(isset($course['professor_name']) ? $course['professor_name'] : ($currentLang == 'ja' ? '不明な教授' : 'Unknown Professor')); ?></p>
+                    <?php foreach ($topCourses as $course): ?>
+                    <a href="course_page_template.php?course=<?php echo urlencode($course['course_name'] ?? $course['name']); ?>&professor=<?php echo urlencode(str_replace(' ', '', $course['professor_name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                        <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+                            <div>
+                                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?><?php echo !empty($course['course_code']) ? ' (' . htmlspecialchars($course['course_code']) . ')' : ''; ?></h3>
+                                <p><?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+                            </div>
+                            <div class="rating">
+                                <?php 
+                                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
+                                    $fullStars = floor($course['avg_rating']);
+                                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
+                                    echo str_repeat('★', $fullStars);
+                                    echo $hasHalfStar ? '½' : '';
+                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                                    echo ' <span>' . $course['avg_rating'] . '</span>';
+                                } else {
+                                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                                }
+                                ?>
+                            </div>
                         </div>
-                        <div class="rating">
-                            <?php 
-                            // Generate star rating
-                            if ($course['avg_rating'] !== 'N/A') {
-                                $rating = floatval($course['avg_rating']);
-                                $fullStars = floor($rating);
-                                $halfStar = ($rating - $fullStars) >= 0.5;
-                                
-                                echo str_repeat('★', $fullStars);
-                                if ($halfStar) echo '½';
-                                echo str_repeat('☆', 5 - $fullStars - ($halfStar ? 1 : 0));
-                                echo '<span>' . $course['avg_rating'] . '</span>';
-                            } else {
-                                echo '<span class="no-rating">' . ($currentLang == 'ja' ? '未評価' : 'Not yet rated') . '</span>';
-                            }
-                            ?>
-                        </div>
-                    </div>
+                    </a>
                     <?php endforeach; ?>
+                </div>
+            </div>
                 </div>
             </div>
         </main>
