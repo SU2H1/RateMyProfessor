@@ -1477,60 +1477,107 @@ $sampleReviews = [];
             margin-top: 20px;
         }
         
+/* More aggressive fix for the grade distribution title and chart */
         .info-card {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: visible;
         }
-        
+
         .info-title {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 60px; /* Drastically increased space below title */
             color: var(--dark-gray);
             border-bottom: 2px solid var(--light-gray);
             padding-bottom: 10px;
+            position: relative;
         }
-        
-        .info-content {
-            font-size: 16px;
-            line-height: 1.6;
+
+        /* Add this completely new section for title container */
+        .grade-title-container {
+            position: relative;
+            padding-bottom: 70px; /* Large padding to push the chart down */
+            margin-bottom: 20px;
         }
-        
+
         .grades-chart {
             display: flex;
-            height: 200px;
+            height: 180px;
             align-items: flex-end;
-            margin-top: 20px;
-            padding-bottom: 20px;
+            margin-top: 80px; /* Very large margin */
+            padding-bottom: 40px;
             border-bottom: 2px solid var(--light-gray);
+            position: relative;
+            clear: both; /* Force it to clear previous elements */
         }
-        
+
+/* Modify the CSS to place percentage values in the middle of the bars */
         .grade-bar {
             flex: 1;
             margin: 0 5px;
             background-color: var(--primary-color);
             position: relative;
+            min-height: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* For vertical centering */
         }
-        
-        .grade-label {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-weight: bold;
-        }
-        
+
         .grade-percentage {
             position: absolute;
-            top: -25px;
             left: 50%;
-            transform: translateX(-50%);
+            top: 50%;
+            transform: translate(-50%, -50%);
             font-weight: bold;
-            color: var(--primary-color);
+            color: white;
+            white-space: nowrap;
+            font-size: 14px;
+            text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            background-color: transparent; /* Remove any background */
+            padding: 0; /* Remove any padding */
+            box-shadow: none; /* Remove any shadow */
+            border: none; /* Remove any border */
         }
-        
+
+        /* For percentages above bars (for small bars) */
+        .grade-bar[style*="height: 5px"] .grade-percentage,
+        .grade-bar[style*="height: 0px"] .grade-percentage {
+            top: -25px;
+            color: var(--primary-color);
+            text-shadow: none;
+            background-color: transparent; /* Ensure no background for small bars too */
+            padding: 0;
+            box-shadow: none;
+            border: none;
+}
+
+
+        /* Remove the old top margin spacing since we don't need it anymore */
+        .grades-chart {
+            display: flex;
+            height: 180px;
+            align-items: flex-end;
+            margin-top: 30px; /* Reduced from previous large values */
+            padding-bottom: 40px;
+            border-bottom: 2px solid var(--light-gray);
+            position: relative;
+        }
+
+        /* Adjust title spacing to normal */
+        .info-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px; /* Return to normal spacing */
+            color: var(--dark-gray);
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+
+
         footer {
             background-color: #1e3a8a;
             color: white;
@@ -1932,21 +1979,41 @@ $sampleReviews = [];
         </div>
 
         <div class="course-info">
-            <div class="info-card">
+            <div class="info-card" style="background: transparent; box-shadow: none;">
                 <h3 class="info-title"><?php echo $lang === 'ja' ? '成績分布' : 'Grade Distribution'; ?></h3>
                 <?php if ($totalGradeCount > 0): ?>
                 <div class="grades-chart" style="display: flex; height: 200px; align-items: flex-end; margin-top: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--light-gray);">
-                    <?php foreach ($gradeDistribution as $grade => $percent): ?>
-                    <?php if ($grade !== 'P'): ?> <!-- Skip P grade in main distribution -->
-                    <div class="grade-bar" style="flex: 1; margin: 0 5px; background-color: <?php echo ($grade === 'F' || $grade === 'D') ? '#e57373' : '#1e3a8a'; ?>; height: <?php echo max(5, $percent * 2); ?>px; position: relative;">
-                        <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: bold; color: #1e3a8a;">
-                            <?php echo $percent; ?>%
-                        </div>
-                        <div class="grade-label" style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-weight: bold;">
+                    <?php 
+                    // Define grade colors
+                    $gradeColors = [
+                        'S' => '#FFD700', // Yellow
+                        'A' => '#28a745', // Green
+                        'B' => '#1e3a8a', // Blue
+                        'C' => '#fd7e14', // Orange
+                        'D' => '#dc3545', // Red
+                        'P' => '#1e3a8a', // Blue
+                        'F' => '#dc3545', // Red
+                    ];
+                    
+                    foreach ($gradeDistribution as $grade => $percent): 
+                        // Calculate bar height (minimum 5px for visibility even at 0%)
+                        $barHeight = max(5, $percent * 2);
+                    ?>
+                    <div class="grade-bar" data-grade="<?php echo $grade; ?>" style="flex: 1; margin: 0 5px; background-color: <?php echo $gradeColors[$grade]; ?>; height: <?php echo $barHeight; ?>px; position: relative; display: flex; justify-content: center; align-items: center;">
+                        <?php if ($barHeight > 20): // Only show percentage inside if bar is tall enough ?>
+                            <div class="grade-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);">
+                                <?php echo $percent; ?>%
+                            </div>
+                        <?php else: // Show percentage above the bar if it's too small ?>
+                            <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: <?php echo $gradeColors[$grade]; ?>; font-weight: bold;">
+                                <?php echo $percent; ?>%
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="grade-label" style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-weight: bold;">
                             <?php echo $grade; ?>
                         </div>
                     </div>
-                    <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
                 <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
