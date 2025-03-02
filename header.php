@@ -1,4 +1,12 @@
 <?php
+// Include session configuration before starting the session
+require_once 'session_config.php';
+
+// Start the session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Default page title if not set
 if (!isset($page_title)) {
     $page_title = "Rate My Teacher";

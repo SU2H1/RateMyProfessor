@@ -1,9 +1,20 @@
 <?php
-// Start the session at the beginning of the file
-session_start();
+// Include session configuration before starting the session
+require_once 'session_config.php';
+
+// Now start the session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if user is logged in
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
+
+// Debug session variables - Only enable this temporarily to troubleshoot
+$sessionDebug = "Session Status: " . ($isLoggedIn ? "Logged In" : "Not Logged In") . "\n";
+$sessionDebug .= "Session ID: " . session_id() . "\n";
+$sessionDebug .= "Session Variables: " . print_r($_SESSION, true) . "\n";
+error_log($sessionDebug);
 
 // Get username if logged in
 $username = $isLoggedIn ? htmlspecialchars($_SESSION["username"]) : '';
@@ -1143,8 +1154,8 @@ elseif (!isset($_COOKIE['language'])) {
                 // Remove spaces for the URL
                 const profNameNoSpaces = profName.replace(/\s+/g, '');
                 
-                // Create the redirect URL with the current language
-                const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profNameNoSpaces)}&id=${profId}&lang=${currentLang}`;
+                // Create the redirect URL with the current language - no ID needed
+                const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profNameNoSpaces)}&lang=${currentLang}`;
                 console.log("Redirecting to:", redirectUrl);
                 
                 // Perform the redirect
@@ -1202,8 +1213,8 @@ elseif (!isset($_COOKIE['language'])) {
                         const courseName = item.querySelector('h3').textContent;
                         console.log("Course name from HTML:", courseName);
                         
-                        // Create the redirect URL with the current language
-                        const redirectUrl = `course_page_template.php?course=${encodeURIComponent(courseName)}&id=${courseId}&lang=${currentLang}`;
+                        // Create the redirect URL with the current language - no ID needed
+                        const redirectUrl = `course_page_template.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
                         console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect

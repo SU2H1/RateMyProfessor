@@ -1,14 +1,21 @@
 <?php
 // login.php - User login form and processing - Simplified version
-require_once 'config.php';
 
 // For debugging - comment out in production
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Initialize the session
-session_start();
+// Include session configuration first, before starting the session
+require_once 'session_config.php';
+
+// Initialize the session after config is loaded
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Now include other configurations that might use session data
+require_once 'config.php';
 
 // Check if the user is already logged in, if yes then redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
@@ -68,6 +75,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $_SESSION["id"] = $row['id'];
                         $_SESSION["username"] = $row['username'];
                         $_SESSION["email"] = $row['email'];
+                        
+                        // Debug session data being saved
+                        error_log("Login successful for user: " . $row['username']);
+                        error_log("Session ID: " . session_id());
+                        error_log("Setting session variables: " . print_r($_SESSION, true));
+                        
+                        // Make sure session data is saved
+                        session_write_close();
                         
                         // Redirect user to home page
                         header("location: " . SITE_URL . "/home.php");

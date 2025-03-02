@@ -1,11 +1,14 @@
 <?php
 // config.php - Configuration file with SQLite database settings and email configuration
 
+// These settings must be applied BEFORE session_start() is called
+// Do NOT modify session settings here, as files may include this after session_start()
+
 // Database file path - keep it in a subdirectory for better organization
 define('DB_FILE', dirname(__FILE__) . '/database/ratemyteacher.db');
 define('EMAIL_FROM', 's23447ks@sfc.keio.ac.jp'); // Your SFC email address
 define('EMAIL_NAME', 'SU2H1 Rating');
-define('SITE_URL', 'https://web.sfc.keio.ac.jp/~s23447ks/RateMyTeacher');
+define('SITE_URL', 'https://ratemyteachersfc.com');
 
 // Create database directory if it doesn't exist
 $db_dir = dirname(__FILE__) . '/database';

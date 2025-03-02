@@ -32,12 +32,12 @@ foreach ($data['courses'] as $course) {
         
         // Add professor URL (if not already added) - we'll use English name without spaces
         $professorUrlFriendly = str_replace(' ', '', $professorNameEn);
-        $professorUrls[$professorUrlFriendly] = "https://web.sfc.keio.ac.jp/~s23447ks/RateMyTeacher/{$professorUrlFriendly}";
+        $professorUrls[$professorUrlFriendly] = "https://ratemyteachersfc.com/{$professorUrlFriendly}";
         
         // Add course URL - format: ProfessorName/CourseName/Year/Language
         // Japanese version
         $courseUrls[] = [
-            'url' => "https://web.sfc.keio.ac.jp/~s23447ks/RateMyTeacher/{$professorUrlFriendly}/" . 
+            'url' => "https://ratemyteachersfc.com/{$professorUrlFriendly}/" . 
                     urlencode($courseNameJa) . "/{$courseYear}/jp",
             'professor' => $professorNameJa,
             'course' => $courseNameJa,
@@ -47,7 +47,7 @@ foreach ($data['courses'] as $course) {
         
         // English version
         $courseUrls[] = [
-            'url' => "https://web.sfc.keio.ac.jp/~s23447ks/RateMyTeacher/{$professorUrlFriendly}/" . 
+            'url' => "https://ratemyteachersfc.com/{$professorUrlFriendly}/" . 
                     urlencode($courseNameEn) . "/{$courseYear}/en",
             'professor' => $professorNameEn,
             'course' => $courseNameEn,

@@ -42,6 +42,7 @@ $firstHalf = isset($_POST['first_half']) ? $_POST['first_half'] : [];
 $secondHalf = isset($_POST['second_half']) ? $_POST['second_half'] : [];
 $comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
 $courseId = isset($_POST['course_id']) ? $_POST['course_id'] : null;
+$courseName = isset($_POST['course_name']) ? $_POST['course_name'] : null;
 // Get professor name from POST or extract from URL
 $professorName = isset($_POST['professor_name']) ? $_POST['professor_name'] : null;
 
@@ -206,28 +207,59 @@ try {
             echo "- " . $col['name'] . "<br>";
         }
         
-        // Check if the course exists - based on available columns
-        if (in_array('course_id', $columns)) {
-            // If course_id column exists
-            echo "Using course_id column to look up course<br>";
+        // Check if the course exists - try multiple methods
+        echo "Looking for course with ID: $courseId or name: $courseName<br>";
+        
+        // First try by exact course name if provided
+        if ($courseName) {
+            echo "Looking up course by name: $courseName<br>";
             $stmt = $db->prepare("
                 SELECT id FROM courses 
-                WHERE course_id = :course_id 
+                WHERE name = :name 
                 LIMIT 1
             ");
-            $stmt->bindValue(':course_id', $courseId, SQLITE3_TEXT);
-        } else {
-            // Fallback to looking up by ID directly
-            echo "No course_id column found - falling back to id column<br>";
-            $stmt = $db->prepare("
-                SELECT id FROM courses 
-                WHERE id = :id 
-                LIMIT 1
-            ");
-            $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
+            $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            $course = $result->fetchArray(SQLITE3_ASSOC);
         }
-        $result = $stmt->execute();
-        $course = $result->fetchArray(SQLITE3_ASSOC);
+        
+        // If not found by name and we have an ID, try that
+        if (!$course && $courseId) {
+            // Try by course_id column if it exists
+            if (in_array('course_id', $columns)) {
+                echo "Looking up course by course_id column: $courseId<br>";
+                $stmt = $db->prepare("
+                    SELECT id FROM courses 
+                    WHERE course_id = :course_id 
+                    LIMIT 1
+                ");
+                $stmt->bindValue(':course_id', $courseId, SQLITE3_TEXT);
+            } else {
+                // Fallback to looking up by ID directly
+                echo "Looking up course by id column: $courseId<br>";
+                $stmt = $db->prepare("
+                    SELECT id FROM courses 
+                    WHERE id = :id 
+                    LIMIT 1
+                ");
+                $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
+            }
+            $result = $stmt->execute();
+            $course = $result->fetchArray(SQLITE3_ASSOC);
+        }
+        
+        // If still not found, try partial name match
+        if (!$course && $courseName) {
+            echo "Trying partial name match for: $courseName<br>";
+            $stmt = $db->prepare("
+                SELECT id FROM courses 
+                WHERE name LIKE :name 
+                LIMIT 1
+            ");
+            $stmt->bindValue(':name', '%' . $courseName . '%', SQLITE3_TEXT);
+            $result = $stmt->execute();
+            $course = $result->fetchArray(SQLITE3_ASSOC);
+        }
     
     if ($course) {
         $courseDbId = $course['id'];
@@ -238,9 +270,21 @@ try {
         $courseInfo = null;
         
         foreach ($data['courses'] as $c) {
-            if ($c['course_id'] === $courseId) {
+            // Try to match by course_id if available
+            if (isset($c['course_id']) && $c['course_id'] === $courseId) {
                 $courseInfo = $c;
                 break;
+            }
+            
+            // Try to match by name
+            if ($courseName) {
+                $jaName = $c['translations']['ja']['name'] ?? '';
+                $enName = $c['translations']['en']['name'] ?? '';
+                
+                if ($jaName === $courseName || $enName === $courseName) {
+                    $courseInfo = $c;
+                    break;
+                }
             }
         }
         

@@ -424,8 +424,8 @@ $reviews = [];
                 <?php endif; ?>
             </div>
             <div class="language-toggle" style="display: flex; align-items: center;">
-                <a href="?name=<?php echo urlencode($professorParam); ?>&id=<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>&lang=en" style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; background:<?php echo $lang == 'en' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'en' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">English</a>
-                <a href="?name=<?php echo urlencode($professorParam); ?>&id=<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>&lang=ja" style="display:inline-block; width:80px; text-align:center; padding:8px 0; background:<?php echo $lang == 'ja' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'ja' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">日本語</a>
+                <a href="?name=<?php echo urlencode($professorParam); ?>&lang=en" style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; background:<?php echo $lang == 'en' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'en' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">English</a>
+                <a href="?name=<?php echo urlencode($professorParam); ?>&lang=ja" style="display:inline-block; width:80px; text-align:center; padding:8px 0; background:<?php echo $lang == 'ja' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'ja' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">日本語</a>
             </div>
         </div>
     </header>

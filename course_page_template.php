@@ -89,31 +89,14 @@ if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
     header("Expires: 0");
 }
 
-// Redirect logic to standardize URLs
-// If we're specifically looking at パーソナリティ発達論 course with various parameters,
-// redirect to the consistent ID-based URL for better sharing and to avoid duplication
-if (!isset($_GET['no_redirect']) && $courseParam && (
-    $courseParam === 'パーソナリティ発達論' || 
+// Standardize course name for certain special cases
+if ($courseParam === 'パーソナリティ発達論' || 
     strpos($courseParam, 'パーソナリティ') !== false || 
     strpos($courseParam, 'パーソ') !== false ||
     ($professorParam && ($professorParam === 'YokoHamada' || $professorParam === 'Yoko Hamada'))
-)) {
-    // Only do this if we don't already have the ID parameter
-    if (!isset($_GET['id'])) {
-        // Construct the redirect URL with ID=30 (known ID for this course)
-        $redirectParams = $_GET;
-        unset($redirectParams['course']); // Remove course parameter
-        unset($redirectParams['professor']); // Remove professor parameter
-        unset($redirectParams['year']); // Remove year parameter
-        $redirectParams['id'] = 30; // Set ID to 30
-        $redirectParams['no_redirect'] = 1; // Prevent redirect loops
-        
-        $redirectUrl = 'course_page_template.php?' . http_build_query($redirectParams);
-        
-        // Perform the redirect
-        header("Location: $redirectUrl");
-        exit;
-    }
+) {
+    // Standardize to the full name
+    $courseParam = 'パーソナリティ発達論';
 }
 
 // Debug output
@@ -126,17 +109,17 @@ $lang = isset($_GET['lang']) ? $_GET['lang'] : 'ja';
 // Convert "jp" to "ja" for internal consistency
 if ($lang === 'jp') $lang = 'ja';
 
-// Legacy support for course_id param
-$courseId = isset($_GET['id']) ? $_GET['id'] : null;
-
-// We need at least course name or ID
-if (!$courseParam && !$courseId) {
-    echo "Course name or ID is required.";
+// We need at least course name
+if (!$courseParam) {
+    echo "Course name is required.";
     exit;
 }
 
+// Define courseId variable (it was removed earlier but still referenced)
+$courseId = null;
+
 // Debug info for URL parameters
-error_log("URL Parameters - course: " . ($courseParam ?? 'null') . ", professor: " . ($professorParam ?? 'null') . ", year: " . ($year ?? 'null') . ", id: " . ($courseId ?? 'null'));
+error_log("URL Parameters - course: " . ($courseParam ?? 'null') . ", professor: " . ($professorParam ?? 'null') . ", year: " . ($year ?? 'null'));
 echo "<!-- Debug info: Course param: " . htmlspecialchars($courseParam ?? 'null') . " -->";
 echo "<!-- Debug info: Professor param: " . htmlspecialchars($professorParam ?? 'null') . " -->";
 
@@ -685,7 +668,9 @@ $avgRating = 0;
 $ratingCount = 0;
 $reviews = [];
 
-// If course exists in the database and database is connected, get ratings
+// Get a courseId variable for backward compatibility with existing code
+$courseId = $dbCourse['id'] ?? null;
+
 // If course exists in the database and database is connected, get ratings
 if ($dbCourse && $db) {
     try {
@@ -2221,7 +2206,9 @@ $sampleReviews = [];
             </div>
             <?php endif; ?>
             <form action="submit_rating.php" method="post" style="padding: 15px 0;">
+                <!-- Include both course_id and course_name for better identification -->
                 <input type="hidden" name="course_id" value="<?php echo $courseId ?? $course['course_id'] ?? ''; ?>">
+                <input type="hidden" name="course_name" value="<?php echo htmlspecialchars($translation['name'] ?? ''); ?>">
                 <!-- Store current URL for redirect after submission -->
                 <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
                 <!-- Debug info -->
