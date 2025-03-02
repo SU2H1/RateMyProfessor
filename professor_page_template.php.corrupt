@@ -87,29 +87,20 @@ $db = new SQLite3('database/ratemyteacher.db');
 // Try to find professor in the database by name
 $professorId = null;
 $professorNameNoSpaces = str_replace(' ', '', $professorParam);
-$stmt = $db->prepare("SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like");
+$stmt = $db->prepare("SELECT id, avg_content_quality, avg_difficulty, overall_rating, review_count FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like");
 $stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
 $stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
 $result = $stmt->execute();
 $row = $result->fetchArray(SQLITE3_ASSOC);
 if ($row) {
     $professorId = $row['id'];
-    $professorDbName = $row['name'];
-    // Debug the professor found
-    error_log("Found professor in database: ID=$professorId, Name={$row['name']}, Input={$professorParam}");
-    
     // If the professor has stored ratings, use those directly
     if (isset($row['avg_content_quality']) && $row['avg_content_quality'] > 0) {
         $avgContentQuality = $row['avg_content_quality'];
         $avgDifficulty = $row['avg_difficulty'];
         $overallRating = $row['overall_rating'];
         $reviewCount = $row['review_count'];
-        error_log("Found stored ratings for professor: Content=$avgContentQuality, Difficulty=$avgDifficulty, Overall=$overallRating, Reviews=$reviewCount");
-    } else {
-        error_log("No stored ratings found for professor ID=$professorId");
     }
-} else {
-    error_log("No professor found in database matching '$professorParam' or '$professorNameNoSpaces'");
 }
 
 // Get ratings based on professor ID if not already set
@@ -126,9 +117,6 @@ if ($professorId) {
     $avgDifficulty = $ratings['difficulty'];
     $overallRating = $ratings['overall'];
     $reviewCount = $ratings['review_count'];
-    
-    // Debug output to see what's going on with ratings
-    error_log("Professor ID: $professorId, Content Quality: $avgContentQuality, Difficulty: $avgDifficulty, Overall: $overallRating, Reviews: $reviewCount");
 } else {
     // If professor not found in DB, try to aggregate ratings from JSON data
     // This is a fallback but won't be as accurate
@@ -177,16 +165,6 @@ $reviewsWithDifficultyRating = 0;
 
 if ($professorId && $db) {
     try {
-        // Debug professor ID for review search
-        error_log("Searching for reviews with professor_id: $professorId");
-        
-        // Check if professor has any reviews
-        $checkStmt = $db->prepare("SELECT COUNT(*) as count FROM ratings WHERE professor_id = :professor_id");
-        $checkStmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
-        $checkResult = $checkStmt->execute();
-        $checkRow = $checkResult->fetchArray(SQLITE3_ASSOC);
-        error_log("Found {$checkRow['count']} reviews for professor ID: $professorId");
-        
         // Query to get all reviews for this professor across all courses
         $stmt = $db->prepare("
             SELECT 
@@ -332,6 +310,65 @@ if ($reviewCount > 0) {
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
 <head>
+    <meta charset="UTF-8
+        ");
+        $stmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        
+        // Process each review
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            // Format the date
+            $timestamp = strtotime($row['created_at']);
+            $formattedDate = $timestamp !== false ? date('F j, Y', $timestamp) : 'Unknown Date';
+            
+            // Add to reviews array with default username if missing
+            $review = [
+                'id' => $row['id'],
+                'rating' => $row['rating'] ?? 3,
+                'content_rating' => $row['content_rating'] ?? 0,
+                'difficulty_rating' => $row['difficulty_rating'] ?? 0,
+                'comment' => $row['comment'] ?? '',
+                'created_at' => $formattedDate,
+                'username' => $row['username'] ?? 'Student',
+                'course_name' => $row['course_name'] ?? 'Unknown Course',
+                'grade' => $row['grade'] ?? '',
+                'textbook' => $row['textbook'] ?? '',
+                'attendance_check' => $row['attendance_check'] ?? ''
+            ];
+            
+            // Try to parse JSON fields
+            if (!empty($row['first_half'])) {
+                try {
+                    $review['first_half'] = json_decode($row['first_half'], true);
+                } catch (Exception $e) {
+                    $review['first_half'] = [];
+                }
+            } else {
+                $review['first_half'] = [];
+            }
+            
+            if (!empty($row['second_half'])) {
+                try {
+                    $review['second_half'] = json_decode($row['second_half'], true);
+                } catch (Exception $e) {
+                    $review['second_half'] = [];
+                }
+            } else {
+                $review['second_half'] = [];
+            }
+            
+            $reviews[] = $review;
+        }
+        
+        error_log("Found " . count($reviews) . " reviews for professor ID: $professorId");
+    } catch (Exception $e) {
+        error_log("Error fetching professor reviews: " . $e->getMessage());
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $lang; ?>">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - Rate My Teacher</title>
@@ -354,33 +391,6 @@ if ($reviewCount > 0) {
             --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             --hover-shadow: 0 5px 15px rgba(0,0,0,0.1);
             --border-color: #f0f0f0;
-        }
-        
-        /* Fix for rating categories display on small screens */
-        @media (max-width: 576px) {
-            .rating-category {
-                flex-wrap: wrap;
-                padding-right: 40px;
-                position: relative;
-            }
-            
-            .category-name {
-                width: 100% !important;
-                margin-bottom: 8px;
-            }
-            
-            .progress-bar {
-                flex-grow: 1;
-                width: 100% !important;
-                margin: 0 !important;
-            }
-            
-            .category-score {
-                position: absolute !important;
-                right: 0 !important;
-                top: 50% !important;
-                transform: translateY(-50%) !important;
-            }
         }
 
         /* Global Style Improvements */
@@ -641,17 +651,17 @@ if ($reviewCount > 0) {
                     </div>
                 </div>
                 <?php foreach ($categoryScores as $key => $category): ?>
-                <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 15px; position: relative;">
-                    <div class="category-name" style="width: 140px; font-size: 0.95em; color: #444; flex-shrink: 0;">
+                <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;">
                         <?php echo $category['label']; ?>
                         <div style="font-size: 0.8em; color: #666;">
                             <?php echo $category['description']; ?>
                         </div>
                     </div>
-                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 30px 0 15px; overflow: hidden;">
+                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 15px; overflow: hidden;">
                         <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: <?php echo $category['color'] ?? '#1e3a8a'; ?>;"></div>
                     </div>
-                    <div class="category-score" style="min-width: 40px; text-align: right; font-weight: bold; color: #1e3a8a; flex-shrink: 0; position: absolute; right: 0;">
+                    <div class="category-score" style="width: 40px; text-align: right; font-weight: bold; color: #1e3a8a;">
                         <?php echo isset($category['raw_score']) ? $category['raw_score'] : $category['score']; ?>
                     </div>
                 </div>

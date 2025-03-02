@@ -291,9 +291,10 @@ if (!$course && $courseParam) {
                 $courseNameJa = $c['translations']['ja']['name'] ?? '';
                 $courseNameEn = $c['translations']['en']['name'] ?? '';
                 
+                // For course page template, we MUST use exact matching to avoid confusion
                 $containsCourseName = 
-                    (stripos($courseNameJa, $courseParam) !== false) || 
-                    (stripos($courseNameEn, $courseParam) !== false);
+                    (strcasecmp($courseNameJa, $courseParam) === 0) || 
+                    (strcasecmp($courseNameEn, $courseParam) === 0);
                     
                 if ($containsCourseName) {
                     error_log("Found partial course name match: $courseNameEn");
@@ -743,11 +744,18 @@ if ($dbCourse && $db) {
                                     }
                                 }
                                 
-                                // We're going to use a more flexible approach to show reviews
-                                // Simplified query - show all reviews for this course
-                                // This will ensure reviews appear on the course page
-                                $sql = "SELECT $selectColumns FROM ratings WHERE course_id = :course_id ORDER BY created_at DESC";
-                                error_log("SQL Query (simplified to show all course reviews): $sql");
+                                // We're going to use professor filtering when available
+                                // This will ensure reviews are properly filtered by both course and professor
+                                $sql = "SELECT $selectColumns FROM ratings WHERE course_id = :course_id";
+                                
+                                // Add professor filtering if we have a professor ID
+                                if ($professorId) {
+                                    $sql .= " AND professor_id = :professor_id";
+                                    error_log("Including professor filter in query with ID: $professorId");
+                                }
+                                
+                                $sql .= " ORDER BY created_at DESC";
+                                error_log("SQL Query for reviews: $sql");
                                 
                                 // Get ratings without any joins but get all rating fields
                                 $simpleStmt = $db->prepare($sql);
@@ -759,6 +767,11 @@ if ($dbCourse && $db) {
                                 }
                                 
                                 $simpleStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+                                
+                                // Bind professor ID if we're filtering by professor
+                                if ($professorId) {
+                                    $simpleStmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
+                                }
                                 $simpleResult = $simpleStmt->execute();
                                 
                                 // Process each rating
@@ -1061,17 +1074,32 @@ if ($dbCourse && $db) {
             
             // Only attempt to query grades if the column exists
             if ($hasGradeColumn) {
-                // Simplified approach - just get all grades for this course
-                $stmt = $db->prepare("
+                // Build SQL with optional professor filter for grade distribution
+                $gradeSql = "
                     SELECT grade, COUNT(*) as count
                     FROM ratings
                     WHERE course_id = :course_id 
                       AND grade IS NOT NULL 
                       AND grade != ''
-                    GROUP BY grade
-                ");
+                ";
+                
+                // Add professor filtering if we have a professor ID
+                if (isset($professorId) && $professorId) {
+                    $gradeSql .= " AND professor_id = :professor_id";
+                    error_log("Including professor filter in grade distribution query with ID: $professorId");
+                }
+                
+                $gradeSql .= " GROUP BY grade";
+                
+                $stmt = $db->prepare($gradeSql);
                 $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-                error_log("Using only course_id filter to get all grades for this course");
+                
+                // Bind professor ID if we're filtering by professor
+                if (isset($professorId) && $professorId) {
+                    $stmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
+                }
+                
+                error_log("Grade distribution SQL: $gradeSql");
                 $result = $stmt->execute();
             } else {
                 error_log("No grade column in ratings table, skipping grade distribution");
@@ -2009,14 +2037,16 @@ $sampleReviews = [];
                             $barHeight = max(5, $percent * 2);
                         ?>
                         <div class="grade-bar" data-grade="<?php echo $grade; ?>" style="flex: 1; margin: 0 5px; background-color: <?php echo $gradeColors[$grade]; ?>; height: <?php echo $barHeight; ?>px; position: relative; display: flex; justify-content: center; align-items: center;">
-                            <?php if ($barHeight > 20): // Only show percentage inside if bar is tall enough ?>
-                                <div class="grade-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5); background-color: transparent; padding: 0; box-shadow: none; border: none;">
-                                    <?php echo $percent; ?>%
-                                </div>
-                            <?php else: // Show percentage above the bar if it's too small ?>
-                                <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: <?php echo $gradeColors[$grade]; ?>; font-weight: bold; background-color: transparent; padding: 0; box-shadow: none; border: none;">
-                                    <?php echo $percent; ?>%
-                                </div>
+                            <?php if ($percent > 0): // Only show percentage if there's any data ?>
+                                <?php if ($barHeight > 30): // Only show percentage inside if bar is tall enough ?>
+                                    <div class="grade-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5); background-color: transparent; padding: 0; box-shadow: none; border: none; font-size: 14px;">
+                                        <?php echo $percent; ?>%
+                                    </div>
+                                <?php else: // Show percentage above the bar if it's too small ?>
+                                    <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: <?php echo $gradeColors[$grade]; ?>; font-weight: bold; background-color: transparent; padding: 0; box-shadow: none; border: none; font-size: 14px;">
+                                        <?php echo $percent; ?>%
+                                    </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                             
                             <div class="grade-label" style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-weight: bold;">

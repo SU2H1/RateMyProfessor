@@ -31,6 +31,16 @@ echo "Debugging POST data:<pre>";
 print_r($_POST);
 echo "</pre>";
 
+// Dump important variables to error log for permanent record
+error_log("---------- START NEW RATING SUBMISSION ----------");
+error_log("POST data: " . json_encode($_POST));
+if (isset($_POST['course_name'])) {
+    error_log("COURSE NAME FROM POST: '{$_POST['course_name']}'");
+}
+if (isset($_POST['course_id'])) {
+    error_log("COURSE ID FROM POST: '{$_POST['course_id']}'");
+}
+
 // Get rating data from POST
 $userId = $_SESSION['id'];
 $rating = isset($_POST['rating']) ? (int) $_POST['rating'] : 0;
@@ -43,6 +53,12 @@ $secondHalf = isset($_POST['second_half']) ? $_POST['second_half'] : [];
 $comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
 $courseId = isset($_POST['course_id']) ? $_POST['course_id'] : null;
 $courseName = isset($_POST['course_name']) ? $_POST['course_name'] : null;
+
+// Log original course name for debugging
+if ($courseName) {
+    error_log("Original course name from POST data: '$courseName'");
+}
+
 // Get professor name from POST or extract from URL
 $professorName = isset($_POST['professor_name']) ? $_POST['professor_name'] : null;
 
@@ -213,15 +229,27 @@ try {
         // First try by exact course name if provided
         if ($courseName) {
             echo "Looking up course by name: $courseName<br>";
+            error_log("Looking up course by exact name match: '$courseName'");
+            
             $stmt = $db->prepare("
-                SELECT id FROM courses 
+                SELECT id, name FROM courses 
                 WHERE name = :name 
                 LIMIT 1
             ");
             $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
             $result = $stmt->execute();
             $course = $result->fetchArray(SQLITE3_ASSOC);
+            
+            // Log the result for debugging
+            if ($course) {
+                error_log("Found exact course name match in database: ID={$course['id']}, Name={$course['name']}");
+            } else {
+                error_log("No exact course name match found in database");
+            }
         }
+        
+        // Log the current search attempt for debugging
+        error_log("Looking for course. ID=$courseId, Name=$courseName");
         
         // If not found by name and we have an ID, try that
         if (!$course && $courseId) {
@@ -229,7 +257,7 @@ try {
             if (in_array('course_id', $columns)) {
                 echo "Looking up course by course_id column: $courseId<br>";
                 $stmt = $db->prepare("
-                    SELECT id FROM courses 
+                    SELECT id, name FROM courses 
                     WHERE course_id = :course_id 
                     LIMIT 1
                 ");
@@ -238,7 +266,7 @@ try {
                 // Fallback to looking up by ID directly
                 echo "Looking up course by id column: $courseId<br>";
                 $stmt = $db->prepare("
-                    SELECT id FROM courses 
+                    SELECT id, name FROM courses 
                     WHERE id = :id 
                     LIMIT 1
                 ");
@@ -246,24 +274,25 @@ try {
             }
             $result = $stmt->execute();
             $course = $result->fetchArray(SQLITE3_ASSOC);
+            
+            // Log what we found to help with debugging
+            if ($course) {
+                error_log("Found course by ID in database: ID={$course['id']}, Name={$course['name']}");
+            }
         }
         
-        // If still not found, try partial name match
+        // DISABLED partial name matching to avoid incorrect course associations
+        // If no exact match, we'll create a new course rather than risking an incorrect association
         if (!$course && $courseName) {
-            echo "Trying partial name match for: $courseName<br>";
-            $stmt = $db->prepare("
-                SELECT id FROM courses 
-                WHERE name LIKE :name 
-                LIMIT 1
-            ");
-            $stmt->bindValue(':name', '%' . $courseName . '%', SQLITE3_TEXT);
-            $result = $stmt->execute();
-            $course = $result->fetchArray(SQLITE3_ASSOC);
+            echo "No exact match found for: $courseName. Will create a new course record.<br>";
+            // NO partial name matching - we'll create a new course record instead
         }
     
     if ($course) {
         $courseDbId = $course['id'];
+        error_log("Using existing course record with ID: $courseDbId and name: '{$course['name']}'");
     } else {
+        error_log("No existing course found, will create new course with name: '$courseName'");
         // Get course info from JSON file
         $jsonData = file_get_contents(__DIR__ . '/sfc_courses.json');
         $data = json_decode($jsonData, true);
@@ -289,12 +318,20 @@ try {
         }
         
         if ($courseInfo) {
-            // Use Japanese name by default, fall back to English
-            $courseName = $courseInfo['translations']['ja']['name'] ?? 
-                         ($courseInfo['translations']['en']['name'] ?? $courseId);
+            // IMPORTANT: Preserve the original course name from POST data if available
+            if (isset($_POST['course_name']) && !empty($_POST['course_name'])) {
+                // Keep the original course name from POST
+                error_log("PRESERVING original course name from POST: '$courseName'");
+            } else {
+                // Only use course info as fallback if we don't have a name from POST
+                $courseName = $courseInfo['translations']['ja']['name'] ?? 
+                             ($courseInfo['translations']['en']['name'] ?? $courseId);
+                error_log("Using course name from JSON data: '$courseName'");
+            }
             
             // Create the course with available columns
             echo "Creating course in database with name: " . htmlspecialchars($courseName) . "<br>";
+            error_log("CRITICAL: Creating new course from course info with name: '$courseName'");
             
             // Get column names to see what we can insert
             $columns = [];
@@ -349,9 +386,20 @@ try {
             
             // Parse debug info for course name
             $debugInfo = isset($_POST['debug_info']) ? json_decode($_POST['debug_info'], true) : [];
-            $courseName = isset($debugInfo['course_name']) ? $debugInfo['course_name'] : "Course $courseId";
             
-            echo "Course name from debug info: " . htmlspecialchars($courseName) . "<br>";
+            // FIXED: Always prioritize $_POST['course_name'] and make sure it's not overwritten
+            if (isset($_POST['course_name']) && !empty($_POST['course_name'])) {
+                $courseName = $_POST['course_name'];
+                error_log("Using course name from direct POST: " . $courseName);
+            } else if (isset($debugInfo['course_name']) && !empty($debugInfo['course_name'])) {
+                $courseName = $debugInfo['course_name'];
+                error_log("Using course name from debug info: " . $courseName);
+            } else {
+                $courseName = "Course $courseId";
+                error_log("No course name found, using default: " . $courseName);
+            }
+            
+            echo "Course name determined: " . htmlspecialchars($courseName) . "<br>";
             
             // Get column names to see what we can insert
             $columns = [];
@@ -365,6 +413,7 @@ try {
                 if (in_array('professor_id', $columns)) {
                     // If we have course_code and professor_id columns
                     echo "Inserting course with name, course_code, and professor_id<br>";
+                    error_log("CRITICAL: Creating new course with name: '$courseName' and course_id: $courseId");
                     $insertStmt = $db->prepare("
                         INSERT INTO courses (name, course_code, professor_id) 
                         VALUES (:name, :course_code, :professor_id)
@@ -375,6 +424,7 @@ try {
                 } else {
                     // If we have course_code but no professor_id
                     echo "Inserting course with name and course_code<br>";
+                    error_log("CRITICAL: Creating new course with name: '$courseName' and course_id: $courseId");
                     $insertStmt = $db->prepare("
                         INSERT INTO courses (name, course_code) 
                         VALUES (:name, :course_code)
@@ -385,6 +435,7 @@ try {
             } else {
                 // Simple insert with just name
                 echo "Inserting course with just name<br>";
+                error_log("CRITICAL: Creating new course with name: '$courseName' and course_id: $courseId");
                 $insertStmt = $db->prepare("
                     INSERT INTO courses (name) 
                     VALUES (:name)
