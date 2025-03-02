@@ -6,26 +6,105 @@
  * and updates the HTML in home.php to display this real data.
  */
 
-// Include database configuration
+// Include database configuration and rating calculation functions
 require_once 'config.php';
+require_once 'calculate_ratings.php';
 
 // Create database connection
 $db = new SQLite3('database/ratemyteacher.db');
 
-// Get top 5 professors by average rating
+// Ensure the professors table has the needed rating columns
+echo "Checking and updating database schema...\n";
+$columnsResult = $db->query("PRAGMA table_info(professors)");
+$hasRatingColumns = false;
+while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+    if ($col['name'] === 'avg_content_quality') {
+        $hasRatingColumns = true;
+        break;
+    }
+}
+
+// Add rating columns if they don't exist
+if (!$hasRatingColumns) {
+    echo "Adding rating columns to professors table...\n";
+    try {
+        $db->exec("ALTER TABLE professors ADD COLUMN avg_content_quality REAL DEFAULT 0");
+        $db->exec("ALTER TABLE professors ADD COLUMN avg_difficulty REAL DEFAULT 0");
+        $db->exec("ALTER TABLE professors ADD COLUMN overall_rating REAL DEFAULT 0");
+        $db->exec("ALTER TABLE professors ADD COLUMN review_count INTEGER DEFAULT 0");
+        echo "Rating columns added successfully!\n";
+    } catch (Exception $e) {
+        echo "Error adding rating columns: " . $e->getMessage() . "\n";
+    }
+}
+
+// Ensure the courses table has the needed rating columns
+$columnsResult = $db->query("PRAGMA table_info(courses)");
+$hasCourseRatingColumns = false;
+while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+    if ($col['name'] === 'avg_content_quality') {
+        $hasCourseRatingColumns = true;
+        break;
+    }
+}
+
+// Add rating columns if they don't exist
+if (!$hasCourseRatingColumns) {
+    echo "Adding rating columns to courses table...\n";
+    try {
+        $db->exec("ALTER TABLE courses ADD COLUMN avg_content_quality REAL DEFAULT 0");
+        $db->exec("ALTER TABLE courses ADD COLUMN avg_difficulty REAL DEFAULT 0");
+        $db->exec("ALTER TABLE courses ADD COLUMN review_count INTEGER DEFAULT 0");
+        echo "Course rating columns added successfully!\n";
+    } catch (Exception $e) {
+        echo "Error adding course rating columns: " . $e->getMessage() . "\n";
+    }
+}
+
+// Update ALL professor ratings
+echo "Updating all professor ratings...\n";
+$stmt = $db->prepare("SELECT id FROM professors");
+$result = $stmt->execute();
+$updatedCount = 0;
+$errorCount = 0;
+while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+    $professorId = $row['id'];
+    if (updateStoredProfessorRatings($professorId, $db)) {
+        $updatedCount++;
+    } else {
+        $errorCount++;
+    }
+}
+echo "Professor ratings update complete: $updatedCount updated, $errorCount failed\n";
+
+// Update ALL course ratings
+echo "Updating all course ratings...\n";
+$stmt = $db->prepare("SELECT id FROM courses");
+$result = $stmt->execute();
+$updatedCount = 0;
+$errorCount = 0;
+while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+    $courseId = $row['id'];
+    if (updateStoredCourseRatings($courseId, $db)) {
+        $updatedCount++;
+    } else {
+        $errorCount++;
+    }
+}
+echo "Course ratings update complete: $updatedCount updated, $errorCount failed\n";
+
+// Get top 5 professors by using the updated ratings from the professors table
 $topProfessors = [];
 $query = "
     SELECT 
         p.id, 
         p.name, 
         p.department, 
-        AVG(r.rating) as avg_rating,
-        COUNT(r.id) as rating_count
+        p.overall_rating as avg_rating,
+        p.review_count as rating_count
     FROM professors p
-    JOIN ratings r ON p.id = r.professor_id
-    GROUP BY p.id
-    HAVING COUNT(r.id) >= 3
-    ORDER BY avg_rating DESC, rating_count DESC
+    WHERE p.review_count > 0
+    ORDER BY p.overall_rating DESC, p.review_count DESC
     LIMIT 5
 ";
 $result = $db->query($query);
@@ -64,23 +143,23 @@ if (count($topProfessors) < 5) {
     }
 }
 
-// Get top 5 courses by average rating
+// Get top 5 courses by using the updated ratings from the courses table
 $topCourses = [];
 $query = "
     SELECT 
         c.id, 
         c.name, 
         c.course_code,
-        p.id as professor_id,
+        r.professor_id,
         p.name as professor_name, 
-        AVG(r.rating) as avg_rating,
-        COUNT(r.id) as rating_count
+        c.avg_content_quality as avg_rating,
+        c.review_count as rating_count
     FROM courses c
-    JOIN professors p ON c.professor_id = p.id
     JOIN ratings r ON c.id = r.course_id
+    JOIN professors p ON r.professor_id = p.id
+    WHERE c.review_count > 0
     GROUP BY c.id
-    HAVING COUNT(r.id) >= 3
-    ORDER BY avg_rating DESC, rating_count DESC
+    ORDER BY c.avg_content_quality DESC, c.review_count DESC
     LIMIT 5
 ";
 $result = $db->query($query);
@@ -195,13 +274,13 @@ HTML;
 $homeFile = __DIR__ . '/home.php';
 $homeContent = file_get_contents($homeFile);
 
-// Update professor list
-$pattern = '/<div class="professor-list">(.*?)<\/div>\s+<\/div>/s';
+// Update professor list - match the entire PHP structure including foreach and endforeach
+$pattern = '/<div class="professor-list">.*?(?:<\?php\s+endforeach;\s+\?>)?<\/div>\s+<\/div>/s';
 $replacement = '<div class="professor-list">' . $professorsHtml . '</div></div>';
 $homeContent = preg_replace($pattern, $replacement, $homeContent);
 
-// Update course list
-$pattern = '/<div class="course-list">(.*?)<\/div>\s+<\/div>/s';
+// Update course list - match the entire PHP structure including foreach and endforeach
+$pattern = '/<div class="course-list">.*?(?:<\?php\s+endforeach;\s+\?>)?<\/div>\s+<\/div>/s';
 $replacement = '<div class="course-list">' . $coursesHtml . '</div></div>';
 $homeContent = preg_replace($pattern, $replacement, $homeContent);
 
@@ -211,3 +290,4 @@ file_put_contents($homeFile, $homeContent);
 echo "Home page lists updated successfully with real data from the database.\n";
 echo "Top professors: " . count($topProfessors) . "\n";
 echo "Top courses: " . count($topCourses) . "\n";
+echo "All professor and course ratings have been updated using the original formula: (content_quality + (5 - difficulty)) / 2\n";

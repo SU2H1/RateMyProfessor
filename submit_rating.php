@@ -76,8 +76,8 @@ error_log("Second half assessments: " . implode(", ", (array)$secondHalf));
 $attendanceCheck = isset($_POST['attendance_check']) ? $_POST['attendance_check'] : '';
 
 // Calculate the overall rating from content and difficulty
-$rating = round(($contentRating + $difficultyRating) / 2);
-echo "Calculated overall rating: $rating (from content: $contentRating, difficulty: $difficultyRating)<br>";
+$rating = round(($contentRating + (5 - $difficultyRating)) / 2);
+echo "Calculated overall rating: $rating (from content: $contentRating, inverted difficulty: " . (5 - $difficultyRating) . ")<br>";
 
 // Validate content rating
 if ($contentRating < 1 || $contentRating > 5) {

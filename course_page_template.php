@@ -911,8 +911,21 @@ if (isset($course['semester'])) {
 
 // Set up category scores for display
 $categoryScores = [
-    'content' => ['score' => 0, 'percent' => 0, 'label' => $lang === 'ja' ? '授業内容の質' : 'Content Quality'],
-    'difficulty' => ['score' => 0, 'percent' => 0, 'label' => $lang === 'ja' ? '難易度' : 'Difficulty']
+    'content' => [
+        'score' => 0, 
+        'percent' => 0, 
+        'label' => $lang === 'ja' ? '授業内容の質' : 'Content Quality',
+        'description' => $lang === 'ja' ? '高いほど良い' : 'Higher is better',
+        'color' => '#6c757d' // Default grey (no reviews)
+    ],
+    'difficulty' => [
+        'score' => 0, 
+        'percent' => 0, 
+        'raw_score' => 0,
+        'label' => $lang === 'ja' ? '難易度' : 'Difficulty',
+        'description' => $lang === 'ja' ? '高いほど難しい' : 'Higher = more difficult',
+        'color' => '#6c757d' // Default grey (no reviews)
+    ]
 ];
 
 // If we have reviews, calculate average content and difficulty ratings
@@ -930,10 +943,31 @@ if (!empty($reviews)) {
     }
     
     if ($reviewsWithRatings > 0) {
+        // Content quality: higher is better
         $categoryScores['content']['score'] = round($totalContent / $reviewsWithRatings, 1);
         $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
+        // Green for good content quality
+        $categoryScores['content']['color'] = '#28a745'; // green
+        
+        // Difficulty: for difficulty, higher score = more difficult = worse
         $categoryScores['difficulty']['score'] = round($totalDifficulty / $reviewsWithRatings, 1);
-        $categoryScores['difficulty']['percent'] = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
+        $categoryScores['difficulty']['raw_score'] = $categoryScores['difficulty']['score'];
+        
+        // Calculate both display values - the actual value and the color
+        $difficultyPercent = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
+        
+        // For difficulty, calculate a color from red to green based on difficulty
+        // Lower difficulty (easier) = more green, Higher difficulty (harder) = more red
+        if ($categoryScores['difficulty']['score'] <= 2.5) {
+            // Easy courses (score 0-2.5) should be green
+            $categoryScores['difficulty']['color'] = '#28a745'; // green
+        } else {
+            // Hard courses (score 2.5-5) should be red
+            $categoryScores['difficulty']['color'] = '#dc3545'; // red
+        }
+        
+        // Show the actual difficulty as percentage (harder class = more filled)
+        $categoryScores['difficulty']['percent'] = $difficultyPercent;
     }
 }
 
@@ -1806,11 +1840,18 @@ $sampleReviews = [];
             <div class="rating-details" style="flex-grow: 1; min-width: 300px;">
                 <?php foreach ($categoryScores as $key => $category): ?>
                 <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 12px;">
-                    <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;"><?php echo $category['label']; ?></div>
-                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 15px; overflow: hidden;">
-                        <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: #1e3a8a;"></div>
+                    <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;">
+                        <?php echo $category['label']; ?>
+                        <div style="font-size: 0.8em; color: #666;">
+                            <?php echo $category['description']; ?>
+                        </div>
                     </div>
-                    <div class="category-score" style="width: 40px; text-align: right; font-weight: bold; color: #1e3a8a;"><?php echo $category['score']; ?></div>
+                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 15px; overflow: hidden;">
+                        <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: <?php echo $category['color'] ?? '#1e3a8a'; ?>;"></div>
+                    </div>
+                    <div class="category-score" style="width: 40px; text-align: right; font-weight: bold; color: #1e3a8a;">
+                        <?php echo isset($category['raw_score']) ? $category['raw_score'] : $category['score']; ?>
+                    </div>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -1823,9 +1864,34 @@ $sampleReviews = [];
                 <div class="professor-card" onclick="window.location.href='professor.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>'">
                     <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
                     <div class="professor-department"><?php echo htmlspecialchars($professor['department'][$lang]); ?></div>
+                    <?php
+                    // Try to get professor rating from database
+                    $profRating = '?';
+                    $profStars = '☆☆☆☆☆';
+                    
+                    if (isset($db)) {
+                        // Try to find professor in database
+                        $profName = str_replace(' ', '', $professor['name']['en']);
+                        $stmt = $db->prepare("SELECT id, overall_rating FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like LIMIT 1");
+                        $stmt->bindValue(':name', $profName, SQLITE3_TEXT);
+                        $stmt->bindValue(':name_like', '%' . $profName . '%', SQLITE3_TEXT);
+                        $result = $stmt->execute();
+                        $profRow = $result->fetchArray(SQLITE3_ASSOC);
+                        
+                        if ($profRow && isset($profRow['overall_rating']) && $profRow['overall_rating'] > 0) {
+                            $profRating = round($profRow['overall_rating'], 1);
+                            // Generate star display
+                            $fullStars = floor($profRating);
+                            $halfStar = ($profRating - $fullStars) >= 0.5;
+                            $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                            
+                            $profStars = str_repeat('★', $fullStars) . ($halfStar ? '★' : '') . str_repeat('☆', $emptyStars);
+                        }
+                    }
+                    ?>
                     <div class="professor-rating">
-                        <div class="stars">☆☆☆☆☆</div>
-                        <span>-</span>
+                        <div class="stars" style="color: #ffc107; font-size: 16px;"><?php echo $profStars; ?></div>
+                        <span><?php echo $profRating; ?></span>
                     </div>
                 </div>
                 <?php endforeach; ?>

@@ -24,26 +24,9 @@ function calculateProfessorRatings($professor_id, $db) {
     
     try {
         // Step 1: Get all courses taught by this professor
-        $query = "SELECT DISTINCT c.id FROM courses c 
-                 WHERE c.professor_id = :professor_id";
-        
-        // Check if table has professor_id column
-        $columns = [];
-        $columnsResult = $db->query("PRAGMA table_info(courses)");
-        $hasProfessorId = false;
-        
-        while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
-            if ($col['name'] === 'professor_id') {
-                $hasProfessorId = true;
-                break;
-            }
-        }
-        
-        // If courses don't have professor_id, we need to get courses from the ratings
-        if (!$hasProfessorId) {
-            $query = "SELECT DISTINCT r.course_id as id FROM ratings r 
-                     WHERE r.professor_id = :professor_id";
-        }
+        // Always get courses from the ratings table to ensure we capture all professor-course relationships
+        $query = "SELECT DISTINCT r.course_id as id FROM ratings r 
+                 WHERE r.professor_id = :professor_id";
         
         $stmt = $db->prepare($query);
         $stmt->bindValue(':professor_id', $professor_id, SQLITE3_INTEGER);
@@ -122,7 +105,17 @@ function calculateProfessorRatings($professor_id, $db) {
         if ($coursesWithRatings > 0) {
             $result['content_quality'] = round($totalContentQuality / $coursesWithRatings, 1);
             $result['difficulty'] = round($totalDifficulty / $coursesWithRatings, 1);
-            $result['overall'] = round(($result['content_quality'] + $result['difficulty']) / 2, 1);
+            
+            // Calculate overall rating: high content quality is good, high difficulty is bad
+            // Convert difficulty to an inverted score (5 - difficulty) so lower difficulty becomes higher score
+            // Then average with content quality - this ensures overall rating reflects that easier courses are better
+            $invertedDifficulty = 5 - $result['difficulty'];
+            // Make sure the inverted difficulty doesn't go below 0
+            $invertedDifficulty = max(0, $invertedDifficulty);
+            
+            // Overall is the average of content quality and inverted difficulty
+            // Higher content quality and lower difficulty both result in higher overall score
+            $result['overall'] = round(($result['content_quality'] + $invertedDifficulty) / 2, 1);
             $result['review_count'] = $totalRatingCount;
         }
         
@@ -192,7 +185,17 @@ function calculateCourseRatings($course_id, $db) {
         if ($ratings && $ratings['rating_count'] > 0) {
             $result['content_quality'] = round($ratings['avg_content_quality'], 1);
             $result['difficulty'] = round($ratings['avg_difficulty'], 1);
-            $result['overall'] = round(($result['content_quality'] + $result['difficulty']) / 2, 1);
+            
+            // Calculate overall rating: high content quality is good, high difficulty is bad
+            // Convert difficulty to an inverted score (5 - difficulty) so lower difficulty becomes higher score
+            // Then average with content quality - this ensures overall rating reflects that easier courses are better
+            $invertedDifficulty = 5 - $result['difficulty'];
+            // Make sure the inverted difficulty doesn't go below 0
+            $invertedDifficulty = max(0, $invertedDifficulty);
+            
+            // Overall is the average of content quality and inverted difficulty
+            // Higher content quality and lower difficulty both result in higher overall score
+            $result['overall'] = round(($result['content_quality'] + $invertedDifficulty) / 2, 1);
             $result['review_count'] = $ratings['rating_count'];
         }
         
