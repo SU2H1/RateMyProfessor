@@ -2,6 +2,7 @@
 // Display instructions for accessing Rate My Teacher
 
 // Start session to check if user is logged in
+require_once 'session_config.php'; //NEW
 session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 $username = $isLoggedIn ? htmlspecialchars($_SESSION["username"]) : '';

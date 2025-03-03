@@ -1,5 +1,6 @@
 <?php
 // account-section.php - Dedicated user account management page
+require_once 'session_config.php'; //NEW
 session_start();
 
 // Check if user is logged in

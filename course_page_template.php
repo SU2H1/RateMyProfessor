@@ -30,6 +30,7 @@ register_shutdown_function('fatal_error_handler');
 require_once 'config.php';
 
 // Start session to check if user is logged in
+require_once 'session_config.php'; //NEW
 session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 
