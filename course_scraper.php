@@ -9,6 +9,7 @@
  * 3. Links courses across languages using K-Number as the unique identifier
  * 4. Stores both language versions of each course
  * 5. FIXED: Properly extracts and applies English professor names
+ * 6. ADDED: Extracts semester information (spring/fall)
  */
 
 // Set maximum execution time to 30 minutes for processing multiple URLs with pagination
@@ -91,17 +92,55 @@ $targetFields = [
 
 // URLs for testing Data Science courses only
 $urlsToScrape = [
-    // Data Science 1 (2024) - Japanese and English
-    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Btitle%5D=&search%5Byear%5D=2024&search%5Bsemester%5D=&search%5Bsub_semester%5D=&search%5Bteacher_name%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsummary%5D=&button=",
-    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Btitle%5D=&search%5Byear%5D=2024&search%5Bsemester%5D=&search%5Bsub_semester%5D=&search%5Bteacher_name%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsummary%5D=&button=",
-
-    // Data Science 1 (2023) - Japanese and English to test year combining
-    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Btitle%5D=&search%5Byear%5D=2023&search%5Bsemester%5D=&search%5Bsub_semester%5D=&search%5Bteacher_name%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsummary%5D=&button=",
-    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Btitle%5D=&search%5Byear%5D=2023&search%5Bsemester%5D=&search%5Bsub_semester%5D=&search%5Bteacher_name%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsummary%5D=&button="
+    //Fundamental Subjects - Introductory Subjects 202&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Language Communication 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Data Science - Data Science 1 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Data Science - Data Science 2 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Fundamentals of Information Technology 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Interdisciplinary Subjects 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Advanced Subjects - Series of Policy Management 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Advanced Subjects - Series of Environment And Information Studies 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Special Subjects 2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023"
 ];
 
 // Maximum number of pages to process per URL
-$maxPagesPerUrl = 50;
+$maxPagesPerUrl = 200;
 
 // Function to fetch URL content
 function fetchUrlContent($url)
@@ -449,6 +488,32 @@ function findCourseByNameAndInstructors($courses, $courseName, $instructors, $re
     return -1;
 }
 
+// Function to extract semester information from year-semester text
+function extractSemester($yearSemester, $language) {
+    if ($language == 'ja') {
+        // Japanese semester detection - using exact patterns from HTML
+        if (preg_match('/春学期/u', $yearSemester)) {
+            return 'spring';
+        } elseif (preg_match('/秋学期/u', $yearSemester)) {
+            return 'fall';
+        } elseif (preg_match('/通年/u', $yearSemester)) {
+            return 'full_year';
+        } 
+    } else {
+        // English semester detection - using exact patterns from HTML
+        if (preg_match('/Spring/i', $yearSemester)) {
+            return 'spring';
+        } elseif (preg_match('/Fall/i', $yearSemester)) {
+            return 'fall';
+        } elseif (preg_match('/Full Year/i', $yearSemester)) {
+            return 'full_year';
+        }
+    }
+    
+    // Default if not found
+    return 'unknown';
+}
+
 // We need to keep track of the English professor names by registration number
 // so we can pair them with Japanese professor names
 $englishProfessorNames = [];
@@ -653,6 +718,12 @@ function parseCourses($html, $existingCourses, $courseCounter = 0, $language = '
         }
 
         $courseData['year'] = $year;
+        
+        // Extract semester information (spring/fall)
+        $semester = extractSemester($yearSemester, $language);
+        $courseData['semester'] = $semester;
+        
+        echo "Extracted semester: $semester from '$yearSemester'\n";
 
         // Extract instructor(s) using our enhanced method
         $instructors = extractInstructorNames($xpath, $courseLi, $language);
@@ -685,8 +756,14 @@ function parseCourses($html, $existingCourses, $courseCounter = 0, $language = '
                 $existingCourses[$existingIndex]['translations'][$language] = [
                     'name' => $courseName,
                     'field' => $field,
-                    'credits' => $credits
+                    'credits' => $credits,
+                    'semester' => $semester
                 ];
+                
+                // Also add semester to the course object
+                if (!isset($existingCourses[$existingIndex]['semester'])) {
+                    $existingCourses[$existingIndex]['semester'] = $semester;
+                }
             } else {
                 // Create a numbered array of instructors
                 $numberedInstructors = [];
@@ -699,11 +776,13 @@ function parseCourses($html, $existingCourses, $courseCounter = 0, $language = '
                     'reg_number' => $regNumber,
                     'instructors' => $numberedInstructors,
                     'year' => $year,
+                    'semester' => $semester,
                     'translations' => [
                         $language => [
                             'name' => $courseName,
                             'field' => $field,
-                            'credits' => $credits
+                            'credits' => $credits,
+                            'semester' => $semester
                         ]
                     ]
                 ];
@@ -726,19 +805,27 @@ function parseCourses($html, $existingCourses, $courseCounter = 0, $language = '
                     'course_name' => $courseName,
                     'field' => $field,
                     'credits' => $credits,
+                    'semester' => $semester,
                     'instructors' => $unknownInstructors
                 ];
+                
+                // Also add semester to the course object
+                if (!isset($existingCourses[$existingIndex]['semester'])) {
+                    $existingCourses[$existingIndex]['semester'] = $semester;
+                }
             } else {
                 // Add new course with unknown instructor
                 $newCourse = [
                     'reg_number' => $regNumber,
                     'instructors' => $unknownInstructors,
                     'year' => $year,
+                    'semester' => $semester,
                     'translations' => [
                         $language => [
                             'name' => $courseName,
                             'field' => $field,
-                            'credits' => $credits
+                            'credits' => $credits,
+                            'semester' => $semester
                         ]
                     ]
                 ];
@@ -997,6 +1084,7 @@ foreach ($urlPairs as $index => $pair) {
                 $mergedCourse = [
                     'reg_number' => $regNum,
                     'year' => $enCourse['year'] ?? $jaCourse['year'],
+                    'semester' => $enCourse['semester'] ?? $jaCourse['semester'],
                     'translations' => [
                         'ja' => isset($jaCourse['translations']['ja']) ? $jaCourse['translations']['ja'] : [],
                         'en' => isset($enCourse['translations']['en']) ? $enCourse['translations']['en'] : []
@@ -1271,6 +1359,11 @@ foreach ($allCourses as $course) {
             if (!isset($course['translations'][$lang]['credits'])) {
                 $course['translations'][$lang]['credits'] = $lang == 'en' ? "Unknown Credits" : "不明な単位";
             }
+            
+            // Make sure semester is set
+            if (!isset($course['translations'][$lang]['semester'])) {
+                $course['translations'][$lang]['semester'] = isset($course['semester']) ? $course['semester'] : 'unknown';
+            }
         }
     }
 
@@ -1352,7 +1445,11 @@ foreach ($allCourses as $course) {
             'Listening' => '聴解',
             'Outline' => '概論',
             'Earth' => '地球',
-            'Environment' => '環境'
+            'Environment' => '環境',
+            'spring' => '春学期',
+            'fall' => '秋学期',
+            'full_year' => '通年',
+            'unknown' => '不明'
         ];
 
         // Check Japanese fields for English text and translate
@@ -1413,6 +1510,27 @@ foreach ($allCourses as $course) {
                 $creditNum = $matches[1];
                 $course['translations']['ja']['credits'] = $creditNum . "単位";
                 echo "  Translated credits: {$course['translations']['ja']['credits']} -> {$creditNum}単位\n";
+            }
+        }
+        
+        // Translate semester information if needed
+        if (
+            isset($course['translations']['ja']['semester']) &&
+            !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $course['translations']['ja']['semester'])
+        ) {
+            $englishSemester = $course['translations']['ja']['semester'];
+            
+            // Map English semester values to Japanese
+            $semesterMap = [
+                'spring' => '春学期',
+                'fall' => '秋学期',
+                'full_year' => '通年',
+                'unknown' => '不明'
+            ];
+            
+            if (isset($semesterMap[$englishSemester])) {
+                $course['translations']['ja']['semester'] = $semesterMap[$englishSemester];
+                echo "  Translated semester: $englishSemester -> {$semesterMap[$englishSemester]}\n";
             }
         }
     }
@@ -1582,6 +1700,23 @@ foreach ($allCourses as $course) {
             $creditNum = $matches[1];
             $course['translations']['en']['credits'] = $creditNum . " credits";
         }
+        
+        // Translate semester from Japanese to English if needed
+        if (
+            isset($course['translations']['en']['semester']) &&
+            preg_match('/[春秋通]学期|通年/u', $course['translations']['en']['semester'])
+        ) {
+            $jaSemester = $course['translations']['en']['semester'];
+            
+            // Map Japanese semester values to English
+            if (strpos($jaSemester, '春') !== false) {
+                $course['translations']['en']['semester'] = 'spring';
+            } elseif (strpos($jaSemester, '秋') !== false) {
+                $course['translations']['en']['semester'] = 'fall';
+            } elseif (strpos($jaSemester, '通年') !== false) {
+                $course['translations']['en']['semester'] = 'full_year';
+            }
+        }
     }
 
     // Create a new course structure that works with Rate My Teacher
@@ -1589,20 +1724,23 @@ foreach ($allCourses as $course) {
     $formattedCourse = [
         'course_id' => $course['reg_number'],
         'year' => $course['year'],
+        'semester' => isset($course['semester']) ? $course['semester'] : 'unknown',
         'translations' => [
             'ja' => [
                 'name' => isset($course['translations']['ja']['name']) ? $course['translations']['ja']['name']
                     : (isset($course['translations']['ja']['course_name']) ? $course['translations']['ja']['course_name']
                         : ''),
                 'field' => isset($course['translations']['ja']['field']) ? $course['translations']['ja']['field'] : '基盤科目',
-                'credits' => isset($course['translations']['ja']['credits']) ? $course['translations']['ja']['credits'] : '2単位'
+                'credits' => isset($course['translations']['ja']['credits']) ? $course['translations']['ja']['credits'] : '2単位',
+                'semester' => isset($course['translations']['ja']['semester']) ? $course['translations']['ja']['semester'] : (isset($course['semester']) ? $course['semester'] : 'unknown')
             ],
             'en' => [
                 'name' => isset($course['translations']['en']['name']) ? $course['translations']['en']['name']
                     : (isset($course['translations']['en']['course_name']) ? $course['translations']['en']['course_name']
                         : 'Course ' . $course['reg_number']),
                 'field' => isset($course['translations']['en']['field']) ? $course['translations']['en']['field'] : 'Foundation Course',
-                'credits' => isset($course['translations']['en']['credits']) ? $course['translations']['en']['credits'] : '2 credits'
+                'credits' => isset($course['translations']['en']['credits']) ? $course['translations']['en']['credits'] : '2 credits',
+                'semester' => isset($course['translations']['en']['semester']) ? $course['translations']['en']['semester'] : (isset($course['semester']) ? $course['semester'] : 'unknown')
             ]
         ],
         'professors' => []
