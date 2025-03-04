@@ -978,12 +978,6 @@ elseif (!isset($_COOKIE['language'])) {
                 </div>
             </div>
         </div>
-        <!-- Banner Ad -->
-        <div class="banner-ad" style="text-align: center; margin: 20px 0;">
-            <a href="https://px.a8.net/svt/ejp?a8mat=450W3C+432376+1WP2+64JTD" rel="nofollow">
-            <img border="0" width="468" height="60" alt="" src="https://www27.a8.net/svt/bgt?aid=250304376247&wid=001&eno=01&mid=s00000008903001029000&mc=1"></a>
-            <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=450W3C+432376+1WP2+64JTD" alt="">
-        </div>
         
         <main style="flex: 1; display: flex; padding: 2rem;">
             <div id="popular-professors" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
