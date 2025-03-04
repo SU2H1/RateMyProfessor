@@ -932,7 +932,7 @@ elseif (!isset($_COOKIE['language'])) {
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? '先生を評価' : 'Rate My Teacher'; ?></a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher' : 'Rate My Teacher'; ?></a></h1>
                 </div>
             </div>
             
@@ -1116,7 +1116,7 @@ elseif (!isset($_COOKIE['language'])) {
         </div>
         
         <footer>
-            <p>&copy; 2025 Rate My Teacher - SU2H1. All rights reserved.</p>
+            <p>&copy; 2025 Rate My Teacher. All rights reserved.</p>
         </footer>
     </div>
     
@@ -1285,7 +1285,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "You need to be logged in to view this content.",
                 loginButton: "Login",
                 registerButton: "Register",
-                footer: "© 2025 Rate My Teacher - SU2H1. All rights reserved.",
+                footer: "© 2025 Rate My Teacher. All rights reserved.",
                 viewDetails: "View Details",
                 close: "Close",
                 reviews: "Reviews",
