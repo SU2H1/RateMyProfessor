@@ -176,11 +176,11 @@ function getTopCourses($limit = 5) {
                 // Use stored ratings if they exist
                 $stmt = $conn->prepare("
                     SELECT c.id, c.name as course_name, c.course_code,
-                           COALESCE(c.avg_content_quality, 0) as avg_content_quality,
-                           COALESCE(c.avg_difficulty, 0) as avg_difficulty,
-                           (COALESCE(c.avg_content_quality, 0) + COALESCE(c.avg_difficulty, 0)) / 2 as avg_rating,
-                           COALESCE(c.review_count, 0) as review_count,
-                           p.name as professor_name
+                        COALESCE(c.avg_content_quality, 0) as avg_content_quality,
+                        COALESCE(c.avg_difficulty, 0) as avg_difficulty,
+                        (COALESCE(c.avg_content_quality, 0) + COALESCE(c.avg_difficulty, 0)) / 2 as avg_rating,
+                        COALESCE(c.review_count, 0) as review_count,
+                        p.name as professor_name
                     FROM courses c
                     LEFT JOIN professors p ON c.professor_id = p.id
                     WHERE COALESCE(c.review_count, 0) > 0
@@ -978,13 +978,19 @@ elseif (!isset($_COOKIE['language'])) {
                 </div>
             </div>
         </div>
+        <!-- Banner Ad -->
+        <div class="banner-ad" style="text-align: center; margin: 20px 0;">
+            <a href="https://px.a8.net/svt/ejp?a8mat=450W3C+432376+1WP2+64JTD" rel="nofollow">
+            <img border="0" width="468" height="60" alt="" src="https://www27.a8.net/svt/bgt?aid=250304376247&wid=001&eno=01&mid=s00000008903001029000&mc=1"></a>
+            <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=450W3C+432376+1WP2+64JTD" alt="">
+        </div>
         
-        <main>
-            <div id="popular-professors" class="content-box">
+        <main style="flex: 1; display: flex; padding: 2rem;">
+            <div id="popular-professors" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
                     <?php foreach ($topProfessors as $professor): ?>
-                    <a href="professor_page_template.php?professor=<?php echo urlencode(str_replace(' ', '', $professor['name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="professor_page_template.php?professor=<?php echo urlencode($professor['name']); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
@@ -1009,18 +1015,16 @@ elseif (!isset($_COOKIE['language'])) {
                     <?php endforeach; ?>
                 </div>
             </div>
-                </div>
-            </div>
             
-            <div id="top-courses" class="content-box">
+            <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
                 <div class="course-list">
                     <?php foreach ($topCourses as $course): ?>
-                    <a href="course_page_template.php?course=<?php echo urlencode($course['course_name'] ?? $course['name']); ?>&professor=<?php echo urlencode(str_replace(' ', '', $course['professor_name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="course.php?course=<?php echo urlencode($course['course_name'] ?? $course['name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?><?php echo !empty($course['course_code']) ? ' (' . htmlspecialchars($course['course_code']) . ')' : ''; ?></h3>
-                                <p><?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+                                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
                             </div>
                             <div class="rating">
                                 <?php 
@@ -1039,8 +1043,6 @@ elseif (!isset($_COOKIE['language'])) {
                         </div>
                     </a>
                     <?php endforeach; ?>
-                </div>
-            </div>
                 </div>
             </div>
         </main>
@@ -1159,10 +1161,10 @@ elseif (!isset($_COOKIE['language'])) {
                 console.log("Professor name from HTML:", profName);
                 
                 // Remove spaces for the URL
-                const profNameNoSpaces = profName.replace(/\s+/g, '');
+                // Preserve spaces in the professor name, just use URL encoding
                 
                 // Create the redirect URL with the current language - no ID needed
-                const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profNameNoSpaces)}&lang=${currentLang}`;
+                const redirectUrl = `professor_page_template.php?professor=${encodeURIComponent(profName)}&lang=${currentLang}`;
                 console.log("Redirecting to:", redirectUrl);
                 
                 // Perform the redirect
@@ -1220,8 +1222,8 @@ elseif (!isset($_COOKIE['language'])) {
                         const courseName = item.querySelector('h3').textContent;
                         console.log("Course name from HTML:", courseName);
                         
-                        // Create the redirect URL with the current language - no ID needed
-                        const redirectUrl = `course_page_template.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
+                        // Create the redirect URL with the current language - using course.php instead
+                        const redirectUrl = `course.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
                         console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect
@@ -1919,8 +1921,8 @@ elseif (!isset($_COOKIE['language'])) {
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
                         // Create URL with no spaces for professor name but display with spaces
-                        const profNameNoSpaces = prof.name.replace(/\s+/g, '');
-                        window.location.href = `professor.php?name=${encodeURIComponent(profNameNoSpaces)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                        // Preserve spaces in professor name
+                        window.location.href = `professor.php?professor=${encodeURIComponent(prof.name)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
                     });
                     
                     profList.appendChild(profItem);
@@ -1955,8 +1957,8 @@ elseif (!isset($_COOKIE['language'])) {
                     `;
                     // Add click event to view course page
                     courseItem.addEventListener('click', () => {
-                        // Redirect to course page
-                        window.location.href = `course_page_template.php?course=${encodeURIComponent(course.name)}&id=${course.id}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                        // Redirect to course page via course.php
+                        window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor || '')}&id=${course.id}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
                     });
                     
                     courseList.appendChild(courseItem);
@@ -1999,8 +2001,8 @@ elseif (!isset($_COOKIE['language'])) {
                             // Add click event to view professor page
                             profItem.addEventListener('click', () => {
                                 // Create URL with no spaces for professor name but display with spaces
-                                const profNameNoSpaces = prof.name.replace(/\s+/g, '');
-                                window.location.href = `professor.php?name=${encodeURIComponent(profNameNoSpaces)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                                // Preserve spaces in professor name
+                                window.location.href = `professor.php?professor=${encodeURIComponent(prof.name)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
                             });
                             
                             profList.appendChild(profItem);
@@ -2039,8 +2041,8 @@ elseif (!isset($_COOKIE['language'])) {
                             
                             // Add click event to view course page
                             courseItem.addEventListener('click', () => {
-                                // Redirect to course page
-                                window.location.href = `course_page_template.php?course=${encodeURIComponent(course.name)}&id=${course.id}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                                // Redirect to course page via course.php
+                                window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor || '')}&id=${course.id}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
                             });
                             
                             courseList.appendChild(courseItem);
