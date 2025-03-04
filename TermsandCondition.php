@@ -13,12 +13,16 @@ header("Content-Type: text/html; charset=UTF-8");
 <body>
     <h1>Terms and Conditions - RateMyTeachersFC.com</h1>
 
+    <p><strong>Disclaimer:</strong> This is not an official website of Keio University. It is a student-run project. We are not responsible for any loss incurred by using services that are on or advertised on this website.</p>
+
     <?php
     $language = isset($_GET['lang']) ? $_GET['lang'] : 'en';
 
     if ($language == 'jp') {
     ?>
         <h2>日本語版</h2>
+        <p><strong>免責事項:</strong> 本サイトは慶應義塾大学の公式ウェブサイトではなく、学生が運営するプロジェクトです。本ウェブサイト上のサービスや広告によって生じた損失について、当サイトは責任を負いません。</p>
+        
         <h3>1. はじめに</h3>
         <p>RateMyTeachersFC.comへようこそ。本サイトは慶應義塾大学SFCの学生が教授に関するレビューやフィードバックを共有するためのプラットフォームです。本ウェブサイトにアクセスまたは利用することにより、以下の利用規約に同意し、拘束されることとなります。</p>
 
@@ -40,6 +44,8 @@ header("Content-Type: text/html; charset=UTF-8");
     } else {
     ?>
         <h2>English Version</h2>
+        <p><strong>Disclaimer:</strong> This is not an official website of Keio University. It is a student-run project. We are not responsible for any loss incurred by using services that are on or advertised on this website.</p>
+        
         <h3>1. Introduction</h3>
         <p>Welcome to RateMyTeachersFC.com, a platform designed for Keio University SFC students to share reviews and feedback about professors. By accessing or using our website, you agree to comply with and be bound by the following terms and conditions.</p>
 
