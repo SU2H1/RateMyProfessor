@@ -459,7 +459,7 @@ ID: " . htmlspecialchars($courseId ?? 'Not provided') . "</pre>
 if ($skipJsonRequirement && !$course) {
     // Get course details from database
     try {
-        $stmt = $db->prepare("SELECT name, course_code, description FROM courses WHERE id = :id LIMIT 1");
+        $stmt = $db->prepare("SELECT name, course_code, description, semester FROM courses WHERE id = :id LIMIT 1");
         $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
         $result = $stmt->execute();
         $courseDetails = $result->fetchArray(SQLITE3_ASSOC);
@@ -516,6 +516,7 @@ if ($skipJsonRequirement && !$course) {
             $course = [
                 'course_id' => $courseDetails['course_code'] ?? $courseId,
                 'year' => '2023&2024',
+                'semester' => $courseDetails['semester'] ?? 'spring',  // Include semester from database, default to spring if not set
                 'translations' => [
                     'en' => ['name' => $courseDetails['name'], 'field' => $fieldInfo],
                     'ja' => ['name' => $courseDetails['name'], 'field' => $fieldInfo]
@@ -888,8 +889,18 @@ $pageTitle = htmlspecialchars($translation['name']);
 
 // Get semester info
 $semester = $lang === 'ja' ? '春学期' : 'Spring Semester'; // Default value
+
+// Get semester from database if available
 if (isset($course['semester'])) {
-    $semester = $course['semester'][$lang] ?? ($lang === 'ja' ? '春学期' : 'Spring Semester');
+    // Format the semester based on the value and language
+    if ($course['semester'] === 'spring') {
+        $semester = $lang === 'ja' ? '春学期' : 'Spring Semester';
+    } elseif ($course['semester'] === 'fall') {
+        $semester = $lang === 'ja' ? '秋学期' : 'Fall Semester';
+    } else {
+        // For any other value, just display it with the word "Semester"
+        $semester = ucfirst($course['semester']) . ($lang === 'ja' ? '学期' : ' Semester');
+    }
 }
 
 // Set up category scores for display
