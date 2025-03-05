@@ -4,6 +4,7 @@
  * 
  * This script imports the scraped course data from JSON into the SQLite database.
  * It handles duplicates and ensures proper relationships between courses and professors.
+ * Now includes semester information in the database schema and import process.
  */
 
 // Include database configuration
@@ -148,6 +149,7 @@ try {
     foreach ($data['courses'] as $course) {
         $courseCode = $course['course_id'];
         $year = $course['year'];
+        $semester = $course['semester']; // Get semester information
         $jaName = $course['translations']['ja']['name'];
         $enName = $course['translations']['en']['name'];
         $jaField = $course['translations']['ja']['field'];
@@ -162,7 +164,8 @@ try {
                       "English Field: $enField\n" .
                       "Japanese Credits: $jaCredits\n" .
                       "English Credits: $enCredits\n" .
-                      "Year: $year";
+                      "Year: $year\n" .
+                      "Semester: $semester";
         
         // Get the primary professor for this course (first one in the list)
         $primaryProfessor = $course['professors'][0];
@@ -191,11 +194,12 @@ try {
             $courseId = $existingCourse['id'];
             $updateStmt = $db->prepare('
                 UPDATE courses 
-                SET name = :name, description = :description
+                SET name = :name, description = :description, semester = :semester
                 WHERE id = :id
             ');
             $updateStmt->bindValue(':name', $enName, SQLITE3_TEXT);
             $updateStmt->bindValue(':description', $description, SQLITE3_TEXT);
+            $updateStmt->bindValue(':semester', $semester, SQLITE3_TEXT);
             $updateStmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
             $updateStmt->execute();
             
@@ -203,13 +207,14 @@ try {
         } else {
             // Insert new course
             $insertStmt = $db->prepare('
-                INSERT INTO courses (name, course_code, description, professor_id) 
-                VALUES (:name, :course_code, :description, :professor_id)
+                INSERT INTO courses (name, course_code, description, professor_id, semester) 
+                VALUES (:name, :course_code, :description, :professor_id, :semester)
             ');
             $insertStmt->bindValue(':name', $enName, SQLITE3_TEXT);
             $insertStmt->bindValue(':course_code', $courseCode, SQLITE3_TEXT);
             $insertStmt->bindValue(':description', $description, SQLITE3_TEXT);
             $insertStmt->bindValue(':professor_id', $primaryProfessorId, SQLITE3_INTEGER);
+            $insertStmt->bindValue(':semester', $semester, SQLITE3_TEXT);
             $insertStmt->execute();
             
             $courseId = $db->lastInsertRowID();
@@ -278,7 +283,7 @@ function search($query) {
     
     // Search courses
     $stmt = $db->prepare("
-        SELECT c.id, c.name, c.course_code, c.description, p.name as professor_name, p.id as professor_id
+        SELECT c.id, c.name, c.course_code, c.description, c.semester, p.name as professor_name, p.id as professor_id
         FROM courses c
         JOIN professors p ON c.professor_id = p.id
         WHERE c.name LIKE :query OR c.course_code LIKE :query OR p.name LIKE :query
@@ -351,7 +356,9 @@ document.getElementById(\'searchForm\').addEventListener(\'submit\', function(e)
                     const courseList = document.createElement(\'ul\');
                     data.courses.forEach(course => {
                         const item = document.createElement(\'li\');
-                        item.innerHTML = `<strong>${course.name}</strong> (${course.course_code}) - Taught by ${course.professor_name}`;
+                        item.innerHTML = `<strong>${course.name}</strong> (${course.course_code}) - 
+                                        Taught by ${course.professor_name} - 
+                                        Semester: ${course.semester}`;
                         courseList.appendChild(item);
                     });
                     
@@ -376,3 +383,28 @@ echo "Next steps:\n";
 echo "1. Integrate the search functionality into home.php\n";
 echo "2. Update your professor and course detail pages to use real data\n";
 echo "3. Customize the scraper to match your university's actual website structure\n";
+
+// Make sure we have the semester field in the courses table
+try {
+    // Check if the semester field exists in the courses table
+    $result = $db->query("PRAGMA table_info(courses)");
+    $columnExists = false;
+    
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        if ($row['name'] === 'semester') {
+            $columnExists = true;
+            break;
+        }
+    }
+    
+    // Add the semester field if it doesn't exist
+    if (!$columnExists) {
+        echo "Adding 'semester' field to the courses table...\n";
+        $db->exec("ALTER TABLE courses ADD COLUMN semester TEXT");
+        echo "Added 'semester' field to the courses table.\n";
+    } else {
+        echo "The 'semester' field already exists in the courses table.\n";
+    }
+} catch (Exception $e) {
+    echo "Error checking or adding semester field: " . $e->getMessage() . "\n";
+}
