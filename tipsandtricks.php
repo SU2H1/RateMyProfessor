@@ -446,8 +446,8 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
             
             <h3><?php echo $t['sub_paywall']; ?></h3>
             <ul>
-                <li><a href="https://github.com/search?q=Bypass+Paywalls+Chrome" target="_blank">Bypass Paywalls (Chromium) - Open Source</a></li>
-                <li><a href="https://github.com/search?q=Bypass+Paywalls+Firefox" target="_blank">Bypass Paywalls (Firefox) - Open Source</a></li>
+                <li><a href="https://gitflic.ru/project/magnolia1234/bypass-paywalls-chrome-clean#installation" target="_blank">Bypass Paywalls (Chromium) - Open Source</a></li>
+                <li><a href="https://gitflic.ru/project/magnolia1234/bypass-paywalls-firefox-clean#installation" target="_blank">Bypass Paywalls (Firefox) - Open Source</a></li>
             </ul>
         </section>
 
@@ -494,8 +494,8 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
                 <li><a href="https://liber3.eth.limo/" target="_blank">Liber3</a></li>
                 <li><a href="https://annas-archive.org/" target="_blank">Anna's Archive</a></li>
                 <li><a href="https://libgen.is/" target="_blank">Library Genesis</a></li>
-                <li><a href="https://github.com/search?q=Bypass+Paywalls+Chrome" target="_blank">Bypass Paywalls (Chrome) - Open Source</a></li>
-                <li><a href="https://github.com/search?q=Bypass+Paywalls+Firefox" target="_blank">Bypass Paywalls (Firefox) - Open Source</a></li>
+                <li><a href="https://gitflic.ru/project/magnolia1234/bypass-paywalls-chrome-clean#installation" target="_blank">Bypass Paywalls (Chrome) - Open Source</a></li>
+                <li><a href="https://gitflic.ru/project/magnolia1234/bypass-paywalls-firefox-clean#installation" target="_blank">Bypass Paywalls (Firefox) - Open Source</a></li>
             </ul>
             
             <h3><?php echo $t['sub_official']; ?></h3>
