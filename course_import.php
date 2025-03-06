@@ -9,10 +9,35 @@
 
 // Include database configuration
 require_once 'config.php';
-
+$db = new SQLite3(__DIR__ . '/database/ratemyteacher.db');
+if (!is_dir('database')) {
+    mkdir('database', 0755, true);
+}
 // Check if database connection is working
 try {
     // Create a new SQLite3 database connection
+    $db = new SQLite3(__DIR__ . '/database/ratemyteacher.db');
+    $dbDir = __DIR__ . '/database';
+
+// Check if directory exists and is writable
+if (is_dir($dbDir)) {
+    if (!is_writable($dbDir)) {
+        die("Database directory exists but is not writable: $dbDir\n");
+    }
+} else {
+    // Try to create directory
+    if (!mkdir($dbDir, 0755, true)) {
+        die("Failed to create database directory: $dbDir\n");
+    }
+    echo "Created database directory.\n";
+}
+
+$dbPath = $dbDir . '/ratemyteacher.db';
+
+// Check if database file exists and is writable
+if (file_exists($dbPath) && !is_writable($dbPath)) {
+    die("Database file exists but is not writable: $dbPath\n");
+}
     $db = new SQLite3('database/ratemyteacher.db');
     
     // Enable foreign keys
@@ -262,7 +287,131 @@ try {
     $db->exec('ROLLBACK');
     echo "Error during import: " . $e->getMessage() . "\n";
 }
+// This code should be placed after the main import transaction is committed
+// Create a separate transaction for adding columns
+$db->exec('BEGIN TRANSACTION');
 
+try {
+    // First check if the professors table exists
+    $tableResult = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='professors'");
+    if (!$tableResult->fetchArray()) {
+        echo "Error: professors table does not exist. Creating it now...\n";
+        // Create the professors table if it doesn't exist
+        $db->exec("CREATE TABLE IF NOT EXISTS professors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            department TEXT,
+            bio TEXT
+        )");
+    }
+    
+    // Check which columns already exist
+    $result = $db->query("PRAGMA table_info(professors)");
+    $existingColumns = array();
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $existingColumns[] = strtolower($row['name']);
+        echo "Found existing column: " . $row['name'] . "\n";
+    }
+    
+    // Only add columns that don't exist
+    if (!in_array('avg_content_quality', $existingColumns)) {
+        echo "Adding avg_content_quality column...\n";
+        $db->exec("ALTER TABLE professors ADD COLUMN avg_content_quality REAL DEFAULT 0");
+    }
+    
+    if (!in_array('avg_difficulty', $existingColumns)) {
+        echo "Adding avg_difficulty column...\n";
+        $db->exec("ALTER TABLE professors ADD COLUMN avg_difficulty REAL DEFAULT 0");
+    }
+    
+    if (!in_array('overall_rating', $existingColumns)) {
+        echo "Adding overall_rating column...\n";
+        $db->exec("ALTER TABLE professors ADD COLUMN overall_rating REAL DEFAULT 0");
+    }
+    
+    if (!in_array('review_count', $existingColumns)) {
+        echo "Adding review_count column...\n";
+        $db->exec("ALTER TABLE professors ADD COLUMN review_count INTEGER DEFAULT 0");
+    }
+    
+    $db->exec('COMMIT');
+    echo "Rating columns processed successfully.\n";
+    $hasRatingColumns = true;
+    
+} catch (Exception $e) {
+    $db->exec('ROLLBACK');
+    echo "Error processing rating columns: " . $e->getMessage() . "\n";
+    // Print the SQLite error code for more information
+    echo "SQLite error code: " . $db->lastErrorCode() . "\n";
+    echo "SQLite error message: " . $db->lastErrorMsg() . "\n";
+}
+
+// Verify columns were added
+try {
+    $verifyResult = $db->query("PRAGMA table_info(professors)");
+    echo "Current professors table structure:\n";
+    while ($row = $verifyResult->fetchArray(SQLITE3_ASSOC)) {
+        echo "- Column: " . $row['name'] . " (Type: " . $row['type'] . ")\n";
+    }
+} catch (Exception $e) {
+    echo "Error verifying table structure: " . $e->getMessage() . "\n";
+}
+
+// Add rating columns to courses table
+$db->exec('BEGIN TRANSACTION');
+
+try {
+    // Check which columns already exist in courses table
+    $result = $db->query("PRAGMA table_info(courses)");
+    $existingColumns = array();
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $existingColumns[] = strtolower($row['name']);
+        echo "Found existing column in courses: " . $row['name'] . "\n";
+    }
+    
+    // Only add columns that don't exist
+    if (!in_array('avg_content_quality', $existingColumns)) {
+        echo "Adding avg_content_quality column to courses...\n";
+        $db->exec("ALTER TABLE courses ADD COLUMN avg_content_quality REAL DEFAULT 0");
+    }
+    
+    if (!in_array('avg_difficulty', $existingColumns)) {
+        echo "Adding avg_difficulty column to courses...\n";
+        $db->exec("ALTER TABLE courses ADD COLUMN avg_difficulty REAL DEFAULT 0");
+    }
+    
+    if (!in_array('overall_rating', $existingColumns)) {
+        echo "Adding overall_rating column to courses...\n";
+        $db->exec("ALTER TABLE courses ADD COLUMN overall_rating REAL DEFAULT 0");
+    }
+    
+    if (!in_array('review_count', $existingColumns)) {
+        echo "Adding review_count column to courses...\n";
+        $db->exec("ALTER TABLE courses ADD COLUMN review_count INTEGER DEFAULT 0");
+    }
+    
+    $db->exec('COMMIT');
+    echo "Rating columns added to courses table successfully.\n";
+    
+} catch (Exception $e) {
+    $db->exec('ROLLBACK');
+    echo "Error adding rating columns to courses table: " . $e->getMessage() . "\n";
+    echo "SQLite error code: " . $db->lastErrorCode() . "\n";
+    echo "SQLite error message: " . $db->lastErrorMsg() . "\n";
+}
+
+// Verify courses columns were added
+try {
+    $verifyResult = $db->query("PRAGMA table_info(courses)");
+    echo "Current courses table structure:\n";
+    while ($row = $verifyResult->fetchArray(SQLITE3_ASSOC)) {
+        echo "- Column: " . $row['name'] . " (Type: " . $row['type'] . ")\n";
+    }
+} catch (Exception $e) {
+    echo "Error verifying courses table structure: " . $e->getMessage() . "\n";
+}
+
+    
 // Now, update the search functionality to use the actual database
 echo "Updating search functionality to use the real database...\n";
 echo "Created search example at $searchExampleFile\n";
