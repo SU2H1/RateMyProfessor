@@ -278,8 +278,8 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
             <ul>
                 <li><a href="https://www.keio.ac.jp/" target="_blank">Keio Website Portal</a></li>
                 <li><a href="https://www.students.keio.ac.jp/en/sfc/class/registration/" target="_blank">Syllabus</a></li>
-                <li><a href="https://www.students.keio.ac.jp/en/com/class/registration/" target="_blank">Course Registration</a></li>
-                <li><a href="https://www.students.keio.ac.jp/en/sfc/class/registration/" target="_blank">PE Registration</a></li>
+                <li><a href="https://wellness.sfc.keio.ac.jp/v3/index.php?page=top&lang=ja&semester=20230" target="_blank">Course Registration</a></li>
+                <li><a href="https://sola.sfc.keio.ac.jp/faculty/students/sign_in" target="_blank">PE Registration</a></li>
             </ul>
         </section>
 
@@ -483,7 +483,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
             <h2><?php echo $t['section_health']; ?></h2>
             <ul>
                 <li><a href="https://www.students.keio.ac.jp/en/com/life/health/" target="_blank">Keio Medical Care Benefits</a></li>
-                <li><a href="https://www.fmsc.keio.ac.jp/en/" target="_blank">Shonan Keiiku Hospital</a></li>
+                <li><a href="https://keiiku.gr.jp/" target="_blank">Shonan Keiiku Hospital</a></li>
             </ul>
         </section>
 
@@ -502,7 +502,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
             <ul>
                 <li><a href="https://www.sfc.lib.keio.ac.jp/eng/" target="_blank">SFC Media Center</a></li>
                 <li><a href="https://archive.org/" target="_blank">Internet Archive</a></li>
-                <li><a href="https://www.city.fujisawa.kanagawa.jp/toshokan/" target="_blank">Fujisawa City Library</a> <?php echo $t['library_note']; ?></li>
+                <li><a href="https://www.lib.city.fujisawa.kanagawa.jp/index" target="_blank">Fujisawa City Library</a> <?php echo $t['library_note']; ?></li>
             </ul>
         </section>
 
