@@ -984,7 +984,7 @@ elseif (!isset($_COOKIE['language'])) {
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
                     <?php foreach ($topProfessors as $professor): ?>
-                    <a href="professor_page_template.php?professor=<?php echo urlencode($professor['name']); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '',$professor['name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
