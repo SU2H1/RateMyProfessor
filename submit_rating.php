@@ -10,6 +10,7 @@ ini_set('display_errors', 1);
 
 // Include database configuration
 require_once 'config.php';
+require_once 'session_config.php';
 
 // Start session to check if user is logged in
 session_start();
