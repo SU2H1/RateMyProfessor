@@ -178,7 +178,7 @@ function getTopCourses($limit = 5) {
                     SELECT c.id, c.name as course_name, c.course_code,
                         COALESCE(c.avg_content_quality, 0) as avg_content_quality,
                         COALESCE(c.avg_difficulty, 0) as avg_difficulty,
-                        (COALESCE(c.avg_content_quality, 0) + COALESCE(c.avg_difficulty, 0)) / 2 as avg_rating,
+                        (COALESCE(c.avg_content_quality, 0) + (5 - COALESCE(c.avg_difficulty, 0))) / 2 as avg_rating,
                         COALESCE(c.review_count, 0) as review_count,
                         p.name as professor_name
                     FROM courses c
@@ -984,7 +984,7 @@ elseif (!isset($_COOKIE['language'])) {
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
                     <?php foreach ($topProfessors as $professor): ?>
-                    <a href="professor_page_template.php?professor=<?php echo urlencode($professor['name']); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '',$professor['name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
