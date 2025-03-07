@@ -81,7 +81,7 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '<p>Searching for: ' + query + '</p>';
             
-            fetch(`search.php?query=${encodeURIComponent(query)}&t=${Date.now()}`)
+            fetch(`search2.php?query=${encodeURIComponent(query)}&t=${Date.now()}`)
                 .then(response => {
                     console.log('Status:', response.status);
                     return response.text();
@@ -158,7 +158,7 @@
         });
 
         // Set a default search term
-        document.getElementById('searchInput').value = '';
+        document.getElementById('searchInput').value = 'Introduction';
     </script>
 </body>
 </html>

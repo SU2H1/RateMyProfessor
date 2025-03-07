@@ -22,6 +22,7 @@ file_put_contents($logFile, "Search started at " . date('Y-m-d H:i:s') . "\n", F
  * @param string $query The search query
  * @return array Array containing matching professors and courses
  */
+
 function search($query) {
     global $logFile;
     
@@ -54,11 +55,11 @@ function search($query) {
     $normalizedQuery = str_replace([' ', '　'], '', $query);
     
     // If more than 2 characters, make an additional "short query" to match partial names
-    $shortQuery = '';
+     $shortQuery = '';
     if (mb_strlen($query) > 2) {
-        // Get the first 2 characters as a very lenient search term
-        $shortQuery = mb_substr($query, 0, 2);
-        file_put_contents($logFile, "Created short query: '$shortQuery' for more lenient matching\n", FILE_APPEND);
+         // Get the first 2 characters as a very lenient search term
+         $shortQuery = mb_substr($query, 0, 2);
+         file_put_contents($logFile, "Created short query: '$shortQuery' for more lenient matching\n", FILE_APPEND);
     }
     
     file_put_contents($logFile, "Search query: '$query', Normalized: '$normalizedQuery'\n", FILE_APPEND);
