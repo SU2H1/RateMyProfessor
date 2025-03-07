@@ -7794,3 +7794,2181 @@ Search started at 2025-03-07 08:39:05
 Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
 Search started at 2025-03-07 08:46:16
 Search started at 2025-03-07 08:46:46
+Search started at 2025-03-07 11:31:41
+Search started at 2025-03-07 11:31:49
+Search started at 2025-03-07 11:32:02
+Search started at 2025-03-07 11:32:13
+Search started at 2025-03-07 11:32:18
+Search started at 2025-03-07 11:32:29
+Search started at 2025-03-07 11:32:42
+Search started at 2025-03-07 11:32:52
+Search started at 2025-03-07 11:33:06
+Search started at 2025-03-07 11:33:30
+Search started at 2025-03-07 11:46:56
+Search started at 2025-03-07 12:10:46
+AJAX request received with query: 総合政策学
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: '総合' for more lenient matching
+Search query: '総合政策学', Normalized: '総合政策学'
+Searching through 1197 courses
+Match found in JA course name: 総合政策学 【学期前半】
+Match found in JA course name: 総合政策学 【学期前半】(giga/gg/gi)
+Match found in JA course name: 総合政策学 【学期前半】
+Match found in JA course name: 総合政策学 【学期前半】(giga/gg/gi)
+Match found with short query in JA course name: デザイン言語総合講座 【学期前半】
+Found 0 matching professors
+Found 5 matching courses
+Returning JSON response with 0 professors and 5 courses
+Request completed
+
+Search started at 2025-03-07 12:37:10
+AJAX request received with query: ji
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Search query: 'ji', Normalized: 'ji'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Returning JSON response with 35 professors and 0 courses
+Request completed
+
+Search started at 2025-03-07 12:37:23
+Search started at 2025-03-07 12:37:36
+AJAX request received with query: Jin
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ji' for more lenient matching
+Search query: 'jin', Normalized: 'jin'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Returning JSON response with 35 professors and 0 courses
+Request completed
+
+Search started at 2025-03-07 12:41:07
+Search started at 2025-03-07 12:41:48
+Search started at 2025-03-07 13:25:57
+Direct access with query: jin
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ji' for more lenient matching
+Search query: 'jin', Normalized: 'jin'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-07 13:26:11
+Direct access with query: introduction
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'in' for more lenient matching
+Search query: 'introduction', Normalized: 'introduction'
+Searching through 1197 courses
+Match found with short query in EN course name: environment and information studies [1st half of semester]
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found with short query in EN course name: environment and information studies [1st half of semester](giga/gg/gi)
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=shugo shinohara, JA=篠原　舟吾
+Match found with short query in EN course name: environment and information studies [1st half of semester]
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=shugo shinohara, JA=篠原　舟吾
+Match found with short query in EN course name: environment and information studies [1st half of semester](giga/gg/gi)
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found with short query in EN course name: chinese basic 1 ca
+Match found with short query in EN course name: chinese basic 1 cb
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: chinese basic 1 cc
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: chinese basic 3
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found with short query in EN course name: malay-indonesian basic 1
+Match found with short query in EN course name: german intensive 1 gb
+Match found with short query in EN course name: german intensive 2 ga
+Match found with short query in EN course name: german intensive 3 ga
+Match found with short query in EN course name: french intensive 1 fc
+Match found in professor name: EN=kazumi nakao, JA=中尾　和美
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: french intensive 1 fb
+Match found with short query in EN course name: french intensive 3 fb
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: chinese intensive 1 cc
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found with short query in EN course name: chinese intensive 1 cd
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese intensive 1 ca
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: chinese intensive 2 ca
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: korean intensive 1 kb
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found with short query in EN course name: korean intensive 1 ka
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: korean intensive 2
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: malay-indonesian intensive 1 ma
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: malay-indonesian intensive 1 mb
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: malay-indonesian intensive 2
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: spanish intensive 2
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: spanish intensive 3
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: spanish intensive 4
+Match found in professor name: EN=diego yonamine f, JA=与那嶺　ディエゴフェルナンド
+Match found with short query in EN course name: arabic intensive 1
+Match found with short query in EN course name: japanese intensive 1 b/japanese intensive 1
+Match found with short query in EN course name: japanese intensive 2 a/japanese intensive 2
+Match found with short query in EN course name: japanese intensive 3 b/japanese intensive 3
+Match found with short query in EN course name: russian intensive 1
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found with short query in EN course name: project english a ea06(speaking a)
+Match found with short query in JA course name: プロジェクト英語Ａ ea06(speaking a)
+Match found with short query in EN course name: project english b eb06(writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb06(writing)
+Match found with short query in EN course name: project english c ec04(oral listening)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec04(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: region and culture (spanish-speaking world) /spanish contents
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: malay-indonesian study abroad a
+Match found with short query in EN course name: chinese basic 1 cb
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found with short query in EN course name: chinese basic 2 ca
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: chinese basic 2 cb
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found with short query in EN course name: chinese basic 3
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: malay-indonesian basic 1
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: german intensive 1 ga
+Match found with short query in EN course name: german intensive 2 ga
+Match found with short query in EN course name: german intensive 2 gb
+Match found with short query in EN course name: german intensive 3 ga
+Match found with short query in EN course name: french intensive 1 fb
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: french intensive 2 fc
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: french intensive 4 fa
+Match found with short query in EN course name: chinese intensive 1 ca
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese intensive 2 ca
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found with short query in EN course name: chinese intensive 2 cc
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: chinese intensive 2 cb
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: chinese intensive 3 ca
+Match found with short query in EN course name: chinese intensive 4 ca
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: korean intensive 1
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found with short query in EN course name: korean intensive 2
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found with short query in EN course name: malay-indonesian intensive 1
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: malay-indonesian intensive 2
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: spanish intensive 3
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: spanish intensive 4
+Match found in professor name: EN=diego yonamine f, JA=与那嶺　ディエゴフェルナンド
+Match found with short query in EN course name: arabic intensive 1
+Match found with short query in EN course name: japanese intensive 3 a/japanese intensive 3
+Match found with short query in EN course name: japanese intensive - elementary 2 b/japanese intensive - elementary 2
+Match found with short query in EN course name: russian intensive 2
+Match found with short query in EN course name: french skill (reading comprehension)
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: project english a (speaking a)
+Match found with short query in JA course name: プロジェクト英語Ａ (speaking a)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in JA course name: プロジェクト英語Ａ (reading)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb01(oral listening)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ (oral listening)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english c ec02(reading)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(reading)(giga/gg/gi)
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: chinese study abroad a
+Match found with short query in EN course name: malay-indonesian study abroad a
+Match found with short query in EN course name: chinese basic 1 ca
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found with short query in EN course name: chinese basic 1 cb
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: chinese basic 1 cc
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese basic 3
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found with short query in EN course name: malay-indonesian basic 1 a
+Match found with short query in EN course name: german intensive 1 gb
+Match found with short query in EN course name: german intensive 2 ga
+Match found with short query in EN course name: german intensive 3 ga
+Match found with short query in EN course name: french intensive 1 fb
+Match found with short query in EN course name: french intensive 1 fc
+Match found in professor name: EN=kazumi nakao, JA=中尾　和美
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: french intensive 3 fb
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: chinese intensive 1 cd
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese intensive 1 cc
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese intensive 1 ca
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: chinese intensive 2 ca
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: korean intensive 1 kb
+Match found with short query in EN course name: korean intensive 1 ka
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found with short query in EN course name: korean intensive 2 ka
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found with short query in EN course name: malay-indonesian intensive 1 ma
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: malay-indonesian intensive 1 mb
+Match found with short query in EN course name: malay-indonesian intensive 2 ma
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: spanish intensive 3
+Match found with short query in EN course name: spanish intensive 4
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found in professor name: EN=diego yonamine f, JA=与那嶺　ディエゴフェルナンド
+Match found with short query in EN course name: arabic intensive 1 aa
+Match found with short query in EN course name: japanese intensive 1 b/japanese intensive 1
+Match found with short query in EN course name: japanese intensive 2 a/japanese intensive 2
+Match found with short query in EN course name: japanese intensive 3 b/japanese intensive 3
+Match found with short query in EN course name: russian intensive 1 a
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: project english a ea06(oral listening)
+Match found with short query in JA course name: プロジェクト英語Ａ ea06(oral listening)
+Match found with short query in EN course name: project english b eb03(listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb03(listening)
+Match found with short query in EN course name: project english c ec01(oral listening)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: society in japan and germany (german) /german contents
+Match found with short query in EN course name: region and culture (spanish-speaking world) /spanish contents
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: chinese basic 1 cb
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese basic 2 cb
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese basic 2 ca
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found with short query in EN course name: chinese basic 3
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found with short query in EN course name: malay-indonesian basic 1 a
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: malay-indonesian basic 2
+Match found with short query in EN course name: german intensive 1 ga
+Match found with short query in EN course name: german intensive 2 gb
+Match found with short query in EN course name: german intensive 2 ga
+Match found with short query in EN course name: german intensive 3 ga
+Match found with short query in EN course name: french intensive 1 fb
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: french intensive 2 fc
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: french intensive 4 fa
+Match found with short query in EN course name: chinese intensive 1 ca
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found with short query in EN course name: chinese intensive 2 ca
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=xiaoyin wang, JA=王　暁音
+Match found with short query in EN course name: chinese intensive 2 cc
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: chinese intensive 2 cb
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found with short query in EN course name: korean intensive 1 ka
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found with short query in EN course name: korean intensive 2 kb
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found with short query in EN course name: korean intensive 2 ka
+Match found in professor name: EN=minjung seo, JA=徐　旻廷
+Match found in professor name: EN=qin xu, JA=許　秦
+Match found with short query in EN course name: malay-indonesian intensive 1 ma
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: malay-indonesian intensive 2 ma
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found with short query in EN course name: spanish intensive 1
+Match found in professor name: EN=rokusana shintani, JA=高畠　理恵
+Match found with short query in EN course name: spanish intensive 2
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: spanish intensive 3
+Match found in professor name: EN=diego yonamine f, JA=与那嶺　ディエゴフェルナンド
+Match found with short query in EN course name: spanish intensive 4
+Match found in professor name: EN=rokusana shintani, JA=高畠　理恵
+Match found with short query in EN course name: arabic intensive 1 aa
+Match found with short query in EN course name: japanese intensive 3 a/japanese intensive 3
+Match found with short query in EN course name: japanese intensive - elementary 2 b/japanese intensive - elementary 2
+Match found with short query in EN course name: russian intensive 2
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=erika florentina a, JA=フロレンティナ，　エリカ　Ａ
+Match found in professor name: EN=diego yonamine f, JA=与那嶺　ディエゴフェルナンド
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in JA course name: プロジェクト英語Ａ (oral listening)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in JA course name: プロジェクト英語Ａ (oral listening)
+Match found with short query in EN course name: project english c (reading)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (reading)(giga/gg/gi)
+Match found with short query in EN course name: cultural studies (chinese) /chinese contents
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found in EN course name: introduction to statistics [ds1]
+Match found with short query in EN course name: linear algebra [ds1]
+Match found with short query in EN course name: linear algebra [ds1]
+Match found in EN course name: introduction to statistics [ds1]
+Match found with short query in EN course name: linear algebra [ds1](giga/gg/gi)
+Match found with short query in EN course name: linear algebra [ds1]
+Match found with short query in EN course name: linear algebra [ds1]
+Match found in professor name: EN=koichi kinoshita, JA=木下　倖一
+Match found with short query in EN course name: data science for international society [ds2]
+Match found in EN course name: data science for economics and finance [ds2]/introduction to time-series analysis
+Match found with short query in EN course name: data science for information and society [ds2]
+Match found with short query in EN course name: data science for business [ds2][2nd half of semester]
+Match found in professor name: EN=kazuki nishio, JA=西尾　和生
+Match found in professor name: EN=masashi nakatani, JA=仲谷　正史
+Match found in professor name: EN=masashi nakatani, JA=仲谷　正史
+Match found with short query in EN course name: fundamentals of information technology 1 (06)
+Match found with short query in EN course name: fundamentals of information technology 1 (19)
+Match found with short query in EN course name: fundamentals of information technology 1 (25)
+Match found with short query in EN course name: fundamentals of information technology 1 (04)
+Match found with short query in EN course name: fundamentals of information technology 1 (26)
+Match found with short query in EN course name: fundamentals of information technology 1 (13)
+Match found with short query in EN course name: fundamentals of information technology 1 (14)
+Match found with short query in EN course name: fundamentals of information technology 1 (24)
+Match found with short query in EN course name: fundamentals of information technology 1 (22)
+Match found with short query in EN course name: fundamentals of information technology 1 (10)
+Match found with short query in EN course name: fundamentals of information technology 1 (15)
+Match found with short query in EN course name: fundamentals of information technology 1 (18)
+Match found with short query in EN course name: fundamentals of information technology 1 (17)
+Match found with short query in EN course name: fundamentals of information technology 2 (hybrid)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found in professor name: EN=yui kakino, JA=柿野　優衣
+Match found with short query in EN course name: fundamentals of information technology 1 (13)
+Match found with short query in EN course name: fundamentals of information technology 1 (22)
+Match found with short query in EN course name: fundamentals of information technology 1 (23)
+Match found with short query in EN course name: fundamentals of information technology 1 (04)
+Match found with short query in EN course name: fundamentals of information technology 1 (15)
+Match found with short query in EN course name: fundamentals of information technology 1 (24)
+Match found with short query in EN course name: fundamentals of information technology 1 (25)
+Match found with short query in EN course name: fundamentals of information technology 1 (19)
+Match found with short query in EN course name: fundamentals of information technology 1 (26)
+Match found with short query in EN course name: fundamentals of information technology 1 (14)
+Match found with short query in EN course name: fundamentals of information technology 1 (18)
+Match found with short query in EN course name: fundamentals of information technology 1 (06)
+Match found with short query in EN course name: fundamentals of information technology 1 (10)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: workshops on sensing technologies [1st half of semester]
+Match found with short query in EN course name: workshop on designing learning environments [2nd half of semester]
+Match found with short query in EN course name: urbanism and architecture in history
+Match found with short query in EN course name: thinking with geospatial information (giga/gg/gi)
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in EN course name: introduction to novel fabrication (giga/gg/gi)
+Match found in EN course name: introduction to the internet
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester]
+Match found with short query in EN course name: academic writing
+Match found in professor name: EN=shinya yabe, JA=石谷　寧希
+Match found with short query in EN course name: programming methodologies (giga/gg/gi)
+Match found with short query in EN course name: bibliographic information retrieval
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found with short query in EN course name: mathematics for information science
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found in EN course name: interpersonal communication: introduction and practice
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in professor name: EN=yosuke arino, JA=有野　洋輔
+Match found in EN course name: introduction to the internet (giga/gg/gi)
+Match found with short query in EN course name: information visualization (giga/gg/gi)
+Match found with short query in EN course name: lifelong learning and community participation [1st half of semester]
+Match found in professor name: EN=atsushi shinjo, JA=神成　淳司
+Match found in EN course name: introduction to integrated health research [1st half of semester]
+Match found with short query in EN course name: japan in world history (giga/gg/gi)
+Match found with short query in EN course name: policy-making and media
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=katsuhiko meshino, JA=飯野　克彦
+Match found in professor name: EN=hiroshi minegishi, JA=峯岸　博
+Match found with short query in EN course name: urbanism and architecture in history
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in EN course name: introduction to novel fabrication
+Match found in EN course name: introduction to the internet
+Match found with short query in EN course name: marketing strategy [2nd half of semester]
+Match found with short query in EN course name: academic writing
+Match found in professor name: EN=koichi nagashima, JA=長島　光一
+Match found with short query in EN course name: internship in public organizations
+Match found with short query in EN course name: internship in social enterprises
+Match found with short query in EN course name: programming methodologies
+Match found with short query in EN course name: bibliographic information retrieval
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found with short query in EN course name: exploring creative society [2nd half of semester](giga/gg/gi)
+Match found with short query in EN course name: exploring creative society [1st half of semester]
+Match found in professor name: EN=yujun wakashin, JA=若新　雄純
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found with short query in EN course name: workshops on designing policy
+Match found with short query in EN course name: workshops on sensing technologies
+Match found with short query in EN course name: workshop on designing learning environments [1st half of semester]
+Match found with short query in EN course name: mutual interaction and intersubjectivity [2nd half of the semester]
+Match found with short query in EN course name: social innovation
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in professor name: EN=yosuke arino, JA=有野　洋輔
+Match found in EN course name: introduction to the internet (giga/gg/gi)
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester](giga/gg/gi)
+Match found in professor name: EN=ichiro innami, JA=印南　一路
+Match found with short query in EN course name: information visualization
+Match found with short query in EN course name: lifelong learning and community participation
+Match found with short query in EN course name: software engineering
+Match found in EN course name: introduction to database
+Match found with short query in EN course name: mathematics for information science (giga/gg/gi)
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found in EN course name: introduction to integrated health research [1st half of semester]
+Match found with short query in EN course name: policy-making and media
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=katsuhiko meshino, JA=飯野　克彦
+Match found in professor name: EN=hiroshi minegishi, JA=峯岸　博
+Match found with short query in EN course name: security policy in society(public order)
+Match found in professor name: EN=binwei chen, JA=陳　ビンウェイ
+Match found with short query in EN course name: policy making process
+Match found with short query in EN course name: seminar on economic theory
+Match found with short query in EN course name: international development
+Match found with short query in EN course name: international finance
+Match found in professor name: EN=michelin franck, JA=フランク，　ミシュラン
+Match found in professor name: EN=koichi nagashima, JA=長島　光一
+Match found with short query in EN course name: urban planning and machizukuri
+Match found with short query in EN course name: intellectual property system
+Match found with short query in EN course name: public finance
+Match found with short query in EN course name: local public finance
+Match found with short query in EN course name: international development (giga/gg)
+Match found in professor name: EN=navarro hundzinski, JA=ナヴァロ　フンジンスキ
+Match found with short query in EN course name: practicing analytical framework for policy design
+Match found in professor name: EN=ichiro innami, JA=印南　一路
+Match found with short query in EN course name: security policy in society(public order)
+Match found with short query in EN course name: governance and institutions(local government)
+Match found in professor name: EN=shugo shinohara, JA=篠原　舟吾
+Match found in professor name: EN=hasumi nishikawa, JA=西川　葉澄
+Match found with short query in EN course name: indonesian regional studies
+Match found in professor name: EN=shugo shinohara, JA=篠原　舟吾
+Match found with short query in EN course name: information technology and marketing [1st half of semester]
+Match found with short query in EN course name: intellectual property system (giga/gg)
+Match found with short query in EN course name: public finance
+Match found with short query in EN course name: local public finance
+Match found with short query in EN course name: international relations
+Match found with short query in EN course name: international finance (giga/gg)
+Match found with short query in EN course name: theory of environmentally sustainable planning [2nd half of semester]
+Match found with short query in EN course name: design studio(housing and environment)
+Match found with short query in EN course name: genetic engineering laboratory (ttck)
+Match found in professor name: EN=josephine galipon f, JA=ガリポン，　ジョゼフィーヌ　Ｆ
+Match found with short query in EN course name: system programming [2nd half of semester]
+Match found with short query in EN course name: human interface design
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found with short query in EN course name: information security management
+Match found with short query in EN course name: web information system design
+Match found with short query in EN course name: music and the brain
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=masashi nakatani, JA=仲谷　正史
+Match found with short query in EN course name: designing with information technology (giga/gi)
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in EN course name: introduction to sports science
+Match found with short query in EN course name: the epoch-making discoveries in cell biology (giga/gi)
+Match found with short query in EN course name: quantum information processing (giga/gi)
+Match found with short query in EN course name: info-communication security and privacy (giga/gi)
+Match found with short query in EN course name: ubiquitous information service
+Match found with short query in EN course name: programming languages
+Match found with short query in EN course name: substance and information [2nd half of semester]
+Match found with short query in EN course name: digital signal processing fundamentals (giga/gi)
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found with short query in EN course name: affective and behavioral computing (giga/gi)
+Match found with short query in EN course name: intelligence and life [1st half of semester]
+Match found with short query in EN course name: design studio(housing and environment)
+Match found in professor name: EN=yusuke shinohara, JA=篠原　裕介
+Match found with short query in EN course name: genetic engineering laboratory (ttck)
+Match found in professor name: EN=josephine galipon f, JA=ガリポン，　ジョゼフィーヌ　Ｆ
+Match found in professor name: EN=shine undarga dagva, JA=ダグワ　シン　ウンダルガ
+Match found with short query in EN course name: system programming [2nd half of semester](giga/gi)
+Match found with short query in EN course name: big data processing (giga/gi)
+Match found with short query in EN course name: human interface design (giga/gi)
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found with short query in EN course name: information security management
+Match found with short query in EN course name: web information system design
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found with short query in EN course name: music and the brain [2nd half of semester]
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found with short query in EN course name: theory of environmentally sustainable planning [1st half of semester]
+Match found in professor name: EN=yujun wakashin, JA=若新　雄純
+Match found with short query in EN course name: the epoch-making discoveries in cell biology
+Match found with short query in EN course name: functional programming
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found with short query in EN course name: quantum information processing
+Match found with short query in EN course name: info-communication security and privacy
+Match found with short query in EN course name: ubiquitous information service (giga/gi)
+Match found with short query in EN course name: programming languages (giga/gi)
+Match found with short query in EN course name: digital signal processing fundamentals
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=masashi nakatani, JA=仲谷　正史
+Match found with short query in EN course name: affective and behavioral computing
+Match found in professor name: EN=osamu minakawa, JA=皆川　治
+Match found with short query in EN course name: coaching in a leadership development
+Match found with short query in EN course name: fieldwork in japan a
+Match found with short query in EN course name: fieldwork in japan b
+Match found in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found with short query in EN course name: environmental issues in polar regions [1st half of semester](giga)
+Match found with short query in EN course name: culture, environment and technology of india (giga)
+Match found in EN course name: digital art -introduction and practice
+Match found with short query in EN course name: cross-disciplinary exploration of life and living
+Match found in professor name: EN=atsushi shinjo, JA=神成　淳司
+Match found in professor name: EN=hiroyuki nobutomo, JA=信朝　裕行
+Match found in professor name: EN=yoshinori isagai, JA=飯盛　義徳
+Match found with short query in EN course name: fieldwork in japan a
+Match found with short query in EN course name: fieldwork in japan b
+Match found in professor name: EN=isao shinohara, JA=篠原　勲
+Match found with short query in EN course name: data business creation a [1st half of semester]
+Match found with short query in EN course name: mechanical and materials engineering
+Match found with short query in EN course name: information security d
+Match found in professor name: EN=atsuo inomata, JA=猪俣　敦夫
+Match found with short query in EN course name: data business creation b [2nd half of semester]
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found with short query in EN course name: stress management in daily life (giga)
+Match found with short query in EN course name: advanced exercise in cyber security operations
+Match found with short query in EN course name: basic exercise in protecting information systems against security threats
+Match found with short query in EN course name: advanced exercise in incident handling
+Match found with short query in EN course name: advanced security workshop in smartphone security
+Match found in professor name: EN=shinya sakuma, JA=佐久間　信哉
+Match found with short query in EN course name: cross-sectoral policy making
+Match found in professor name: EN=yujun wakashin, JA=若新　雄純
+Match found in professor name: EN=atsushi shinjo, JA=神成　淳司
+Match found in professor name: EN=shinnosuke nakamura, JA=中村　慎之祐
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found with short query in EN course name: practical exercises of regional industry-government-academia collaboration <constructing "living" from agriculture>
+Match found in EN course name: introduction to keio gijuku, its history, people and tradition
+Match found with short query in EN course name: chinese basic 2
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=mengke xin, JA=辛　孟軻
+Match found with short query in EN course name: malay-indonesian basic 2
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: english intensive 1 ed
+Match found with short query in EN course name: english intensive 1 ec
+Match found with short query in EN course name: english intensive 1 eb
+Match found with short query in EN course name: english intensive 1 ea
+Match found with short query in EN course name: german intensive 1 gc
+Match found with short query in EN course name: german intensive 1 ga
+Match found with short query in EN course name: french intensive 1 fa
+Match found with short query in EN course name: french intensive 2 fa
+Match found with short query in EN course name: french intensive 3 fa
+Match found in professor name: EN=vincent durrenberger, JA=デュレンベルジェ，　ヴァンサン
+Match found with short query in EN course name: french intensive 4 fa
+Match found in professor name: EN=vincent durrenberger, JA=デュレンベルジェ，　ヴァンサン
+Match found with short query in EN course name: chinese intensive 1 cb
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: chinese intensive 3 ca
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found with short query in EN course name: chinese intensive 4 ca
+Match found with short query in EN course name: spanish intensive 1
+Match found in professor name: EN=rokusana shintani, JA=高畠　理恵
+Match found in professor name: EN=diego yonamine f, JA=新谷　ロクサナ
+Match found with short query in EN course name: arabic intensive 2
+Match found with short query in EN course name: japanese intensive - elementary 2 a/japanese intensive - elementary 2
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found with short query in EN course name: project english a ea03(reading/discussion)
+Match found with short query in JA course name: プロジェクト英語Ａ ea03(reading/discussion)
+Match found with short query in EN course name: project english a ea02(writing)
+Match found with short query in JA course name: プロジェクト英語Ａ ea02(writing)
+Match found with short query in EN course name: project english a ea07(listening)
+Match found with short query in JA course name: プロジェクト英語Ａ ea07(listening)
+Match found with short query in EN course name: project english a ea01(writing)
+Match found with short query in JA course name: プロジェクト英語Ａ ea01(writing)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english a ea03(listening)
+Match found with short query in JA course name: プロジェクト英語Ａ ea03(listening)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb01(oral listening)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english b eb04(listening + writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb04(listening + writing)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english b eb01(critical thinking)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb01(critical thinking)
+Match found with short query in EN course name: project english b eb07(writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb07(writing)
+Match found with short query in EN course name: project english b eb05(writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb05(writing)
+Match found with short query in EN course name: project english b eb02(oral listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(oral listening)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english c ec07(oral listening)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec07(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c (speaking)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (speaking)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec05(reading)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec05(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(listening)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec08(reading)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec08(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c (creative writing)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (creative writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec08(writing)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec08(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec06(indie rock)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec06(indie rock)(giga/gg/gi)
+Match found with short query in EN course name: language education practice (chinese) /chinese contents
+Match found with short query in EN course name: chinese study abroad b
+Match found with short query in EN course name: malay-indonesian study abroad b
+Match found with short query in EN course name: chinese basic 1 ca
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=junichi nitta, JA=新田　順一
+Match found with short query in EN course name: french intensive 1 fa
+Match found in professor name: EN=kazumi nakao, JA=中尾　和美
+Match found with short query in EN course name: french intensive 2 fb
+Match found with short query in EN course name: french intensive 2 fa
+Match found in professor name: EN=vincent durrenberger, JA=デュレンベルジェ，　ヴァンサン
+Match found with short query in EN course name: french intensive 3 fa
+Match found in professor name: EN=vincent durrenberger, JA=デュレンベルジェ，　ヴァンサン
+Match found with short query in EN course name: spanish intensive 2
+Match found in professor name: EN=rokusana shintani, JA=高畠　理恵
+Match found with short query in EN course name: arabic intensive 2
+Match found with short query in EN course name: japanese intensive 1 a/japanese intensive 1
+Match found with short query in EN course name: japanese intensive 2 b
+Match found with short query in EN course name: japanese intensive - elementary 1 a/japanese intensive - elementary 1
+Match found in professor name: EN=kazumi nakao, JA=中尾　和美
+Match found in professor name: EN=huiqin wang, JA=王　慧琴
+Match found in professor name: EN=bing han, JA=韓　氷
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in JA course name: プロジェクト英語Ａ (oral listening)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in JA course name: プロジェクト英語Ａ (reading)
+Match found with short query in EN course name: project english a ea03(writing)
+Match found with short query in JA course name: プロジェクト英語Ａ ea03(writing)
+Match found with short query in EN course name: project english a (listening)
+Match found with short query in JA course name: プロジェクト英語Ａ (listening)
+Match found with short query in EN course name: project english a ea02(reading/discussion)
+Match found with short query in JA course name: プロジェクト英語Ａ ea02(reading/discussion)
+Match found with short query in EN course name: project english a (writing)
+Match found with short query in JA course name: プロジェクト英語Ａ (writing)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english a ea01(listening)
+Match found with short query in JA course name: プロジェクト英語Ａ ea01(listening)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in JA course name: プロジェクト英語Ａ (oral listening)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ (writing)
+Match found with short query in EN course name: project english b (reading)
+Match found with short query in JA course name: プロジェクト英語Ｂ (reading)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ (listening)
+Match found with short query in EN course name: project english b eb02(critical thinking)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(critical thinking)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ (listening)
+Match found with short query in EN course name: project english b eb01(writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb01(writing)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ (oral listening)
+Match found with short query in EN course name: project english b (listening + writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ (listening + writing)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english b eb02(writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(writing)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in JA course name: プロジェクト英語Ｂ (writing)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in JA course name: プロジェクト英語Ｂ (listening)
+Match found with short query in EN course name: project english c ec03(writing)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec03(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c (oral listening)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (oral listening)(giga/gg/gi)
+Match found in professor name: EN=tim hemington, JA=へミングトン，　ティム
+Match found with short query in EN course name: project english c (writing)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c (listening)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(writing)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(writing)(giga/gg/gi)
+Match found with short query in EN course name: society in japan and germany (german) /german contents
+Match found with short query in EN course name: spanish contents /region and culture (spanish-speaking world)
+Match found in professor name: EN=rokusana shintani, JA=新谷　ロクサナ
+Match found with short query in EN course name: practical academic writing (giga/gg/gi)/english contents
+Match found with short query in EN course name: malay-indonesian study abroad b
+Match found in EN course name: introduction to statistics [ds1]
+Match found in EN course name: introduction to statistics [ds1](giga/gg/gi)
+Match found in professor name: EN=takayuki hoshino, JA=星野　貴行
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found with short query in EN course name: linear algebra [ds1]
+Match found in EN course name: introduction to statistics [ds1](giga/gg/gi)
+Match found in EN course name: introduction to statistics [ds1]
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found with short query in EN course name: linear algebra [ds1]
+Match found in professor name: EN=takayuki hoshino, JA=星野　貴行
+Match found with short query in EN course name: linear algebra [ds1](giga/gg/gi)
+Match found with short query in EN course name: linear algebra [ds1]
+Match found in professor name: EN=tatsuya hagino, JA=萩野　達也
+Match found in professor name: EN=naoto yoshinaga, JA=吉永　直人
+Match found with short query in EN course name: data science for bioinformatics [ds2](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found with short query in EN course name: data science for bioinformatics [ds2]
+Match found with short query in EN course name: mathematics in earth and planetary sciences [ds２]
+Match found in professor name: EN=masaru inatsu, JA=稲津　將
+Match found with short query in EN course name: information theory [ds2]
+Match found with short query in EN course name: fundamentals of information technology 1 (11)
+Match found with short query in EN course name: fundamentals of information technology 1 (09)
+Match found with short query in EN course name: fundamentals of information technology 1 (20)
+Match found with short query in EN course name: fundamentals of information technology 1 (03)
+Match found with short query in EN course name: fundamentals of information technology 1 (01)
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found with short query in EN course name: fundamentals of information technology 1 (16)
+Match found with short query in EN course name: fundamentals of information technology 1 (07)
+Match found with short query in EN course name: fundamentals of information technology 1 (05)
+Match found with short query in EN course name: fundamentals of information technology 1 (08)
+Match found with short query in EN course name: fundamentals of information technology 1 (12)
+Match found with short query in EN course name: fundamentals of information technology 1 (21)
+Match found with short query in EN course name: fundamentals of information technology 1 (02)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found in professor name: EN=toshinori saito, JA=斎藤　俊則
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found with short query in EN course name: fundamentals of information technology 2 (giga/gg/gi)
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found in professor name: EN=yui kakino, JA=柿野　優衣
+Match found with short query in EN course name: fundamentals of system programming
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of object-oriented programming
+Match found in professor name: EN=tatsuo minohara, JA=箕原　辰夫
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found in professor name: EN=tatsuo minohara, JA=箕原　辰夫
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of information technology 1 (28)(giga/gg/gi)
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of information technology 1 (27)
+Match found in professor name: EN=toshinori saito, JA=斎藤　俊則
+Match found with short query in EN course name: fundamentals of information technology 1 (29)(giga/gg/gi)
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2 (hybrid)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of system programming (giga/gg/gi)
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found in professor name: EN=atsushi shinjo, JA=神成　淳司
+Match found with short query in EN course name: workshops on new business creation
+Match found in professor name: EN=yoshinori isagai, JA=飯盛　義徳
+Match found with short query in EN course name: workshops on designing policy (giga/gg/gi)
+Match found with short query in EN course name: multilingual communication practice
+Match found in EN course name: interpersonal communication: introduction and practice
+Match found in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: legal mind
+Match found with short query in EN course name: sports business
+Match found with short query in EN course name: social business planning [2nd half of semester]
+Match found in professor name: EN=tomomi nagumo, JA=南雲　朋美
+Match found with short query in EN course name: analyzing of financial statement
+Match found with short query in EN course name: development of decision-making abilities
+Match found in professor name: EN=ichiro innami, JA=印南　一路
+Match found in professor name: EN=atsushi shinjo, JA=神成　淳司
+Match found in professor name: EN=koichi nagashima, JA=長島　光一
+Match found in EN course name: introduction to brain and behavior
+Match found in EN course name: introduction to sensory physiology and psychology [2nd half of the semester]
+Match found with short query in EN course name: workshops on legal thinking
+Match found with short query in EN course name: workshops on legal thinking [2nd half of semester](giga/gg/gi)
+Match found in professor name: EN=catharina maracke, JA=マラケ，　カタリナ
+Match found with short query in EN course name: writing skills workshop
+Match found in professor name: EN=toshinori saito, JA=斎藤　俊則
+Match found with short query in EN course name: writing skills workshop
+Match found in professor name: EN=tatsuya inoue, JA=井之上　達矢
+Match found with short query in EN course name: writing skills workshop
+Match found with short query in EN course name: writing skills workshop on science
+Match found with short query in EN course name: writing skills workshop on science
+Match found in EN course name: network communication: introduction and practice
+Match found in EN course name: network communication: introduction and practice
+Match found in professor name: EN=minori tanaka, JA=田中　美乃里
+Match found with short query in EN course name: management of emerging businesses [1st half of semester](giga/gg/gi)/management of emerging businesses [1st half of semester]
+Match found with short query in EN course name: management of emerging businesses [2nd half of semester]
+Match found in professor name: EN=ichiro innami, JA=印南　一路
+Match found with short query in EN course name: legal writing (giga/gg/gi)
+Match found with short query in EN course name: basic information design
+Match found in EN course name: introduction to data acquisition
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shugo shinohara, JA=篠原　舟吾
+Match found with short query in EN course name: cognitive learning
+Match found with short query in EN course name: artificial intelligence
+Match found with short query in EN course name: mapping image design [1st half of semester]
+Match found in EN course name: introduction to the islamic world
+Match found in EN course name: introduction to bioinformatics (ttck)
+Match found in professor name: EN=shinichi ueyama, JA=上山　信一
+Match found with short query in EN course name: institutional design for risk society [2nd half of semester](giga/gg)
+Match found with short query in EN course name: urban planning and machizukuri (giga/gg)
+Match found with short query in EN course name: social marketing [1st half of semester]
+Match found with short query in EN course name: community investment [2nd half of semester]
+Match found with short query in EN course name: network industries [2nd half of semester]
+Match found with short query in EN course name: network industries [1st half of semester](giga/gg)/network industries [1st half of semester]
+Match found with short query in EN course name: administrative law
+Match found with short query in EN course name: financial analysis
+Match found with short query in EN course name: seminar: civil law
+Match found with short query in EN course name: risk and insurance
+Match found with short query in EN course name: international security and conflict studies [2nd half of semester]
+Match found with short query in EN course name: international environment (giga/gg)
+Match found with short query in EN course name: international law [1st half of semester]
+Match found with short query in EN course name: applied clinical psychology
+Match found with short query in EN course name: civil code(family and inheritance)
+Match found with short query in EN course name: policy management(human security and international development) (giga/gg)/policy management(human security and international development)
+Match found with short query in EN course name: geography of planning practice (giga/gg)/geography of planning practice
+Match found with short query in EN course name: community-based planning and community renovation
+Match found in professor name: EN=yoshinori isagai, JA=飯盛　義徳
+Match found with short query in EN course name: governance and institutions(local government) (giga/gg)
+Match found in professor name: EN=shugo shinohara, JA=篠原　舟吾
+Match found with short query in EN course name: criminal law
+Match found with short query in EN course name: information law (giga/gg)
+Match found with short query in EN course name: financial analysis (giga/gg)
+Match found with short query in EN course name: seminar: administrative law
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found with short query in EN course name: finance theory [1st half of semester]
+Match found with short query in EN course name: international finance
+Match found with short query in EN course name: international enterprises [1st half of semester]
+Match found with short query in EN course name: international communication
+Match found in professor name: EN=mirin kim, JA=金　美林
+Match found with short query in EN course name: indonesian cultural studies
+Match found with short query in EN course name: multinational management [1st half of semester](giga/gg)
+Match found with short query in EN course name: reinvention and innovation of the social system and organization
+Match found in professor name: EN=shinichi ueyama, JA=上山　信一
+Match found with short query in EN course name: policy practices related to diffusion of information and communications technologies
+Match found in EN course name: introduction to second language learning and teaching (giga/gg)/introduction to second language learning and teaching
+Match found with short query in EN course name: management innovation in it business [1st half of semester](giga/gg)/management innovation in it business [1st half of semester]
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found with short query in EN course name: protection of living environment (giga/gi)
+Match found with short query in EN course name: field methods in ecology [1st half of semester]
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found with short query in EN course name: outline of earth environment
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in professor name: EN=yuko toukairin, JA=東海林　祐子
+Match found in EN course name: introduction to sports science [1st half of semester](giga/gi)
+Match found with short query in EN course name: neural information science
+Match found with short query in EN course name: introductory biochemistry (ttck)[2nd half of semester]
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=rintaro saito, JA=齋藤　輪太郎
+Match found with short query in EN course name: programming on mobile devices
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: operating systems [1st half of semester]
+Match found with short query in EN course name: operating systems [1st half of semester](giga/gi)
+Match found with short query in EN course name: information ethics
+Match found with short query in EN course name: forest science and engineering (from supply side) (giga/gi)
+Match found with short query in EN course name: forest science and engineering (from demand side)
+Match found in professor name: EN=yosuke arino, JA=有野　洋輔
+Match found with short query in EN course name: theory of environment sensing technology
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found in professor name: EN=tomohiro ichinose, JA=一ノ瀬　友博
+Match found with short query in EN course name: building construction methods
+Match found with short query in EN course name: evolution of life and intelligence
+Match found with short query in EN course name: sports engineering
+Match found with short query in EN course name: issues in cognitive linguistics
+Match found in professor name: EN=rintaro saito, JA=齋藤　輪太郎
+Match found with short query in EN course name: heuristic computing
+Match found with short query in EN course name: design programming
+Match found in professor name: EN=wanglin yan, JA=厳　網林
+Match found with short query in EN course name: design and operation of the internet [2nd half of semester]
+Match found with short query in EN course name: knowledge processing and discovery
+Match found with short query in EN course name: information security management
+Match found with short query in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: geometric modeling and computer graphics
+Match found with short query in EN course name: human computer interaction /design strategy (spatial information systems and architecture)
+Match found with short query in EN course name: music and the brain (giga/gi)
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found in professor name: EN=ryuichiro higashinaka, JA=東中　竜一郎
+Match found with short query in EN course name: quantum internet (giga/gi)
+Found 67 matching professors
+Found 537 matching courses
+Displayed search results page
+
+Search started at 2025-03-07 13:26:19
+Direct access with query: jin
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ji' for more lenient matching
+Search query: 'jin', Normalized: 'jin'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-07 13:26:21
+Direct access with query: jin
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ji' for more lenient matching
+Search query: 'jin', Normalized: 'jin'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-07 13:26:32
+Direct access with query: 田中
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Search query: '田中', Normalized: '田中'
+Searching through 1197 courses
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Match found in professor name: EN=takashi tanaka, JA=田中　孝史
+Match found in professor name: EN=takashi tanaka, JA=田中　孝史
+Match found in professor name: EN=takashi tanaka, JA=田中　孝史
+Match found in professor name: EN=takashi tanaka, JA=田中　孝史
+Match found in professor name: EN=takashi tanaka, JA=田中　孝史
+Match found in professor name: EN=takashi tanaka, JA=田中　孝史
+Match found in professor name: EN=akito tanaka, JA=田中　暁人
+Match found in professor name: EN=koichiro tanaka, JA=田中　浩一郎
+Match found in professor name: EN=akito tanaka, JA=田中　暁人
+Match found in professor name: EN=koichiro tanaka, JA=田中　浩一郎
+Match found in professor name: EN=koichiro tanaka, JA=田中　浩一郎
+Match found in professor name: EN=田中　浩也, JA=田中　浩也
+Match found in professor name: EN=田中　浩也, JA=田中　浩也
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Match found in professor name: EN=minori tanaka, JA=田中　美乃里
+Match found in professor name: EN=koichiro tanaka, JA=田中　浩一郎
+Match found in professor name: EN=masatoshi tanaka, JA=田中　雅敏
+Match found in professor name: EN= , JA=田中　佑季
+Match found in professor name: EN=koichiro tanaka, JA=田中　浩一郎
+Match found in professor name: EN=koichiro tanaka, JA=田中　浩一郎
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Match found in professor name: EN=hiroya tanaka, JA=田中　浩也
+Found 8 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-07 13:26:41
+Direct access with query: jin
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ji' for more lenient matching
+Search query: 'jin', Normalized: 'jin'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-07 13:26:42
+Direct access with query: jin
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ji' for more lenient matching
+Search query: 'jin', Normalized: 'jin'
+Searching through 1197 courses
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=hitoshi nakajima, JA=中島　仁
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=hajime onga, JA=恩賀　一
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=akio fujii, JA=藤井　彰夫
+Match found in professor name: EN=katsuji nakazawa, JA=中澤　克二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=kenji ogasawara, JA=小笠原　健二
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=koji matsui, JA=松井　孝治
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Match found in professor name: EN=yuji sekiya, JA=関谷　勇司
+Match found in professor name: EN=megumu tsujimoto, JA=辻本　惠
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=fujiko ogasawara, JA=小笠原　藤子
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=jinling hua, JA=華　金玲
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=jin mitsugi, JA=三次　仁
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=yukiko miyaji, JA=宮地　夕紀子
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=masaki umejima, JA=梅嶋　真樹
+Match found in professor name: EN=kasumi yajima, JA=矢島　佳澄
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found in professor name: EN=jin nakazawa, JA=中澤　仁
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=takuji hiroishi, JA=広石　拓司
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=eiji oguma, JA=小熊　英二
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=hirokuni iijima, JA=飯島　大邦
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=ken jimbo, JA=神保　謙
+Match found in professor name: EN=eiichi tajima, JA=田島　英一
+Match found in professor name: EN=jiro kokuryo, JA=國領　二郎
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hajime ishikawa, JA=石川　初
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=rajib shaw, JA=ショウ，　ラジブ
+Match found in professor name: EN=shojiro kitajima, JA=北島　正二朗
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=yuji ohgi, JA=仰木　裕嗣
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=shinya fujii, JA=藤井　進也
+Found 35 matching professors
+Found 0 matching courses
+Displayed search results page
+
