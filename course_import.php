@@ -9,35 +9,10 @@
 
 // Include database configuration
 require_once 'config.php';
-$db = new SQLite3(__DIR__ . '/database/ratemyteacher.db');
-if (!is_dir('database')) {
-    mkdir('database', 0755, true);
-}
+
 // Check if database connection is working
 try {
     // Create a new SQLite3 database connection
-    $db = new SQLite3(__DIR__ . '/database/ratemyteacher.db');
-    $dbDir = __DIR__ . '/database';
-
-// Check if directory exists and is writable
-if (is_dir($dbDir)) {
-    if (!is_writable($dbDir)) {
-        die("Database directory exists but is not writable: $dbDir\n");
-    }
-} else {
-    // Try to create directory
-    if (!mkdir($dbDir, 0755, true)) {
-        die("Failed to create database directory: $dbDir\n");
-    }
-    echo "Created database directory.\n";
-}
-
-$dbPath = $dbDir . '/ratemyteacher.db';
-
-// Check if database file exists and is writable
-if (file_exists($dbPath) && !is_writable($dbPath)) {
-    die("Database file exists but is not writable: $dbPath\n");
-}
     $db = new SQLite3('database/ratemyteacher.db');
     
     // Enable foreign keys
@@ -288,16 +263,6 @@ try {
     echo "Error during import: " . $e->getMessage() . "\n";
 }
 
-    try {
-        $db->exec("ALTER TABLE professors ADD COLUMN avg_content_quality REAL DEFAULT 0");
-        $db->exec("ALTER TABLE professors ADD COLUMN avg_difficulty REAL DEFAULT 0");
-        $db->exec("ALTER TABLE professors ADD COLUMN overall_rating REAL DEFAULT 0");
-        $db->exec("ALTER TABLE professors ADD COLUMN review_count INTEGER DEFAULT 0");
-        $hasRatingColumns = true;
-    } catch (Exception $e) {
-        echo "Note: Could not add rating columns to professors table. " . $e->getMessage() . "<br>";
-    }
-    
 // Now, update the search functionality to use the actual database
 echo "Updating search functionality to use the real database...\n";
 echo "Created search example at $searchExampleFile\n";
