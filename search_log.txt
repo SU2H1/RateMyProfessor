@@ -9972,3 +9972,7 @@ Found 35 matching professors
 Found 0 matching courses
 Displayed search results page
 
+Search started at 2025-03-09 15:49:45
+Direct access without parameters
+
+Search started at 2025-03-09 15:49:55
