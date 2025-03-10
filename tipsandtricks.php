@@ -200,6 +200,8 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
+    crossorigin="anonymous"></script>
     <title><?php echo $t['title']; ?></title>
     <style>
         body {
