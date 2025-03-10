@@ -1678,59 +1678,59 @@ elseif (!isset($_COOKIE['language'])) {
         // Also update language variables when page loads
         document.addEventListener('DOMContentLoaded', updateLanguageVariables);
 
-// Enhanced performSearch function with improved loading indicator and language support
-function performSearch(searchTerm) {
-    // Don't search for very short terms
-    if (searchTerm.length < 2) {
-        document.getElementById('searchResults').style.display = 'none';
-        return;
-    }
-    
-    // Get references to DOM elements
-    const searchResultsDiv = document.getElementById('searchResults');
-    
-    // Get current language from cookie
-    const currentLang = document.cookie.split('; ')
-        .find(row => row.startsWith('language='))
-        ?.split('=')[1] || 'en';
-    
-    // Get loading text based on language
-    const loadingText = currentLang === 'ja' ? '検索中...' : 'Searching...';
-    
-    // Clear previous results and show loading indicator
-    searchResultsDiv.innerHTML = `<div class="loading-container"><div class="search-loading"></div><span>${loadingText}</span></div>`;
-    searchResultsDiv.style.display = 'block';
-    
-    console.log(`Making search request for: "${searchTerm}" with language: ${currentLang}`);
-    
-    // Make an AJAX request to search the database, passing the language parameter
-    fetch(`search_api.php?q=${encodeURIComponent(searchTerm)}&lang=${currentLang}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json().catch(err => {
-                throw new Error('Failed to parse response as JSON');
+    // Enhanced performSearch function with language support
+    function performSearch(searchTerm) {
+        // Don't search for very short terms
+        if (searchTerm.length < 2) {
+            document.getElementById('searchResults').style.display = 'none';
+            return;
+        }
+        
+        // Get references to DOM elements
+        const searchResultsDiv = document.getElementById('searchResults');
+        
+        // Get current language from cookie
+        const currentLang = document.cookie.split('; ')
+            .find(row => row.startsWith('language='))
+            ?.split('=')[1] || 'en';
+        
+        // Get loading text based on language
+        const loadingText = currentLang === 'ja' ? '検索中...' : 'Searching...';
+        
+        // Clear previous results and show loading indicator
+        searchResultsDiv.innerHTML = `<div class="loading-container"><div class="search-loading"></div><span>${loadingText}</span></div>`;
+        searchResultsDiv.style.display = 'block';
+        
+        console.log(`Making search request for: "${searchTerm}" with language: ${currentLang}`);
+        
+        // Make an AJAX request to search the database with the language parameter
+        fetch(`search_api.php?q=${encodeURIComponent(searchTerm)}&lang=${currentLang}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json().catch(err => {
+                    throw new Error('Failed to parse response as JSON');
+                });
+            })
+            .then(data => {
+                // Only update if the search input still contains the search term
+                // This prevents outdated results from showing for a previous search
+                const currentSearchTerm = document.querySelector('#searchInput').value.trim();
+                if (currentSearchTerm === searchTerm) {
+                    displaySearchResults(data, searchTerm);
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                const errorText = currentLang === 'ja' 
+                    ? `検索エラー: ${error.message}。後でもう一度お試しください。` 
+                    : `Error performing search: ${error.message}. Please try again later.`;
+                searchResultsDiv.innerHTML = `<div class="error">${errorText}</div>`;
             });
-        })
-        .then(data => {
-            // Only update if the search input still contains the search term
-            // This prevents outdated results from showing for a previous search
-            const currentSearchTerm = document.querySelector('#searchInput').value.trim();
-            if (currentSearchTerm === searchTerm) {
-                displaySearchResults(data, searchTerm);
-            }
-        })
-        .catch(error => {
-            console.error('Search error:', error);
-            const errorMsg = currentLang === 'ja' 
-                ? `検索エラー: ${error.message}。後でもう一度お試しください。` 
-                : `Error performing search: ${error.message}. Please try again later.`;
-            searchResultsDiv.innerHTML = `<div class="error">${errorMsg}</div>`;
-        });
-}
+    }
 
-    // Set up live search functionality with language support
+    // Set up live search functionality with Japanese character support
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.querySelector('#searchInput');
         const searchButton = document.querySelector('#searchButton');
@@ -1747,6 +1747,16 @@ function performSearch(searchTerm) {
                 : 'Search for professors or courses...';
             
             searchButton.textContent = currentLang === 'ja' ? '検索' : 'Search';
+        }
+        
+        // Configure meta tag to ensure proper UTF-8 encoding
+        const metaCharset = document.querySelector('meta[charset]');
+        if (metaCharset) {
+            metaCharset.setAttribute('charset', 'UTF-8');
+        } else {
+            const meta = document.createElement('meta');
+            meta.setAttribute('charset', 'UTF-8');
+            document.head.appendChild(meta);
         }
         
         // Call once when page loads
@@ -1773,14 +1783,20 @@ function performSearch(searchTerm) {
             };
         }
         
-        // Configure live search with debounce (300ms delay)
+        // Configure live search with debounce
+        // Use a shorter delay for Japanese input (200ms)
         const debouncedSearch = debounce(function(searchTerm) {
-            if (searchTerm.length >= 2) {
-                performSearch(searchTerm);
+            if (searchTerm.length >= 1) {
+                // Always search for Japanese characters, even if only 1 character
+                const hasJapaneseChars = /[\u3000-\u303F]|[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]/u.test(searchTerm);
+                
+                if (hasJapaneseChars || searchTerm.length >= 2) {
+                    performSearch(searchTerm);
+                }
             } else {
                 searchResultsDiv.style.display = 'none';
             }
-        }, 300);
+        }, 200);
         
         // Listen for input events (typing)
         searchInput.addEventListener('input', function() {
@@ -1793,19 +1809,35 @@ function performSearch(searchTerm) {
             }
         });
         
+        // Listen for composition events (for IME input methods like Japanese)
+        let isComposing = false;
+        
+        searchInput.addEventListener('compositionstart', function() {
+            isComposing = true;
+        });
+        
+        searchInput.addEventListener('compositionend', function() {
+            isComposing = false;
+            // Trigger search after composition ends
+            const searchTerm = this.value.trim();
+            debouncedSearch(searchTerm);
+        });
+        
         // Maintain the search button functionality
         searchButton.addEventListener('click', function() {
-            const searchTerm = searchInput.value.trim();
-            if (searchTerm.length >= 2) {
-                performSearch(searchTerm);
+            if (!isComposing) {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm.length >= 1) {
+                    performSearch(searchTerm);
+                }
             }
         });
         
         // Allow search on Enter key press
         searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !isComposing) {
                 const searchTerm = this.value.trim();
-                if (searchTerm.length >= 2) {
+                if (searchTerm.length >= 1) {
                     performSearch(searchTerm);
                 }
             }
