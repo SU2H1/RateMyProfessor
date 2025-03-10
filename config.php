@@ -134,7 +134,11 @@ function initDatabase() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         department TEXT,
-        bio TEXT
+        bio TEXT,
+        avg_content_quality REAL DEFAULT 0,
+        avg_difficulty REAL DEFAULT 0,
+        overall_rating REAL DEFAULT 0,
+        review_count INTEGER DEFAULT 0
     )');
     
     // Courses table
@@ -145,10 +149,15 @@ function initDatabase() {
         course_code TEXT,
         description TEXT,
         professor_id INTEGER,
+        semester TEXT,
+        avg_content_quality REAL DEFAULT 0,
+        avg_difficulty REAL DEFAULT 0,
+        overall_rating REAL DEFAULT 0,
+        review_count INTEGER DEFAULT 0,
         FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE SET NULL
     )');
     
-    // Ratings table
+    // Ratings table with all fields from submit_rating.php
     $conn->exec('
     CREATE TABLE IF NOT EXISTS ratings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -156,6 +165,13 @@ function initDatabase() {
         professor_id INTEGER NOT NULL,
         course_id INTEGER NOT NULL,
         rating REAL NOT NULL,
+        content_rating INTEGER,
+        difficulty_rating INTEGER,
+        grade TEXT,
+        textbook TEXT,
+        attendance_check TEXT,
+        first_half TEXT,
+        second_half TEXT,
         comment TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
