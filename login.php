@@ -109,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         } else {
                             // Redirect user to home page
                             error_log("Redirecting to home page");
-                            header("Location: home2.php");
+                            header("Location: home.php");
                         }
                         exit();
                     } else {

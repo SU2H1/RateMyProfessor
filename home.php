@@ -306,6 +306,21 @@ error_log("Current language from cookie: " . $currentLang);
 $topProfessors = getTopProfessors(5);
 $topCourses = getTopCourses(5);
 
+// Store original English names before translation
+foreach ($topProfessors as &$professor) {
+    // Save the original English professor name
+    $professor['english_name'] = $professor['name'] ?? '';
+}
+
+foreach ($topCourses as &$course) {
+    // Save the original English course name
+    $course['english_course_name'] = $course['course_name'] ?? $course['name'] ?? '';
+    // Save the original English professor name if available
+    if (isset($course['professor_name'])) {
+        $course['english_professor_name'] = $course['professor_name'];
+    }
+}
+
 // If language is Japanese, try to convert names to Japanese if available
 if ($currentLang == 'ja') {
     // Add Japanese names from JSON data if available
@@ -984,7 +999,7 @@ elseif (!isset($_COOKIE['language'])) {
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
                     <?php foreach ($topProfessors as $professor): ?>
-                    <a href="professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '',$professor['name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '', $professor['english_name'])); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
@@ -1013,8 +1028,10 @@ elseif (!isset($_COOKIE['language'])) {
             <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
                 <div class="course-list">
+
+
                     <?php foreach ($topCourses as $course): ?>
-                    <a href="course.php?course=<?php echo urlencode($course['course_name'] ?? $course['name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
@@ -1037,6 +1054,9 @@ elseif (!isset($_COOKIE['language'])) {
                         </div>
                     </a>
                     <?php endforeach; ?>
+
+
+                    
                 </div>
             </div>
         </main>
