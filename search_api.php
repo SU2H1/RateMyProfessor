@@ -4,6 +4,12 @@ require_once 'config.php';
 
 // Get search query from GET parameter
 $searchQuery = isset($_GET['q']) ? trim($_GET['q']) : '';
+$language = isset($_GET['lang']) ? trim($_GET['lang']) : 'en';
+
+// Use cookie language if not specified in query
+if (!isset($_GET['lang']) && isset($_COOKIE['language'])) {
+    $language = $_COOKIE['language'];
+}
 
 // Initialize results array
 $results = [
@@ -75,8 +81,85 @@ if (!empty($searchQuery)) {
             
             $results['courses'][] = $row;
         }
+        
+        // If language is Japanese, try to translate names
+        if ($language === 'ja') {
+            translateResults($results);
+        }
     } catch (Exception $e) {
         $results['error'] = "Error performing search: " . $e->getMessage();
+    }
+}
+
+// Function to translate results if needed
+function translateResults(&$results) {
+    $jsonFilePath = __DIR__ . '/sfc_courses.json';
+    if (!file_exists($jsonFilePath)) {
+        return;
+    }
+    
+    $jsonData = file_get_contents($jsonFilePath);
+    if ($jsonData === false) {
+        return;
+    }
+    
+    $data = json_decode($jsonData, true);
+    if ($data === null) {
+        return;
+    }
+    
+    // Create mapping of professor names to Japanese versions
+    $professorJa = [];
+    $courseJa = [];
+    $departmentJa = [];
+    
+    foreach ($data['courses'] as $course) {
+        // Map course name
+        if (isset($course['translations']['ja']['name']) && isset($course['translations']['en']['name'])) {
+            $enName = $course['translations']['en']['name'];
+            $jaName = $course['translations']['ja']['name'];
+            $courseJa[$enName] = $jaName;
+        }
+        
+        // Map professor names
+        foreach ($course['professors'] as $prof) {
+            if (isset($prof['name']['en']) && isset($prof['name']['ja'])) {
+                $enName = $prof['name']['en'];
+                $jaName = $prof['name']['ja'];
+                $professorJa[$enName] = $jaName;
+            }
+        }
+        
+        // Map department names if available
+        if (isset($course['department']['translations'])) {
+            if (isset($course['department']['translations']['en']) && isset($course['department']['translations']['ja'])) {
+                $enDept = $course['department']['translations']['en'];
+                $jaDept = $course['department']['translations']['ja'];
+                $departmentJa[$enDept] = $jaDept;
+            }
+        }
+    }
+    
+    // Update professor names and departments to Japanese
+    foreach ($results['professors'] as &$professor) {
+        if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
+            $professor['name'] = $professorJa[$professor['name']];
+        }
+        
+        if (isset($professor['department']) && isset($departmentJa[$professor['department']])) {
+            $professor['department'] = $departmentJa[$professor['department']];
+        }
+    }
+    
+    // Update course names and professor names to Japanese
+    foreach ($results['courses'] as &$course) {
+        if (isset($course['name']) && isset($courseJa[$course['name']])) {
+            $course['name'] = $courseJa[$course['name']];
+        }
+        
+        if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
+            $course['professor_name'] = $professorJa[$course['professor_name']];
+        }
     }
 }
 

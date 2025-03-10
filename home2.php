@@ -1119,42 +1119,6 @@ elseif (!isset($_COOKIE['language'])) {
         const searchButton = document.querySelector('.search-bar button');
         const searchInput = document.querySelector('.search-bar input');
 
-        // Function to perform search
-        function performSearch(searchTerm) {
-            // Don't search for very short terms
-            if (searchTerm.length < 2) {
-                document.getElementById('searchResults').style.display = 'none';
-                return;
-            }
-            
-            // Get references to DOM elements
-            const searchResultsDiv = document.getElementById('searchResults');
-            
-            // Clear previous results
-            searchResultsDiv.innerHTML = '<div class="loading">Searching...</div>';
-            searchResultsDiv.style.display = 'block';
-            
-            console.log(`Making search request for: "${searchTerm}"`);
-            
-            // Make an AJAX request to search the database
-            fetch(`search_api.php?q=${encodeURIComponent(searchTerm)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json().catch(err => {
-                        throw new Error('Failed to parse response as JSON');
-                    });
-                })
-                .then(data => {
-                    displaySearchResults(data, searchTerm);
-                })
-                .catch(error => {
-                    console.error('Search error:', error);
-                    searchResultsDiv.innerHTML = `<div class="error">Error performing search: ${error.message}. Please try again later.</div>`;
-                });
-        }
-
         // Function to generate rating stars
         function generateStarRating(rating) {
             if (!rating || rating === 'N/A') return '<span class="no-rating">No ratings yet</span>';
@@ -1175,7 +1139,29 @@ elseif (!isset($_COOKIE['language'])) {
         function displaySearchResults(data, searchTerm) {
             const searchResultsDiv = document.getElementById('searchResults');
             searchResultsDiv.innerHTML = '';
-            
+    
+    
+        // Get current language from cookie
+        const currentLang = document.cookie.split('; ')
+            .find(row => row.startsWith('language='))
+            ?.split('=')[1] || 'en';
+        
+        // Language-specific labels
+        const labels = {
+            professors: currentLang === 'ja' ? '教授' : 'Professors',
+            courses: currentLang === 'ja' ? 'コース' : 'Courses',
+            department: currentLang === 'ja' ? '学部' : 'Department',
+            departmentNotSpecified: currentLang === 'ja' ? '学部未指定' : 'Department not specified',
+            professor: currentLang === 'ja' ? '教授' : 'Professor',
+            code: currentLang === 'ja' ? 'コード' : 'Code',
+            noRatingsYet: currentLang === 'ja' ? 'まだ評価がありません' : 'No ratings yet',
+            review: currentLang === 'ja' ? 'レビュー' : 'review',
+            reviews: currentLang === 'ja' ? 'レビュー' : 'reviews',
+            viewAllResults: currentLang === 'ja' ? 'すべての結果を見る' : 'View all results',
+            close: currentLang === 'ja' ? '閉じる' : 'Close',
+            noResults: currentLang === 'ja' ? `"${searchTerm}"の検索結果はありません` : `No results found for "${searchTerm}"`
+        };
+
             // Create container for results
             const resultsContainer = document.createElement('div');
             resultsContainer.className = 'search-results-container';
@@ -1218,11 +1204,6 @@ elseif (!isset($_COOKIE['language'])) {
                     
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
-                        // Get current language from cookie
-                        const currentLang = document.cookie.split('; ')
-                            .find(row => row.startsWith('language='))
-                            ?.split('=')[1] || 'en';
-                        
                         // Redirect to professor page
                         window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
                     });
@@ -1697,99 +1678,7 @@ elseif (!isset($_COOKIE['language'])) {
         // Also update language variables when page loads
         document.addEventListener('DOMContentLoaded', updateLanguageVariables);
 
-// Set up live search functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('#searchInput');
-    const searchButton = document.querySelector('#searchButton');
-    const searchResultsDiv = document.getElementById('searchResults');
-    
-    // Debounce function to limit how often searches are performed while typing
-    function debounce(func, wait) {
-        let timeout;
-        return function() {
-            const context = this;
-            const args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                func.apply(context, args);
-            }, wait);
-        };
-    }
-    
-    // Configure live search with debounce (300ms delay)
-    const debouncedSearch = debounce(function(searchTerm) {
-        if (searchTerm.length >= 2) {
-            performSearch(searchTerm);
-        } else {
-            searchResultsDiv.style.display = 'none';
-        }
-    }, 300);
-    
-    // Listen for input events (typing)
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.trim();
-        debouncedSearch(searchTerm);
-        
-        // If search field is cleared, hide results immediately
-        if (searchTerm.length === 0) {
-            searchResultsDiv.style.display = 'none';
-        }
-    });
-    
-    // Maintain the search button functionality
-    searchButton.addEventListener('click', function() {
-        const searchTerm = searchInput.value.trim();
-        if (searchTerm.length >= 2) {
-            performSearch(searchTerm);
-        }
-    });
-    
-    // Allow search on Enter key press
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const searchTerm = this.value.trim();
-            if (searchTerm.length >= 2) {
-                performSearch(searchTerm);
-            }
-        }
-    });
-    
-    // Hide search results when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && 
-            !searchButton.contains(e.target) && 
-            !searchResultsDiv.contains(e.target)) {
-            searchResultsDiv.style.display = 'none';
-        }
-    });
-    
-    // Add loading indicator styles
-    const style = document.createElement('style');
-    style.textContent = `
-        .search-loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0,0,0,0.1);
-            border-radius: 50%;
-            border-top-color: #1e3a8a;
-            animation: search-spin 0.8s ease infinite;
-            margin-right: 10px;
-        }
-        @keyframes search-spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-    `;
-    document.head.appendChild(style);
-});
-
-// Enhanced performSearch function with improved loading indicator
+// Enhanced performSearch function with improved loading indicator and language support
 function performSearch(searchTerm) {
     // Don't search for very short terms
     if (searchTerm.length < 2) {
@@ -1800,14 +1689,22 @@ function performSearch(searchTerm) {
     // Get references to DOM elements
     const searchResultsDiv = document.getElementById('searchResults');
     
+    // Get current language from cookie
+    const currentLang = document.cookie.split('; ')
+        .find(row => row.startsWith('language='))
+        ?.split('=')[1] || 'en';
+    
+    // Get loading text based on language
+    const loadingText = currentLang === 'ja' ? '検索中...' : 'Searching...';
+    
     // Clear previous results and show loading indicator
-    searchResultsDiv.innerHTML = '<div class="loading-container"><div class="search-loading"></div><span>Searching...</span></div>';
+    searchResultsDiv.innerHTML = `<div class="loading-container"><div class="search-loading"></div><span>${loadingText}</span></div>`;
     searchResultsDiv.style.display = 'block';
     
-    console.log(`Making search request for: "${searchTerm}"`);
+    console.log(`Making search request for: "${searchTerm}" with language: ${currentLang}`);
     
-    // Make an AJAX request to search the database
-    fetch(`search_api.php?q=${encodeURIComponent(searchTerm)}`)
+    // Make an AJAX request to search the database, passing the language parameter
+    fetch(`search_api.php?q=${encodeURIComponent(searchTerm)}&lang=${currentLang}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1826,9 +1723,103 @@ function performSearch(searchTerm) {
         })
         .catch(error => {
             console.error('Search error:', error);
-            searchResultsDiv.innerHTML = `<div class="error">Error performing search: ${error.message}. Please try again later.</div>`;
+            const errorMsg = currentLang === 'ja' 
+                ? `検索エラー: ${error.message}。後でもう一度お試しください。` 
+                : `Error performing search: ${error.message}. Please try again later.`;
+            searchResultsDiv.innerHTML = `<div class="error">${errorMsg}</div>`;
         });
 }
+
+    // Set up live search functionality with language support
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('#searchInput');
+        const searchButton = document.querySelector('#searchButton');
+        const searchResultsDiv = document.getElementById('searchResults');
+        
+        // Update placeholder text based on current language
+        function updateSearchPlaceholder() {
+            const currentLang = document.cookie.split('; ')
+                .find(row => row.startsWith('language='))
+                ?.split('=')[1] || 'en';
+            
+            searchInput.placeholder = currentLang === 'ja' 
+                ? '教授やコースを検索...' 
+                : 'Search for professors or courses...';
+            
+            searchButton.textContent = currentLang === 'ja' ? '検索' : 'Search';
+        }
+        
+        // Call once when page loads
+        updateSearchPlaceholder();
+        
+        // Update when language toggles are clicked
+        document.querySelectorAll('.language-toggle a').forEach(link => {
+            link.addEventListener('click', function() {
+                // After a small delay to allow cookie to be set
+                setTimeout(updateSearchPlaceholder, 100);
+            });
+        });
+        
+        // Debounce function to limit how often searches are performed while typing
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+        
+        // Configure live search with debounce (300ms delay)
+        const debouncedSearch = debounce(function(searchTerm) {
+            if (searchTerm.length >= 2) {
+                performSearch(searchTerm);
+            } else {
+                searchResultsDiv.style.display = 'none';
+            }
+        }, 300);
+        
+        // Listen for input events (typing)
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.trim();
+            debouncedSearch(searchTerm);
+            
+            // If search field is cleared, hide results immediately
+            if (searchTerm.length === 0) {
+                searchResultsDiv.style.display = 'none';
+            }
+        });
+        
+        // Maintain the search button functionality
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm.length >= 2) {
+                performSearch(searchTerm);
+            }
+        });
+        
+        // Allow search on Enter key press
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value.trim();
+                if (searchTerm.length >= 2) {
+                    performSearch(searchTerm);
+                }
+            }
+        });
+        
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && 
+                !searchButton.contains(e.target) && 
+                !searchResultsDiv.contains(e.target)) {
+                searchResultsDiv.style.display = 'none';
+            }
+        });
+    });
     </script>
 </body>
 </html>
