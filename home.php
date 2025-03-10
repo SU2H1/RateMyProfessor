@@ -1110,7 +1110,6 @@ elseif (!isset($_COOKIE['language'])) {
         </div>
         
         <footer>
-            <p>&copy; 2025 Rate My Teacher. All rights reserved.</p>
         </footer>
     </div>
     
