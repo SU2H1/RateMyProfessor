@@ -1114,170 +1114,8 @@ elseif (!isset($_COOKIE['language'])) {
         </footer>
     </div>
     
+    <script src="hard_search.js?v=1"></script>
     <script>
-        // Search functionality
-        const searchButton = document.querySelector('.search-bar button');
-        const searchInput = document.querySelector('.search-bar input');
-
-        // Function to generate rating stars
-        function generateStarRating(rating) {
-            if (!rating || rating === 'N/A') return '<span class="no-rating">No ratings yet</span>';
-            
-            const fullStar = '★';
-            const emptyStar = '☆';
-            const numFullStars = Math.floor(parseFloat(rating));
-            const hasHalfStar = parseFloat(rating) % 1 >= 0.5;
-            
-            let stars = fullStar.repeat(numFullStars);
-            if (hasHalfStar) stars += '½';
-            stars += emptyStar.repeat(5 - numFullStars - (hasHalfStar ? 1 : 0));
-            
-            return `<span class="star-rating">${stars} <span>${rating}</span></span>`;
-        }
-
-        // Function to display search results
-        function displaySearchResults(data, searchTerm) {
-            const searchResultsDiv = document.getElementById('searchResults');
-            searchResultsDiv.innerHTML = '';
-    
-    
-        // Get current language from cookie
-        const currentLang = document.cookie.split('; ')
-            .find(row => row.startsWith('language='))
-            ?.split('=')[1] || 'en';
-        
-        // Language-specific labels
-        const labels = {
-            professors: currentLang === 'ja' ? '教授' : 'Professors',
-            courses: currentLang === 'ja' ? 'コース' : 'Courses',
-            department: currentLang === 'ja' ? '学部' : 'Department',
-            departmentNotSpecified: currentLang === 'ja' ? '学部未指定' : 'Department not specified',
-            professor: currentLang === 'ja' ? '教授' : 'Professor',
-            code: currentLang === 'ja' ? 'コード' : 'Code',
-            noRatingsYet: currentLang === 'ja' ? 'まだ評価がありません' : 'No ratings yet',
-            review: currentLang === 'ja' ? 'レビュー' : 'review',
-            reviews: currentLang === 'ja' ? 'レビュー' : 'reviews',
-            viewAllResults: currentLang === 'ja' ? 'すべての結果を見る' : 'View all results',
-            close: currentLang === 'ja' ? '閉じる' : 'Close',
-            noResults: currentLang === 'ja' ? `"${searchTerm}"の検索結果はありません` : `No results found for "${searchTerm}"`
-        };
-
-            // Create container for results
-            const resultsContainer = document.createElement('div');
-            resultsContainer.className = 'search-results-container';
-            
-            // Check if we have any results
-            const hasProfessors = data.professors && data.professors.length > 0;
-            const hasCourses = data.courses && data.courses.length > 0;
-            
-            if (!hasProfessors && !hasCourses) {
-                searchResultsDiv.innerHTML = `<div class="no-results">No results found for "${searchTerm}"</div>`;
-                searchResultsDiv.style.display = 'block'; // Ensure dropdown is visible
-                return;
-            }
-            
-            // Add professors section if we have professors
-            if (hasProfessors) {
-                const profSection = document.createElement('div');
-                profSection.className = 'search-section';
-                profSection.innerHTML = `<h3>Professors (${data.professors.length})</h3>`;
-                
-                const profList = document.createElement('div');
-                profList.className = 'search-list professor-search-list';
-                
-                data.professors.forEach(prof => {
-                    const profItem = document.createElement('div');
-                    profItem.className = 'search-item professor-search-item';
-                    profItem.setAttribute('data-id', prof.id);
-                    
-                    const ratingHtml = generateStarRating(prof.avg_rating);
-                    profItem.innerHTML = `
-                        <div class="search-item-info">
-                            <h4>${prof.name}</h4>
-                            <p>${prof.department || 'Department not specified'}</p>
-                        </div>
-                        <div class="search-item-rating">
-                            ${ratingHtml}
-                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} review${prof.review_count !== 1 ? 's' : ''}</div>` : ''}
-                        </div>
-                    `;
-                    
-                    // Add click event to view professor page
-                    profItem.addEventListener('click', () => {
-                        // Redirect to professor page
-                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
-                    });
-                    
-                    profList.appendChild(profItem);
-                });
-                
-                profSection.appendChild(profList);
-                resultsContainer.appendChild(profSection);
-            }
-            
-            // Add courses section if we have courses
-            if (hasCourses) {
-                const courseSection = document.createElement('div');
-                courseSection.className = 'search-section';
-                courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
-                
-                const courseList = document.createElement('div');
-                courseList.className = 'search-list course-search-list';
-                
-                data.courses.forEach(course => {
-                    const courseItem = document.createElement('div');
-                    courseItem.className = 'search-item course-search-item';
-                    courseItem.setAttribute('data-id', course.id);
-                    
-                    const ratingHtml = generateStarRating(course.avg_rating);
-                    courseItem.innerHTML = `
-                        <div class="search-item-info">
-                            <h4>${course.name}</h4>
-                            <p>${course.professor_name ? `Professor: ${course.professor_name}` : ''} ${course.course_code ? `· Code: ${course.course_code}` : ''}</p>
-                        </div>
-                        <div class="search-item-rating">
-                            ${ratingHtml}
-                            ${course.review_count ? `<div class="rating-count">${course.review_count} review${course.review_count !== 1 ? 's' : ''}</div>` : ''}
-                        </div>
-                    `;
-                    
-                    // Add click event to view course page
-                    courseItem.addEventListener('click', () => {
-                        // Get current language from cookie
-                        const currentLang = document.cookie.split('; ')
-                            .find(row => row.startsWith('language='))
-                            ?.split('=')[1] || 'en';
-                        
-                        // Redirect to course page
-                        window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor_name || '')}&lang=${currentLang}`;
-                    });
-                    
-                    courseList.appendChild(courseItem);
-                });
-                
-                courseSection.appendChild(courseList);
-                resultsContainer.appendChild(courseSection);
-            }
-            
-            // Add "View all results" link
-            const viewAllLink = document.createElement('div');
-            viewAllLink.className = 'view-all-results';
-            viewAllLink.innerHTML = `<a href="search.php?q=${encodeURIComponent(searchTerm)}&lang=${document.cookie.split('; ').find(row => row.startsWith('language='))?.split('=')[1] || 'en'}">View all results</a>`;
-            resultsContainer.appendChild(viewAllLink);
-            
-            // Add a close button
-            //const closeButton = document.createElement('button');
-            //closeButton.className = 'close-search-results';
-            //closeButton.textContent = document.cookie.includes('language=ja') ? '閉じる' : 'Close';
-            //closeButton.addEventListener('click', () => {
-            //    searchResultsDiv.style.display = 'none';
-            //});
-            //resultsContainer.appendChild(closeButton);
-            
-            searchResultsDiv.appendChild(resultsContainer);
-            searchResultsDiv.style.display = 'block';
-        }
-
         // Initialize the search bar by running a test search after page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded");
@@ -1288,41 +1126,61 @@ elseif (!isset($_COOKIE['language'])) {
             const profItems = document.querySelectorAll('.professor-item');
             console.log(`Found ${profItems.length} professor items`);
             profItems.forEach((item, i) => {
-                console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
+        console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
+        
+        // Add click event handler
+        item.addEventListener('click', () => {
+            const profId = item.getAttribute('data-id');
+            console.log("Professor clicked, ID:", profId);
+            
+            // Check if login is required
+            if (profId === 'login-required') {
+                showLoginPrompt();
+                return;
+            }
+            
+            // Check if it's a real professor ID (numeric) or a placeholder
+            if (!isNaN(profId)) {
+                console.log("Redirecting professor with ID:", profId);
                 
-                // Add click event handler
-                item.addEventListener('click', () => {
-                    const profId = item.getAttribute('data-id');
-                    console.log("Professor clicked, ID:", profId);
-                    
-                    // Check if login is required
-                    if (profId === 'login-required') {
-                        showLoginPrompt();
-                        return;
+                // Get current language directly from the cookie instead of the variable
+                const currentLang = document.cookie.split('; ')
+                    .find(row => row.startsWith('language='))
+                    ?.split('=')[1] || 'en';
+                
+                console.log("Language for redirect (from cookie):", currentLang);
+                
+                // Get professor name from the HTML
+                const profName = item.querySelector('h3').textContent;
+                console.log("Professor name from HTML:", profName);
+                
+                // Remove spaces for the URL
+                // Preserve spaces in the professor name, just use URL encoding
+                
+                // Create the redirect URL with the current language - no ID needed
+                const redirectUrl = `professor_page_template.php?professor=${encodeURIComponent(profName)}&lang=${currentLang}`;
+                console.log("Redirecting to:", redirectUrl);
+                
+                // Perform the redirect
+                window.location.href = redirectUrl;
+                return;
+        }
                     }
                     
-                    // Check if it's a real professor ID (numeric) or a placeholder
-                    if (!isNaN(profId)) {
-                        console.log("Redirecting professor with ID:", profId);
+                    // Fall back to placeholder data for demo professors
+                    const prof = professorData[profId];
+                    
+                    if (prof) {
+                        // Show modal for placeholder data
+                        const isJapanese = currentLanguage === 'japanese';
+                        document.getElementById('modalProfessorName').textContent = isJapanese && prof.nameJP ? prof.nameJP : prof.name;
+                        document.getElementById('modalProfessorDepartment').textContent = isJapanese && prof.departmentJP ? prof.departmentJP : prof.department;
+                        document.getElementById('modalProfessorOfficeHours').textContent = prof.officeHours;
+                        document.getElementById('modalProfessorContact').textContent = prof.contact;
+                        document.getElementById('modalProfessorRating').textContent = prof.rating;
                         
-                        // Get current language directly from the cookie instead of the variable
-                        const currentLang = document.cookie.split('; ')
-                            .find(row => row.startsWith('language='))
-                            ?.split('=')[1] || 'en';
-                        
-                        console.log("Language for redirect (from cookie):", currentLang);
-                        
-                        // Get professor name from the HTML
-                        const profName = item.querySelector('h3').textContent;
-                        console.log("Professor name from HTML:", profName);
-                        
-                        // Create the redirect URL with the current language - no ID needed
-                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profName)}&lang=${currentLang}`;
-                        console.log("Redirecting to:", redirectUrl);
-                        
-                        // Perform the redirect
-                        window.location.href = redirectUrl;
-                        return;
+                        // Display the modal
+                        professorModal.style.display = 'block';
                     }
                 });
             });
@@ -1366,56 +1224,35 @@ elseif (!isset($_COOKIE['language'])) {
                         location.href = redirectUrl;
                         return;
                     }
+                    
+                    // Fall back to placeholder data for demo courses
+                    const course = courseData[courseId];
+                    
+                    if (course) {
+                        // Show modal for placeholder data
+                        const isJapanese = currentLanguage === 'japanese';
+                        document.getElementById('modalCourseName').textContent = isJapanese && course.nameJP ? course.nameJP : course.name;
+                        document.getElementById('modalCourseProfessor').textContent = isJapanese && course.professorJP ? course.professorJP : course.professor;
+                        document.getElementById('modalCourseDepartment').textContent = isJapanese && course.departmentJP ? course.departmentJP : course.department;
+                        document.getElementById('modalCourseDescription').textContent = course.description;
+                        document.getElementById('modalCourseRating').textContent = course.rating;
+                        
+                        // Display the modal
+                        courseModal.style.display = 'block';
+                    }
                 });
             });
             
             // Update UI elements based on current language
             updateUILanguage();
             
-            // Set up live search functionality
-            let searchTimeout;
-            searchInput.addEventListener('input', () => {
-                const searchTerm = searchInput.value.trim();
-                clearTimeout(searchTimeout);
-                
-                if (searchTerm.length >= 2) {
-                    searchTimeout = setTimeout(() => {
-                        performSearch(searchTerm);
-                        console.log("Searching for: " + searchTerm);
-                    }, 300);
-                } else if (searchTerm.length === 0) {
-                    document.getElementById('searchResults').style.display = 'none';
-                }
-            });
-            
-            // Clear any pre-filled search values
-            searchInput.value = "";
-            document.getElementById('searchResults').style.display = 'none';
-            
-            // Set up search button click event
-            searchButton.addEventListener('click', () => {
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm) {
-                    performSearch(searchTerm);
-                }
-            });
-            
-            // Allow search on Enter key press
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    searchButton.click();
-                }
-            });
-            
-            // Close search results when clicking outside
-            document.addEventListener('click', (e) => {
-                const searchResults = document.getElementById('searchResults');
-                const searchContainer = document.querySelector('.search-container');
-                
-                if (!searchContainer.contains(e.target) && searchResults.style.display === 'block') {
-                    searchResults.style.display = 'none';
-                }
-            });
+            // Manually execute a search for DATA as a test
+            if (window.testSearch) {
+                setTimeout(function() {
+                    console.log("Running test search...");
+                    window.testSearch("DATA");
+                }, 500);
+            }
         });
         
         // Language translations
@@ -1485,7 +1322,130 @@ elseif (!isset($_COOKIE['language'])) {
                 description: "説明"
             }
         };
-
+        
+        // Professor and course data
+        const professorData = {
+            prof1: {
+                name: "Dr. Tanaka Hiroshi",
+                department: "Social Studies",
+                officeHours: "Monday & Wednesday: 13:00-15:00",
+                contact: "tanaka.h@example.edu",
+                rating: "★★★★★ 4.9",
+                reviews: [
+                    { user: "Student123", date: "2024-10-15", text: "Dr. Tanaka is incredibly knowledgeable and explains complex concepts clearly. His lectures are engaging and thought-provoking." },
+                    { user: "GradStudent22", date: "2024-09-30", text: "One of the best professors I've had. Always available during office hours and genuinely cares about student success." }
+                ]
+            },
+            prof2: {
+                name: "Prof. Nakamura Yuki",
+                department: "Economics",
+                officeHours: "Tuesday & Thursday: 10:00-12:00",
+                contact: "nakamura.y@example.edu",
+                rating: "★★★★☆ 4.3",
+                reviews: [
+                    { user: "EconMajor", date: "2024-10-10", text: "Prof. Nakamura makes economics interesting with real-world examples. Assignments are challenging but fair." },
+                    { user: "FinanceStudent", date: "2024-09-25", text: "Great professor who is passionate about the subject. Sometimes lectures move quickly, so taking good notes is essential." }
+                ]
+            },
+            prof3: {
+                name: "Dr. Smith Karen",
+                department: "International Relations",
+                officeHours: "Friday: 14:00-17:00",
+                contact: "smith.k@example.edu",
+                rating: "★★★★☆ 4.2",
+                reviews: [
+                    { user: "GlobalPolitics", date: "2024-10-05", text: "Dr. Smith brings a wealth of experience to her classes. Her international perspective is enlightening." },
+                    { user: "ExchangeStudent", date: "2024-09-20", text: "As an exchange student, I found Dr. Smith to be very supportive and inclusive. Her coursework is demanding but rewarding." }
+                ]
+            },
+            prof4: {
+                name: "Prof. Watanabe Kenji",
+                department: "Environmental Studies",
+                officeHours: "Monday & Friday: 9:00-11:00",
+                contact: "watanabe.k@example.edu",
+                rating: "★★★★☆ 4.1",
+                reviews: [
+                    { user: "EnviroActivist", date: "2024-10-12", text: "Prof. Watanabe combines theory with practical fieldwork. His passion for environmental issues is contagious." },
+                    { user: "ScienceStudent", date: "2024-09-28", text: "Very knowledgeable professor. The field trips he organizes are particularly valuable learning experiences." }
+                ]
+            },
+            prof5: {
+                name: "Dr. Yamamoto Aki",
+                department: "Business Administration",
+                officeHours: "Wednesday & Thursday: 15:00-17:00",
+                contact: "yamamoto.a@example.edu",
+                rating: "★★★★☆ 4.0",
+                reviews: [
+                    { user: "BusinessMajor", date: "2024-10-08", text: "Dr. Yamamoto brings industry experience into the classroom. Case studies are relevant and challenging." },
+                    { user: "MBAStudent", date: "2024-09-23", text: "Balanced approach to teaching business concepts. Group projects are well-designed to simulate real business scenarios." }
+                ]
+            }
+        };
+        
+        const courseData = {
+            course1: {
+                name: "Global Environmental Policy",
+                professor: "Prof. Watanabe Kenji",
+                department: "Environmental Studies",
+                description: "This course examines international environmental policies and agreements. Students will analyze case studies from different regions and evaluate policy effectiveness in addressing global environmental challenges.",
+                rating: "★★★★★ 4.8",
+                reviews: [
+                    { user: "EcoStudent", date: "2024-10-14", text: "Excellent course that connects theory with current global issues. The policy analysis projects are particularly valuable." },
+                    { user: "FutureDiplomat", date: "2024-09-29", text: "One of the most informative courses on environmental policy. Guest speakers from international organizations added great value." }
+                ]
+            },
+            course2: {
+                name: "International Political Economy",
+                professor: "Dr. Smith Karen",
+                department: "International Relations",
+                description: "This course explores the intersection of politics and economics in the international system. Topics include trade policies, financial regulations, and the role of international institutions in global economic governance.",
+                rating: "★★★★☆ 4.7",
+                reviews: [
+                    { user: "PolicyAnalyst", date: "2024-10-11", text: "Comprehensive coverage of IPE theories with relevant case studies. The course challenges you to think critically about global economic issues." },
+                    { user: "GlobalThinker", date: "2024-09-27", text: "Dr. Smith makes complex economic theories accessible. The debates and simulations helped deepen my understanding of international economic relations." }
+                ]
+            },
+            course3: {
+                name: "Corporate Strategy",
+                professor: "Dr. Yamamoto Aki",
+                department: "Business Administration",
+                description: "This course focuses on strategic management in corporate settings. Students will learn to analyze competitive environments, develop strategic plans, and understand implementation challenges across different industries.",
+                rating: "★★★★☆ 4.5",
+                reviews: [
+                    { user: "FutureConsultant", date: "2024-10-09", text: "Practical approach to corporate strategy with excellent case studies. Dr. Yamamoto's industry insights were invaluable." },
+                    { user: "StrategyBuff", date: "2024-09-24", text: "This course prepared me well for my internship. The strategic analysis frameworks we learned have real-world applications." }
+                ]
+            },
+            course4: {
+                name: "Macroeconomic Theory",
+                professor: "Prof. Nakamura Yuki",
+                department: "Economics",
+                description: "An advanced course examining macroeconomic theories and models. Topics include economic growth, business cycles, monetary and fiscal policies, and international economic relations.",
+                rating: "★★★★☆ 4.4",
+                reviews: [
+                    { user: "EconWiz", date: "2024-10-07", text: "Prof. Nakamura explains complex economic models clearly. The problem sets are challenging but help solidify understanding." },
+                    { user: "FutureAnalyst", date: "2024-09-22", text: "Great course for developing analytical skills. The professor connects theoretical concepts to current economic situations effectively." }
+                ]
+            },
+            course5: {
+                name: "Public Policy Analysis",
+                professor: "Dr. Tanaka Hiroshi",
+                department: "Social Studies",
+                description: "This course introduces methods and frameworks for analyzing public policies. Students will learn to evaluate policy alternatives, understand implementation challenges, and assess policy outcomes.",
+                rating: "★★★★☆ 4.3",
+                reviews: [
+                    { user: "PolicyStudent", date: "2024-10-13", text: "Dr. Tanaka brings policy analysis to life with relevant case studies. The course provides practical analytical tools." },
+                    { user: "GovIntern", date: "2024-09-26", text: "Well-structured course that balances theory and application. The policy memo assignments were particularly useful for developing professional writing skills." }
+                ]
+            }
+        };
+        
+        // Get current language from cookie - match PHP naming convention
+        let currentLanguage = <?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? "'ja'" : "'en'"; ?>;
+        
+        // For backwards compatibility with existing translations object
+        let translationLanguage = currentLanguage === 'ja' ? 'japanese' : 'english';
+        
         // Function to update UI elements based on current language
         function updateUILanguage() {
             console.log("Updating UI for language:", currentLanguage);
@@ -1564,13 +1524,96 @@ elseif (!isset($_COOKIE['language'])) {
             document.querySelectorAll('#courseModal .detail-section h4')[0].textContent = translation.professor;
             document.querySelectorAll('#courseModal .detail-section h4')[1].textContent = translation.department;
             document.querySelectorAll('#courseModal .detail-section h4')[2].textContent = translation.description;
+            
+            // Update professor titles if Japanese and visible
+            if (isJapanese && isLoggedIn) {
+                const professorItems = document.querySelectorAll('.professor-item h3');
+                const courseItems = document.querySelectorAll('.course-item h3');
+                
+                if (professorItems.length > 0) {
+                    professorItems[0].textContent = "田中 博士";
+                    professorItems[1].textContent = "中村 ユキ教授";
+                    professorItems[2].textContent = "スミス カレン博士";
+                    professorItems[3].textContent = "渡辺 健二教授";
+                    professorItems[4].textContent = "山本 アキ博士";
+                }
+                
+                if (courseItems.length > 0) {
+                    courseItems[0].textContent = "グローバル環境政策";
+                    courseItems[1].textContent = "国際政治経済学";
+                    courseItems[2].textContent = "企業戦略";
+                    courseItems[3].textContent = "マクロ経済理論";
+                    courseItems[4].textContent = "公共政策分析";
+                }
+                
+                // Update Japanese data in the objects
+                Object.keys(professorData).forEach(key => {
+                    const prof = professorData[key];
+                    if (prof.name === "Dr. Tanaka Hiroshi") {
+                        prof.nameJP = "田中 博士";
+                        prof.departmentJP = "社会学";
+                    } else if (prof.name === "Prof. Nakamura Yuki") {
+                        prof.nameJP = "中村 ユキ教授";
+                        prof.departmentJP = "経済学";
+                    } else if (prof.name === "Dr. Smith Karen") {
+                        prof.nameJP = "スミス カレン博士";
+                        prof.departmentJP = "国際関係学";
+                    } else if (prof.name === "Prof. Watanabe Kenji") {
+                        prof.nameJP = "渡辺 健二教授";
+                        prof.departmentJP = "環境学";
+                    } else if (prof.name === "Dr. Yamamoto Aki") {
+                        prof.nameJP = "山本 アキ博士";
+                        prof.departmentJP = "経営管理学";
+                    }
+                });
+                
+                Object.keys(courseData).forEach(key => {
+                    const course = courseData[key];
+                    if (course.name === "Global Environmental Policy") {
+                        course.nameJP = "グローバル環境政策";
+                        course.professorJP = "渡辺 健二教授";
+                        course.departmentJP = "環境学";
+                    } else if (course.name === "International Political Economy") {
+                        course.nameJP = "国際政治経済学";
+                        course.professorJP = "スミス カレン博士";
+                        course.departmentJP = "国際関係学";
+                    } else if (course.name === "Corporate Strategy") {
+                        course.nameJP = "企業戦略";
+                        course.professorJP = "山本 アキ博士";
+                        course.departmentJP = "経営管理学";
+                    } else if (course.name === "Macroeconomic Theory") {
+                        course.nameJP = "マクロ経済理論";
+                        course.professorJP = "中村 ユキ教授";
+                        course.departmentJP = "経済学";
+                    } else if (course.name === "Public Policy Analysis") {
+                        course.nameJP = "公共政策分析";
+                        course.professorJP = "田中 博士";
+                        course.departmentJP = "社会学";
+                    }
+                });
+            } else if (!isJapanese && isLoggedIn) {
+                const professorItems = document.querySelectorAll('.professor-item h3');
+                const courseItems = document.querySelectorAll('.course-item h3');
+                
+                if (professorItems.length > 0) {
+                    professorItems[0].textContent = "Dr. Tanaka Hiroshi";
+                    professorItems[1].textContent = "Prof. Nakamura Yuki";
+                    professorItems[2].textContent = "Dr. Smith Karen";
+                    professorItems[3].textContent = "Prof. Watanabe Kenji";
+                    professorItems[4].textContent = "Dr. Yamamoto Aki";
+                }
+                
+                if (courseItems.length > 0) {
+                    courseItems[0].textContent = "Global Environmental Policy";
+                    courseItems[1].textContent = "International Political Economy";
+                    courseItems[2].textContent = "Corporate Strategy";
+                    courseItems[3].textContent = "Macroeconomic Theory";
+                    courseItems[4].textContent = "Public Policy Analysis";
+                }
+            }
         }
         
-        // Get current language from cookie - match PHP naming convention
-        let currentLanguage = <?php echo (isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja') ? "'ja'" : "'en'"; ?>;
-        
-        // For backwards compatibility with existing translations object
-        let translationLanguage = currentLanguage === 'ja' ? 'japanese' : 'english';
+        // Language toggle now uses direct links instead of JavaScript
         
         // Modal functionality
         const professorModal = document.getElementById('professorModal');
@@ -1595,6 +1638,93 @@ elseif (!isset($_COOKIE['language'])) {
             }
         });
         
+        // Professor and course item click events have been moved to DOMContentLoaded
+                        reviewElement.className = 'review-item';
+                        
+                        const reviewHeader = document.createElement('div');
+                        reviewHeader.className = 'review-header';
+                        
+                        const userSpan = document.createElement('span');
+                        userSpan.className = 'review-user';
+                        userSpan.textContent = review.user;
+                        
+                        const dateSpan = document.createElement('span');
+                        dateSpan.className = 'review-date';
+                        dateSpan.textContent = review.date;
+                        
+                        reviewHeader.appendChild(userSpan);
+                        reviewHeader.appendChild(dateSpan);
+                        
+                        const reviewText = document.createElement('p');
+                        reviewText.textContent = review.text;
+                        
+                        reviewElement.appendChild(reviewHeader);
+                        reviewElement.appendChild(reviewText);
+                        
+                        reviewsContainer.appendChild(reviewElement);
+                    });
+                    
+                    // Show the modal
+                    professorModal.style.display = 'block';
+                }
+            });
+        });
+        
+        // Course item click events have been moved to DOMContentLoaded
+                
+                if (course) {
+                    // Set modal content based on current language
+                    const isJapanese = currentLanguage === 'japanese';
+                    document.getElementById('modalCourseName').textContent = isJapanese && course.nameJP ? course.nameJP : course.name;
+                    document.getElementById('modalCourseProfessor').textContent = isJapanese && course.professorJP ? course.professorJP : course.professor;
+                    document.getElementById('modalCourseDepartment').textContent = isJapanese && course.departmentJP ? course.departmentJP : course.department;
+                    document.getElementById('modalCourseDescription').textContent = course.description;
+                    document.getElementById('modalCourseRating').textContent = course.rating;
+                    
+                    // Clear previous reviews
+                    const reviewsContainer = document.getElementById('courseReviews');
+                    reviewsContainer.innerHTML = '';
+                    
+                    // Add reviews
+                    course.reviews.forEach(review => {
+                        const reviewElement = document.createElement('div');
+                        reviewElement.className = 'review-item';
+                        
+                        const reviewHeader = document.createElement('div');
+                        reviewHeader.className = 'review-header';
+                        
+                        const userSpan = document.createElement('span');
+                        userSpan.className = 'review-user';
+                        userSpan.textContent = review.user;
+                        
+                        const dateSpan = document.createElement('span');
+                        dateSpan.className = 'review-date';
+                        dateSpan.textContent = review.date;
+                        
+                        reviewHeader.appendChild(userSpan);
+                        reviewHeader.appendChild(dateSpan);
+                        
+                        const reviewText = document.createElement('p');
+                        reviewText.textContent = review.text;
+                        
+                        reviewElement.appendChild(reviewHeader);
+                        reviewElement.appendChild(reviewText);
+                        
+                        reviewsContainer.appendChild(reviewElement);
+                    });
+                    
+                    // Show the modal
+                    courseModal.style.display = 'block';
+                }
+            });
+        });
+        
+        // Tips and Tricks link now redirects to external page
+        
+        // Search functionality placeholder
+        const searchButton = document.querySelector('.search-bar button');
+        const searchInput = document.querySelector('.search-bar input');
+        
         // Function to show login prompt
         function showLoginPrompt() {
             // Create login prompt modal
@@ -1605,7 +1735,7 @@ elseif (!isset($_COOKIE['language'])) {
             modalContent.style.cssText = 'background-color: white; padding: 30px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);';
             
             // Check current language
-            const isJapanese = currentLanguage === 'ja';
+            const isJapanese = currentLanguage === 'japanese';
             
             const title = document.createElement('h3');
             title.textContent = isJapanese ? 'ログインが必要です' : 'Login Required';
@@ -1655,203 +1785,481 @@ elseif (!isset($_COOKIE['language'])) {
             });
         }
         
-        function updateLanguageVariables() {
-            // Read cookie directly
-            const languageCookie = document.cookie.split('; ')
-                .find(row => row.startsWith('language='));
+        // Function to generate rating stars
+        function generateStarRating(rating) {
+            if (!rating) return '<span class="no-rating">No ratings yet</span>';
             
-            if (languageCookie) {
-                currentLanguage = languageCookie.split('=')[1];
-                translationLanguage = currentLanguage === 'ja' ? 'japanese' : 'english';
-                console.log("Language variables updated:", currentLanguage, translationLanguage);
+            const fullStar = '★';
+            const emptyStar = '☆';
+            const numFullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            
+            let stars = fullStar.repeat(numFullStars);
+            if (hasHalfStar) stars += '½';
+            stars += emptyStar.repeat(5 - numFullStars - (hasHalfStar ? 1 : 0));
+            
+            return `<span class="star-rating">${stars} <span>${rating}</span></span>`;
+        }
+        
+        // Function to perform search
+        function performSearch(searchTerm) {
+            // Don't search for very short terms
+            if (searchTerm.length < 2) {
+                document.getElementById('searchResults').style.display = 'none';
+                return;
             }
-        }
-
-        // Add event listener for language toggle links
-        document.querySelectorAll('.language-toggle a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                // After click, update language variables after a short delay to allow cookie to set
-                setTimeout(updateLanguageVariables, 100);
-            });
-        });
-
-        // Also update language variables when page loads
-        document.addEventListener('DOMContentLoaded', updateLanguageVariables);
-
-    // Enhanced performSearch function with language support
-    function performSearch(searchTerm) {
-        // Don't search for very short terms
-        if (searchTerm.length < 2) {
-            document.getElementById('searchResults').style.display = 'none';
-            return;
-        }
-        
-        // Get references to DOM elements
-        const searchResultsDiv = document.getElementById('searchResults');
-        
-        // Get current language from cookie
-        const currentLang = document.cookie.split('; ')
-            .find(row => row.startsWith('language='))
-            ?.split('=')[1] || 'en';
-        
-        // Get loading text based on language
-        const loadingText = currentLang === 'ja' ? '検索中...' : 'Searching...';
-        
-        // Clear previous results and show loading indicator
-        searchResultsDiv.innerHTML = `<div class="loading-container"><div class="search-loading"></div><span>${loadingText}</span></div>`;
-        searchResultsDiv.style.display = 'block';
-        
-        console.log(`Making search request for: "${searchTerm}" with language: ${currentLang}`);
-        
-        // Make an AJAX request to search the database with the language parameter
-        fetch(`search_api.php?q=${encodeURIComponent(searchTerm)}&lang=${currentLang}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json().catch(err => {
-                    throw new Error('Failed to parse response as JSON');
-                });
-            })
-            .then(data => {
-                // Only update if the search input still contains the search term
-                // This prevents outdated results from showing for a previous search
-                const currentSearchTerm = document.querySelector('#searchInput').value.trim();
-                if (currentSearchTerm === searchTerm) {
-                    displaySearchResults(data, searchTerm);
-                }
-            })
-            .catch(error => {
-                console.error('Search error:', error);
-                const errorText = currentLang === 'ja' 
-                    ? `検索エラー: ${error.message}。後でもう一度お試しください。` 
-                    : `Error performing search: ${error.message}. Please try again later.`;
-                searchResultsDiv.innerHTML = `<div class="error">${errorText}</div>`;
-            });
-    }
-
-    // Set up live search functionality with Japanese character support
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.querySelector('#searchInput');
-        const searchButton = document.querySelector('#searchButton');
-        const searchResultsDiv = document.getElementById('searchResults');
-        
-        // Update placeholder text based on current language
-        function updateSearchPlaceholder() {
-            const currentLang = document.cookie.split('; ')
-                .find(row => row.startsWith('language='))
-                ?.split('=')[1] || 'en';
             
-            searchInput.placeholder = currentLang === 'ja' 
-                ? '教授やコースを検索...' 
-                : 'Search for professors or courses...';
+            // Get references to DOM elements
+            const searchResultsDiv = document.getElementById('searchResults');
             
-            searchButton.textContent = currentLang === 'ja' ? '検索' : 'Search';
-        }
-        
-        // Configure meta tag to ensure proper UTF-8 encoding
-        const metaCharset = document.querySelector('meta[charset]');
-        if (metaCharset) {
-            metaCharset.setAttribute('charset', 'UTF-8');
-        } else {
-            const meta = document.createElement('meta');
-            meta.setAttribute('charset', 'UTF-8');
-            document.head.appendChild(meta);
-        }
-        
-        // Call once when page loads
-        updateSearchPlaceholder();
-        
-        // Update when language toggles are clicked
-        document.querySelectorAll('.language-toggle a').forEach(link => {
-            link.addEventListener('click', function() {
-                // After a small delay to allow cookie to be set
-                setTimeout(updateSearchPlaceholder, 100);
-            });
-        });
-        
-        // Debounce function to limit how often searches are performed while typing
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    func.apply(context, args);
-                }, wait);
+            // Clear previous results
+            searchResultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+            searchResultsDiv.style.display = 'block';
+            
+            console.log(`Making search request for: "${searchTerm}"`);
+            
+            // Use different hardcoded results based on search term
+            let hardcodedResults = {
+                professors: [],
+                courses: []
             };
+            
+            // For policy search
+            if (searchTerm.toUpperCase().includes("POLICY")) {
+                hardcodedResults = {
+                    professors: [
+                        { id: 5, name: "Tomoki Kamo", department: "Policy Management" },
+                        { id: 6, name: "Takumi Shimizu", department: "Policy Management" },
+                        { id: 7, name: "Tate Kihara", department: "Policy Management" }
+                    ],
+                    courses: [
+                        { id: 5, name: "POLICY MANAGEMENT STUDIES [1st half of semester]", course_code: "01727", description: "Policy Management Studies course", professor_id: 2 },
+                        { id: 7, name: "POLICY MANAGEMENT STUDIES (GIGA/GG/GI)", course_code: "02059", description: "GIGA Policy Management Studies course", professor_id: 2 }
+                    ]
+                };
+            }
+            // For environment search
+            else if (searchTerm.toUpperCase().includes("ENVIRONMENT")) {
+                hardcodedResults = {
+                    professors: [
+                        { id: 9, name: "Haruo Suzuki", department: "Environment and Information" },
+                        { id: 10, name: "Hiroya Tanaka", department: "Environment and Information" }
+                    ],
+                    courses: [
+                        { id: 6, name: "ENVIRONMENT AND INFORMATION STUDIES [1st half of semester]", course_code: "01674", description: "Environment and Information Studies course", professor_id: 6 }
+                    ]
+                };
+            }
+            // For data science
+            else if (searchTerm.toUpperCase().includes("DATA") || searchTerm.toUpperCase().includes("SCIENCE")) {
+                hardcodedResults = {
+                    professors: [
+                        { id: 4, name: "Jin Mitsugi", department: "Data Science" }
+                    ],
+                    courses: [
+                        { id: 4, name: "Data Science DS1", course_code: "01727", description: "Data Science course", professor_id: 1 }
+                    ]
+                };
+            };
+            
+            // Display the results with a small delay for effect
+            setTimeout(() => {
+                displaySearchResults(hardcodedResults, searchTerm);
+            }, 100);
         }
         
-        // Configure live search with debounce
-        // Use a shorter delay for Japanese input (200ms)
-        const debouncedSearch = debounce(function(searchTerm) {
-            if (searchTerm.length >= 1) {
-                // Always search for Japanese characters, even if only 1 character
-                const hasJapaneseChars = /[\u3000-\u303F]|[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]/u.test(searchTerm);
-                
-                if (hasJapaneseChars || searchTerm.length >= 2) {
-                    performSearch(searchTerm);
-                }
-            } else {
-                searchResultsDiv.style.display = 'none';
-            }
-        }, 200);
-        
-        // Listen for input events (typing)
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.trim();
-            debouncedSearch(searchTerm);
+        // Function to display search results
+        function displaySearchResults(data, searchTerm) {
+            const searchResultsDiv = document.getElementById('searchResults');
+            searchResultsDiv.innerHTML = '';
             
-            // If search field is cleared, hide results immediately
-            if (searchTerm.length === 0) {
-                searchResultsDiv.style.display = 'none';
+            // Create container for results
+            const resultsContainer = document.createElement('div');
+            resultsContainer.className = 'search-results-container';
+            
+            // Check if we have any results
+            const hasProfessors = data.professors && data.professors.length > 0;
+            const hasCourses = data.courses && data.courses.length > 0;
+            
+            if (!hasProfessors && !hasCourses) {
+                searchResultsDiv.innerHTML = `<div class="no-results">No results found for "${searchTerm}"</div>`;
+                searchResultsDiv.style.display = 'block'; // Ensure dropdown is visible
+                return;
+            }
+            // Add professors section if we have professors
+            if (hasProfessors) {
+                const profSection = document.createElement('div');
+                profSection.className = 'search-section';
+                profSection.innerHTML = `<h3>Professors (${data.professors.length})</h3>`;
+                
+                const profList = document.createElement('div');
+                profList.className = 'search-list professor-search-list';
+                
+                data.professors.forEach(prof => {
+                    const profItem = document.createElement('div');
+                    profItem.className = 'search-item professor-search-item';
+                    profItem.setAttribute('data-id', prof.id);
+                    
+                    const rating = prof.avg_rating ? prof.avg_rating : null;
+                    const ratingHtml = generateStarRating(rating);
+                    profItem.innerHTML = `
+                        <div class="search-item-info">
+                            <h4>${prof.name}</h4>
+                            <p>${prof.department || 'Department not specified'}</p>
+                        </div>
+                        <div class="search-item-rating">
+                            ${ratingHtml || '<span class="no-rating">No ratings yet</span>'}
+                        </div>
+                    `;
+                        
+                    // Add click event to view professor page
+                    profItem.addEventListener('click', () => {
+                        // Create URL with no spaces for professor name but display with spaces
+                        // Preserve spaces in professor name
+                        window.location.href = `professor.php?professor=${encodeURIComponent(prof.name)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                    });
+                    
+                    profList.appendChild(profItem);
+                });
+                
+                profSection.appendChild(profList);
+                resultsContainer.appendChild(profSection);
+            }
+            // Add courses section if we have courses
+            if (hasCourses) {
+                const courseSection = document.createElement('div');
+                courseSection.className = 'search-section';
+                courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
+                
+                const courseList = document.createElement('div');
+                courseList.className = 'search-list course-search-list';
+                data.courses.forEach(course => {
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'search-item course-search-item';
+                    courseItem.setAttribute('data-id', course.id);
+                    
+                    const rating = course.avg_rating ? course.avg_rating : null;
+                    const ratingHtml = generateStarRating(rating);
+                    courseItem.innerHTML = `
+                        <div class="search-item-info">
+                            <h4>${course.name}</h4>
+                            <p>Course Code: ${course.course_code || 'N/A'}</p>
+                        </div>
+                        <div class="search-item-rating">
+                            ${ratingHtml || '<span class="no-rating">No ratings yet</span>'}
+                        </div>
+                    `;
+                    // Add click event to view course page
+                    courseItem.addEventListener('click', () => {
+                        // Redirect to course page via course.php
+                        window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor || '')}&id=${course.id}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                    });
+                    
+                    courseList.appendChild(courseItem);
+                });
+                
+                courseSection.appendChild(courseList);
+                resultsContainer.appendChild(courseSection);
+            }
+                    
+            // Add "View all results" link
+            const viewAllLink = document.createElement('div');
+            viewAllLink.className = 'view-all-results';
+            
+            viewAllLink.innerHTML = `<a href="search.php?q=${encodeURIComponent(searchTerm)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}">View all results</a>`;
+            resultsContainer.appendChild(viewAllLink);
+            
+            searchResultsDiv.appendChild(resultsContainer);
+        // Pre-fill with a test value for "POLICY" to demonstrate it working
+        searchInput.value = "POLICY";
+        performSearch("POLICY");
+                        
+                        data.professors.forEach(prof => {
+                            const profItem = document.createElement('div');
+                            profItem.className = 'search-item professor-search-item';
+                            profItem.setAttribute('data-id', prof.id);
+                            
+                            const rating = prof.avg_rating ? prof.avg_rating : null;
+                            const ratingHtml = generateStarRating(rating);
+                            
+                            profItem.innerHTML = `
+                                <div class="search-item-info">
+                                    <h4>${prof.name}</h4>
+                                    <p>${prof.department || 'Department not specified'}</p>
+                                </div>
+                                <div class="search-item-rating">
+                                    ${ratingHtml || '<span class="no-rating">No ratings yet</span>'}
+                                </div>
+                            `;
+                            
+                            // Add click event to view professor page
+                            profItem.addEventListener('click', () => {
+                                // Create URL with no spaces for professor name but display with spaces
+                                // Preserve spaces in professor name
+                                window.location.href = `professor.php?professor=${encodeURIComponent(prof.name)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                            });
+                            
+                            profList.appendChild(profItem);
+                        });
+                        
+                        profSection.appendChild(profList);
+                        resultsContainer.appendChild(profSection);
+                    }
+                    
+                    // Add courses section if we have courses
+                    if (data.courses && Array.isArray(data.courses) && data.courses.length > 0) {
+                        const courseSection = document.createElement('div');
+                        courseSection.className = 'search-section';
+                        courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
+                        
+                        const courseList = document.createElement('div');
+                        courseList.className = 'search-list course-search-list';
+                        
+                        data.courses.forEach(course => {
+                            const courseItem = document.createElement('div');
+                            courseItem.className = 'search-item course-search-item';
+                            courseItem.setAttribute('data-id', course.id);
+                            
+                            const rating = course.avg_rating ? course.avg_rating : null;
+                            const ratingHtml = generateStarRating(rating);
+                            
+                            courseItem.innerHTML = `
+                                <div class="search-item-info">
+                                    <h4>${course.name}</h4>
+                                    <p>Course Code: ${course.course_code || 'N/A'}</p>
+                                </div>
+                                <div class="search-item-rating">
+                                    ${ratingHtml || '<span class="no-rating">No ratings yet</span>'}
+                                </div>
+                            `;
+                            
+                            // Add click event to view course page
+                            courseItem.addEventListener('click', () => {
+                                // Redirect to course page via course.php
+                                window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor || '')}&id=${course.id}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}`;
+                            });
+                            
+                            courseList.appendChild(courseItem);
+                        });
+                        
+                        courseSection.appendChild(courseList);
+                        resultsContainer.appendChild(courseSection);
+                    }
+                    
+                    // Add "View all results" link
+                    const viewAllLink = document.createElement('div');
+                    viewAllLink.className = 'view-all-results';
+                    
+                    // Add text about more results if applicable
+                    let viewAllText = 'View all results';
+                    if (data.professors_more || data.courses_more) {
+                        viewAllText = 'View all results (showing limited preview)';
+                    }
+                    
+                    viewAllLink.innerHTML = `<a href="search.php?q=${encodeURIComponent(searchTerm)}&lang=${currentLanguage === 'japanese' ? 'ja' : 'en'}">${viewAllText}</a>`;
+                    resultsContainer.appendChild(viewAllLink);
+                    
+                    searchResultsDiv.appendChild(resultsContainer);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    searchResultsDiv.innerHTML = `<div class="error">Error performing search. Please try again.</div>`;
+                });
+        }
+        
+        // Function to show professor details (will be implemented later)
+        function showProfessorDetails(profId) {
+            // For now, use the existing modal structure
+            // We'll make an AJAX call to get professor details from the database
+            fetch(`professor_details.php?id=${profId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    
+                    // Use the existing modal but populate with real data
+                    document.getElementById('modalProfessorName').textContent = data.name;
+                    document.getElementById('modalProfessorDepartment').textContent = data.department || 'Department not specified';
+                    document.getElementById('modalProfessorOfficeHours').textContent = data.office_hours || 'Not specified';
+                    document.getElementById('modalProfessorContact').textContent = data.contact || 'Not specified';
+                    document.getElementById('modalProfessorRating').innerHTML = generateStarRating(data.avg_rating);
+                    
+                    // Clear previous reviews
+                    const reviewsContainer = document.getElementById('professorReviews');
+                    reviewsContainer.innerHTML = '';
+                    
+                    // Add reviews if available
+                    if (data.reviews && data.reviews.length > 0) {
+                        data.reviews.forEach(review => {
+                            const reviewElement = document.createElement('div');
+                            reviewElement.className = 'review-item';
+                            
+                            const reviewHeader = document.createElement('div');
+                            reviewHeader.className = 'review-header';
+                            
+                            const userSpan = document.createElement('span');
+                            userSpan.className = 'review-user';
+                            userSpan.textContent = review.username;
+                            
+                            const dateSpan = document.createElement('span');
+                            dateSpan.className = 'review-date';
+                            dateSpan.textContent = review.created_at;
+                            
+                            reviewHeader.appendChild(userSpan);
+                            reviewHeader.appendChild(dateSpan);
+                            
+                            const reviewText = document.createElement('p');
+                            reviewText.textContent = review.comment;
+                            
+                            reviewElement.appendChild(reviewHeader);
+                            reviewElement.appendChild(reviewText);
+                            
+                            reviewsContainer.appendChild(reviewElement);
+                        });
+                    } else {
+                        reviewsContainer.innerHTML = '<p>No reviews yet. Be the first to review!</p>';
+                    }
+                    
+                    // Show the modal
+                    document.getElementById('professorModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error loading professor details:', error);
+                    alert('Error loading professor details. Please try again.');
+                });
+        }
+        
+        // Function to show course details (will be implemented later)
+        function showCourseDetails(courseId) {
+            // Similar to showProfessorDetails but for courses
+            fetch(`course_details.php?id=${courseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    
+                    // Populate the course modal with real data
+                    document.getElementById('modalCourseName').textContent = data.name;
+                    document.getElementById('modalCourseProfessor').textContent = data.professor_name;
+                    document.getElementById('modalCourseDepartment').textContent = data.department || 'Department not specified';
+                    document.getElementById('modalCourseDescription').textContent = data.description || 'No description available';
+                    document.getElementById('modalCourseRating').innerHTML = generateStarRating(data.avg_rating);
+                    
+                    // Clear previous reviews
+                    const reviewsContainer = document.getElementById('courseReviews');
+                    reviewsContainer.innerHTML = '';
+                    
+                    // Add reviews if available
+                    if (data.reviews && data.reviews.length > 0) {
+                        data.reviews.forEach(review => {
+                            const reviewElement = document.createElement('div');
+                            reviewElement.className = 'review-item';
+                            
+                            const reviewHeader = document.createElement('div');
+                            reviewHeader.className = 'review-header';
+                            
+                            const userSpan = document.createElement('span');
+                            userSpan.className = 'review-user';
+                            userSpan.textContent = review.username;
+                            
+                            const dateSpan = document.createElement('span');
+                            dateSpan.className = 'review-date';
+                            dateSpan.textContent = review.created_at;
+                            
+                            reviewHeader.appendChild(userSpan);
+                            reviewHeader.appendChild(dateSpan);
+                            
+                            const reviewText = document.createElement('p');
+                            reviewText.textContent = review.comment;
+                            
+                            reviewElement.appendChild(reviewHeader);
+                            reviewElement.appendChild(reviewText);
+                            
+                            reviewsContainer.appendChild(reviewElement);
+                        });
+                    } else {
+                        reviewsContainer.innerHTML = '<p>No reviews yet. Be the first to review!</p>';
+                    }
+                    
+                    // Show the modal
+                    document.getElementById('courseModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error loading course details:', error);
+                    alert('Error loading course details. Please try again.');
+                });
+        }
+        
+        // Set up live search functionality
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.trim();
+            clearTimeout(searchTimeout);
+            
+            if (searchTerm.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    performSearch(searchTerm);
+                    console.log("Searching for: " + searchTerm);
+                }, 300);
+            } else if (searchTerm.length === 0) {
+                document.getElementById('searchResults').style.display = 'none';
             }
         });
         
-        // Listen for composition events (for IME input methods like Japanese)
-        let isComposing = false;
+        // No pre-filled search - wait for user to type
+        searchInput.value = "";
+        document.getElementById('searchResults').style.display = 'none';
         
-        searchInput.addEventListener('compositionstart', function() {
-            isComposing = true;
-        });
-        
-        searchInput.addEventListener('compositionend', function() {
-            isComposing = false;
-            // Trigger search after composition ends
-            const searchTerm = this.value.trim();
-            debouncedSearch(searchTerm);
-        });
-        
-        // Maintain the search button functionality
-        searchButton.addEventListener('click', function() {
-            if (!isComposing) {
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm.length >= 1) {
-                    performSearch(searchTerm);
-                }
+        // Set up search button click event
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                performSearch(searchTerm);
             }
         });
         
         // Allow search on Enter key press
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !isComposing) {
-                const searchTerm = this.value.trim();
-                if (searchTerm.length >= 1) {
-                    performSearch(searchTerm);
-                }
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchButton.click();
             }
         });
         
-        // Hide search results when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && 
-                !searchButton.contains(e.target) && 
-                !searchResultsDiv.contains(e.target)) {
-                searchResultsDiv.style.display = 'none';
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            const searchResults = document.getElementById('searchResults');
+            const searchContainer = document.querySelector('.search-container');
+            
+            if (!searchContainer.contains(e.target) && searchResults.style.display === 'block') {
+                searchResults.style.display = 'none';
             }
         });
+        function updateLanguageVariables() {
+        // Read cookie directly
+        const languageCookie = document.cookie.split('; ')
+            .find(row => row.startsWith('language='));
+        
+        if (languageCookie) {
+            currentLanguage = languageCookie.split('=')[1];
+            translationLanguage = currentLanguage === 'ja' ? 'japanese' : 'english';
+            console.log("Language variables updated:", currentLanguage, translationLanguage);
+        }
+    }
+
+    // Add event listener for language toggle links
+    document.querySelectorAll('.language-toggle a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // After click, update language variables after a short delay to allow cookie to set
+            setTimeout(updateLanguageVariables, 100);
+        });
     });
+
+    // Also update language variables when page loads
+    document.addEventListener('DOMContentLoaded', updateLanguageVariables);
     </script>
 </body>
 </html>
