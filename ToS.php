@@ -483,7 +483,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
         </div>
         
         <footer>
-            <p>&copy; 2025 Rate My Teacher. All rights reserved.</p>
+            <p>2025 Rate My Teacher</p>
         </footer>
     </div>
     
