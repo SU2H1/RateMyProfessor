@@ -214,14 +214,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <span class="help-block"><?php echo $confirm_password_err; ?></span>
                 </div>
                 <div class="terms-container">
-                    <p>By using our service, you agree to the <a href="">Terms of Use</a></p>
+                    <p>This service is a student-made project and is not affiliated with Keio University</p>
                     <ol>
                         <!-- Terms of use content -->
                     </ol>
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" name="terms" id="terms" value="agree">
-                    <label for="terms">I agree to the Terms of Use</label>
+                    <label for="terms">I consent to the usage of this service</label>
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btn-primary" id='submit-btn' value="Submit" disabled>
