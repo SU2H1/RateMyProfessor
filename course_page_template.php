@@ -908,7 +908,7 @@ $categoryScores = [
     'content' => [
         'score' => 0, 
         'percent' => 0, 
-        'label' => $lang === 'ja' ? '授業内容の質' : 'Content Quality',
+        'label' => $lang === 'ja' ? '授業の質' : 'Content Quality',
         'description' => $lang === 'ja' ? '高いほど良い' : 'Higher is better',
         'color' => '#6c757d' // Default grey (no reviews)
     ],
@@ -2402,7 +2402,7 @@ $sampleReviews = [];
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
                     <div>
                         <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                            <?php echo $lang === 'ja' ? '授業内容の質:' : 'Content Quality:'; ?>
+                            <?php echo $lang === 'ja' ? '授業の質:' : 'Content Quality:'; ?>
                         </label>
                         <select name="content_rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
                             <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
