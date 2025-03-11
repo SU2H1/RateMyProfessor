@@ -349,7 +349,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     <h2>2. サービス内容</h2>
                     <p>当サイトは、学生が教授とコースに関する評価やレビューを投稿し、共有することを目的としています。当サイトは、教育機関の公式ウェブサイトではなく、教育機関の管理下にもありません。</p>
                     <p><strong>このサービスは慶應義塾大学と提携していません。</strong>教育目的のために作成された独立したプラットフォームです。</p>
-                    <p>このサービスは主に<strong>慶應義塾大学湘南藤沢キャンパス</strong>に関連する個人を対象としています。慶應義塾大学湘南藤沢キャンパスの学生、教職員、卒業生のみがこのサービスを利用することができます。</p>
+                    <p>このサービスは主に慶應義塾大学湘南藤沢キャンパスに関連する個人を対象としています。慶應義塾大学湘南藤沢キャンパスの学生、教職員、卒業生のみがこのサービスを利用することができます。</p>
                 </div>
                 
                 <div class="terms-section">
@@ -422,7 +422,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     <h2>2. Service Description</h2>
                     <p>The Site allows students to post and share ratings and reviews of professors and courses. The Site is not an official website of any educational institution and is not under the control of any educational institution.</p>
                     <p><strong>This service is not affiliated with Keio University.</strong> It is an independent platform created for educational purposes.</p>
-                    <p>This service is primarily intended for individuals related to <strong>Keio University Shonan Fujisawa Campus</strong>. Only students, faculty, staff, and alumni of Keio University Shonan Fujisawa Campus are permitted to use this service.</p>
+                    <p>This service is primarily intended for individuals related to Keio University Shonan Fujisawa Campus. Only students, faculty, staff, and alumni of Keio University Shonan Fujisawa Campus are permitted to use this service.</p>
                 </div>
                 
                 <div class="terms-section">
