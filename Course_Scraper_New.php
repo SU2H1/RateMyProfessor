@@ -1,2868 +1,2060 @@
 <?php
+
 /**
- * Course Detail Page Template
- * This page displays detailed information about a specific course
+ * SFC Course Scraper - Test Version for Data Science 1
+ * 
+ * This version:
+ * 1. Tests only Data Science 1 courses from 2023 and 2024
+ * 2. Processes both Japanese and English syllabus URLs
+ * 3. Links courses across languages using K-Number as the unique identifier
+ * 4. Stores both language versions of each course
+ * 5. FIXED: Properly extracts and applies English professor names
+ * 6. ADDED: Extracts semester information (spring/fall)
  */
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Set maximum execution time to 30 minutes for processing multiple URLs with pagination
+ini_set('max_execution_time', 1800);
+set_time_limit(1800);
 
-// Set up an error handler to catch fatal errors
-function fatal_error_handler() {
-    $error = error_get_last();
-    if ($error !== NULL && $error['type'] === E_ERROR) {
-        echo "<h1>Fatal Error</h1>";
-        echo "<pre>";
-        print_r($error);
-        echo "</pre>";
-        
-        // If we have a database connection, close it properly
-        global $db;
-        if ($db) {
-            $db->close();
-        }
-    }
-}
-register_shutdown_function('fatal_error_handler');
-
-// Include database configuration
-require_once 'config.php';
-
-// Start session to check if user is logged in
-require_once 'session_config.php'; //NEW
-session_start();
-$isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
-
-// Debug information - uncomment to see on page
-echo "<!-- Debug Information\n";
-echo "REQUEST: " . print_r($_GET, true) . "\n";
-echo "-->\n";
-
-// Also output to error log
-error_log("REQUEST: " . print_r($_GET, true));
-
-// Load JSON data file
+// JSON file path
 $jsonFilePath = __DIR__ . '/sfc_courses.json';
-if (!file_exists($jsonFilePath)) {
-    echo "Error: JSON data file not found at: $jsonFilePath";
-    exit;
-}
 
-$jsonData = file_get_contents($jsonFilePath);
-if ($jsonData === false) {
-    echo "Error: Could not read JSON data file";
-    exit;
-}
+// Define the specific fields to scrape (used for filtering)
+$targetFields = [
+    'ja' => [
+        // Data Science
+        'データサイエンス1',
+        'データサイエンス１',
+        '基盤科目-データサイエンス科目-データサイエンス1',
+        '23/11/2014/4.基盤科目-データサイエンス科目-データサイエンス1',
+        'データサイエンス2',
+        'データサイエンス２',
 
-$data = json_decode($jsonData, true);
-if ($data === null) {
-    echo "Error: Could not parse JSON data. JSON error: " . json_last_error_msg();
-    exit;
-}
+        // Information Technology
+        '情報技術基礎科目',
+        '基盤科目-情報技術基礎科目',
+        '情報基礎',
+        'プログラミング',
+        'システムプログラミング',
+        'オブジェクト指向',
+        'スクリプト言語',
 
-// Get course parameters from the URL
-$courseParam = isset($_GET['course']) ? urldecode($_GET['course']) : null;
-// Fix potential encoding issues with course name
-if ($courseParam) {
-    // If we detect broken UTF-8 characters or specific problematic encodings
-    if (strpos($courseParam, '�') !== false || !mb_check_encoding($courseParam, 'UTF-8')) {
-        error_log("Detected encoding issues with course parameter: " . bin2hex($courseParam));
-        // Try to fix by manually setting common course names
-        if (strpos($courseParam, 'パーソ') !== false && strpos($courseParam, 'リティ発達論') !== false) {
-            $courseParam = 'パーソナリティ発達論';
-            error_log("Fixed course name to: パーソナリティ発達論");
-        }
-    }
-}
-$professorParam = isset($_GET['professor']) ? $_GET['professor'] : null;
-$year = isset($_GET['year']) ? $_GET['year'] : null;
-
-// Debug original and processed course parameter
-error_log("Original course parameter: " . (isset($_GET['course']) ? $_GET['course'] : 'null'));
-error_log("Processed course parameter: " . ($courseParam ?? 'null'));
-
-// Force a clean reload if we're viewing from a review submission
-if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
-    // Set a no-cache header
-    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-    header("Pragma: no-cache");
-    header("Expires: 0");
-}
-
-// No longer doing any special case handling for course names
-// Treat all courses consistently
-
-// Debug output
-error_log("Course: " . ($courseParam ?? 'none'));
-error_log("Professor: " . ($professorParam ?? 'none'));
-error_log("Year: " . ($year ?? 'none'));
-
-// Default to Japanese, but allow language switching
-$lang = isset($_GET['lang']) ? $_GET['lang'] : 'ja';
-// Convert "jp" to "ja" for internal consistency
-if ($lang === 'jp') $lang = 'ja';
-
-// We need at least course name
-if (!$courseParam) {
-    echo "Course name is required.";
-    exit;
-}
-
-// Define courseId variable (it was removed earlier but still referenced)
-$courseId = null;
-
-// Debug info for URL parameters
-error_log("URL Parameters - course: " . ($courseParam ?? 'null') . ", professor: " . ($professorParam ?? 'null') . ", year: " . ($year ?? 'null'));
-echo "<!-- Debug info: Course param: " . htmlspecialchars($courseParam ?? 'null') . " -->";
-echo "<!-- Debug info: Professor param: " . htmlspecialchars($professorParam ?? 'null') . " -->";
-
-// Special handling if we have a new_review parameter
-if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
-    error_log("New review detected! Review ID: " . ($_GET['review_id'] ?? 'unknown'));
-    echo "<!-- New review detected! Review ID: " . ($_GET['review_id'] ?? 'unknown') . " -->";
-}
-
-// Find the course in our JSON data
-$course = null;
-
-// Initialize dbCourse variable
-$dbCourse = null;
-
-// First try to find by direct database ID if provided
-if ($courseId && is_numeric($courseId)) {
-    try {
-        error_log("Attempting to connect to database to find course by ID: $courseId");
-        $db = new SQLite3('database/ratemyteacher.db');
-        
-        // Try to find the course in the database
-        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE id = :id LIMIT 1");
-        $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
-        $result = $stmt->execute();
-        $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-        
-        if ($dbCourse) {
-            error_log("Found course in database by ID: $courseId, Name: " . ($dbCourse['name'] ?? 'Unknown'));
-            
-            // If we found the course in DB, see if we can find it in JSON data for additional info
-            foreach ($data['courses'] as $c) {
-                if (isset($c['course_id']) && $c['course_id'] === $dbCourse['course_code']) {
-                    $course = $c;
-                    error_log("Found matching course in JSON data by course_code: " . $dbCourse['course_code']);
-                    break;
-                }
-            }
-        }
-    } catch (Exception $e) {
-        error_log("Database error when looking up course by ID: " . $e->getMessage());
-    }
-}
-
-// If course not yet found in JSON data but we have course name parameter, try to find it
-if (!$course && $courseParam) {
-    error_log("Searching for course by name parameter: $courseParam");
-    
-    // First, check if this course name exists in database
-    try {
-        if (!isset($db) || $db === null) {
-            $db = new SQLite3('database/ratemyteacher.db');
-        }
-        
-        // Look for course by name in database - try exact and partial match
-        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE name = :name OR name LIKE :like_name LIMIT 1");
-        $stmt->bindValue(':name', $courseParam, SQLITE3_TEXT);
-        $stmt->bindValue(':like_name', '%' . $courseParam . '%', SQLITE3_TEXT);
-        $result = $stmt->execute();
-        $dbCourseByName = $result->fetchArray(SQLITE3_ASSOC);
-        
-        if ($dbCourseByName) {
-            error_log("Found course in database by name: $courseParam, ID: " . $dbCourseByName['id']);
-            $dbCourse = $dbCourseByName;
-            $courseId = $dbCourseByName['id']; // Update courseId for later use
-            
-            // If dbCourse was found by name but not by ID earlier, find in JSON
-            if (!$course) {
-                foreach ($data['courses'] as $c) {
-                    if (isset($c['course_id']) && $c['course_id'] === $dbCourseByName['course_code']) {
-                        $course = $c;
-                        error_log("Found matching course in JSON data by course_code: " . $dbCourseByName['course_code']);
-                        break;
-                    }
-                }
-            }
-        }
-    } catch (Exception $e) {
-        error_log("Database error when looking up course by name: " . $e->getMessage());
-    }
-    
-    // If still not found in database or JSON, search in JSON data
-    if (!$course) {
-        error_log("Course not found in database, searching JSON data");
-        foreach ($data['courses'] as $c) {
-            $matchesCourseName = false;
-            $matchesProfessor = !$professorParam; // If no professor specified, count as match
-            
-            // Debug to find the course we're looking for
-            error_log("Checking course: " . ($c['translations']['en']['name'] ?? 'Unknown'));
-            error_log("Looking for: $courseParam");
-            
-            // Check course name in both languages - exact match with the param
-            if (isset($c['translations']['ja']['name']) && 
-                $c['translations']['ja']['name'] === $courseParam) {
-                $matchesCourseName = true;
-                error_log("Found matching course name (JA)");
-            } else if (isset($c['translations']['en']['name']) && 
-                $c['translations']['en']['name'] === $courseParam) {
-                $matchesCourseName = true;
-                error_log("Found matching course name (EN)");
-            }
-            
-            // Check professor name if specified - exact match with professor's English name without spaces
-            if ($professorParam) {
-                foreach ($c['professors'] as $prof) {
-                    // Clean up professor's English name to match URL format
-                    $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
-                    error_log("Comparing professor: '$profNameUrl' with '$professorParam'");
-                    if ($profNameUrl === $professorParam) {
-                        $matchesProfessor = true;
-                        error_log("Found matching professor");
-                        break;
-                    }
-                }
-            }
-            
-            // Check year match
-            $yearMatches = ($year === null || $c['year'] === $year);
-            error_log("Year match: " . ($yearMatches ? 'Yes' : 'No') . " (Looking for: $year, Course year: {$c['year']})");
-            
-            // If all parameters match, this is our course
-            if ($matchesCourseName && $matchesProfessor && $yearMatches) {
-                $course = $c;
-                error_log("FOUND MATCHING COURSE!");
-                
-                // Now check if this course exists in the database
-                try {
-                    if (!isset($db) || $db === null) {
-                        $db = new SQLite3('database/ratemyteacher.db');
-                    }
-                    
-                    // Try to find by name
-                    $courseName = $lang === 'ja' ? 
-                        ($c['translations']['ja']['name'] ?? $c['translations']['en']['name']) : 
-                        ($c['translations']['en']['name'] ?? $c['translations']['ja']['name']);
-                    
-                    $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE name = :name OR name LIKE :like_name LIMIT 1");
-                    $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
-                    $stmt->bindValue(':like_name', '%' . $courseName . '%', SQLITE3_TEXT);
-                    $result = $stmt->execute();
-                    $foundDbCourse = $result->fetchArray(SQLITE3_ASSOC);
-                    
-                    if ($foundDbCourse) {
-                        $dbCourse = $foundDbCourse;
-                        $courseId = $foundDbCourse['id']; // Update courseId for later use
-                        error_log("Found database entry for JSON course: ID=" . $foundDbCourse['id']);
-                    } else if (isset($c['course_id'])) {
-                        // Try to find by course_code
-                        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE course_code = :code LIMIT 1");
-                        $stmt->bindValue(':code', $c['course_id'], SQLITE3_TEXT);
-                        $result = $stmt->execute();
-                        $foundDbCourse = $result->fetchArray(SQLITE3_ASSOC);
-                        
-                        if ($foundDbCourse) {
-                            $dbCourse = $foundDbCourse;
-                            $courseId = $foundDbCourse['id']; // Update courseId for later use
-                            error_log("Found database entry for JSON course by code: ID=" . $foundDbCourse['id']);
-                        }
-                    }
-                } catch (Exception $e) {
-                    error_log("Database error when cross-referencing JSON course: " . $e->getMessage());
-                }
-                
-                break;
-            }
-        }
-        
-        // If still not found, try a less strict search (partial course name match)
-        if (!$course) {
-            error_log("No exact match found, trying partial match");
-            foreach ($data['courses'] as $c) {
-                $matchesProfessor = !$professorParam; // If no professor specified, count as match
-                
-                // Check if course name contains the search term
-                $courseNameJa = $c['translations']['ja']['name'] ?? '';
-                $courseNameEn = $c['translations']['en']['name'] ?? '';
-                
-                // For course page template, we MUST use exact matching to avoid confusion
-                $containsCourseName = 
-                    (strcasecmp($courseNameJa, $courseParam) === 0) || 
-                    (strcasecmp($courseNameEn, $courseParam) === 0);
-                    
-                if ($containsCourseName) {
-                    error_log("Found partial course name match: $courseNameEn");
-                }
-                
-                // Check professor name if specified
-                if ($professorParam) {
-                    foreach ($c['professors'] as $prof) {
-                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
-                        if ($profNameUrl === $professorParam) {
-                            $matchesProfessor = true;
-                            break;
-                        }
-                    }
-                }
-                
-                // Check year match
-                $yearMatches = ($year === null || $c['year'] === $year);
-                
-                // If all parameters match, this is our course
-                if ($containsCourseName && $matchesProfessor && $yearMatches) {
-                    $course = $c;
-                    error_log("FOUND COURSE BY PARTIAL MATCH!");
-                    
-                    // Now check if this course exists in the database (same as above)
-                    try {
-                        if (!isset($db) || $db === null) {
-                            $db = new SQLite3('database/ratemyteacher.db');
-                        }
-                        
-                        // Try to find by name
-                        $courseName = $lang === 'ja' ? 
-                            ($c['translations']['ja']['name'] ?? $c['translations']['en']['name']) : 
-                            ($c['translations']['en']['name'] ?? $c['translations']['ja']['name']);
-                        
-                        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE name = :name OR name LIKE :like_name LIMIT 1");
-                        $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
-                        $stmt->bindValue(':like_name', '%' . $courseName . '%', SQLITE3_TEXT);
-                        $result = $stmt->execute();
-                        $foundDbCourse = $result->fetchArray(SQLITE3_ASSOC);
-                        
-                        if ($foundDbCourse) {
-                            $dbCourse = $foundDbCourse;
-                            $courseId = $foundDbCourse['id']; // Update courseId for later use
-                            error_log("Found database entry for JSON course: ID=" . $foundDbCourse['id']);
-                        } else if (isset($c['course_id'])) {
-                            // Try to find by course_code
-                            $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE course_code = :code LIMIT 1");
-                            $stmt->bindValue(':code', $c['course_id'], SQLITE3_TEXT);
-                            $result = $stmt->execute();
-                            $foundDbCourse = $result->fetchArray(SQLITE3_ASSOC);
-                            
-                            if ($foundDbCourse) {
-                                $dbCourse = $foundDbCourse;
-                                $courseId = $foundDbCourse['id']; // Update courseId for later use
-                                error_log("Found database entry for JSON course by code: ID=" . $foundDbCourse['id']);
-                            }
-                        }
-                    } catch (Exception $e) {
-                        error_log("Database error when cross-referencing JSON course: " . $e->getMessage());
-                    }
-                    
-                    break;
-                }
-            }
-        }
-    }
-}
-
-// Try to connect to database to find course info if we don't have it yet
-try {
-    error_log("Attempting to connect to database");
-    $db = new SQLite3('database/ratemyteacher.db');
-    error_log("Database connection successful");
-
-    // Check database structure
-    $tables = [];
-    $result = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
-    while ($table = $result->fetchArray(SQLITE3_ASSOC)) {
-        $tables[] = $table['name'];
-    }
-    
-    // Debug info
-    error_log("Database tables: " . implode(", ", $tables));
-    
-    // Look for course in database if we have numeric ID and haven't found it yet
-    if ($courseId && is_numeric($courseId) && in_array('courses', $tables) && !$dbCourse) {
-        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE id = :id LIMIT 1");
-        $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
-        $result = $stmt->execute();
-        $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-        error_log("Looking for course by direct ID: $courseId, found: " . ($dbCourse ? "yes" : "no"));
-    }
-} catch (Exception $e) {
-    error_log("Database error: " . $e->getMessage());
-    $dbCourse = null;
-    $db = null;
-}
-
-// When coming directly from account page via ID, we can skip the JSON data lookup
-$skipJsonRequirement = ($courseId && is_numeric($courseId) && $dbCourse);
-
-// No special case handling for any courses - all courses are treated equally
-
-// If course not found and not viewing by direct ID, show error with more information
-if (!$course && !$skipJsonRequirement) {
-    echo "<!DOCTYPE html>
-<html>
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>Course Not Found</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }
-        .error-container { background: #f8d7da; border: 1px solid #f5c6cb; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-        .debug-container { background: #e2e3e5; border: 1px solid #d6d8db; padding: 20px; border-radius: 5px; margin-top: 20px; }
-        h1 { color: #721c24; }
-        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
-    </style>
-</head>
-<body>
-    <div class=\"error-container\">
-        <h1>Course Not Found</h1>
-        <p>Sorry, we couldn't find the requested course with the provided parameters.</p>
-        <p>Please check the URL and try again.</p>
-        <p><a href=\"home.php\">Return to Home Page</a></p>
-    </div>
-    
-    <div class=\"debug-container\">
-        <h2>Debug Information</h2>
-        <h3>Parameters Received:</h3>
-        <pre>Course: " . htmlspecialchars($courseParam ?? 'Not provided') . "
-Professor: " . htmlspecialchars($professorParam ?? 'Not provided') . "
-Year: " . htmlspecialchars($year ?? 'Not provided') . "
-Language: " . htmlspecialchars($lang ?? 'Not provided') . "
-ID: " . htmlspecialchars($courseId ?? 'Not provided') . "</pre>
-        
-        <h3>First 5 Courses in Database:</h3>
-        <pre>";
-    $count = 0;
-    foreach ($data['courses'] as $c) {
-        if ($count++ >= 5) break;
-        echo "ID: " . htmlspecialchars($c['course_id'] ?? 'Unknown') . "\n";
-        echo "Year: " . htmlspecialchars($c['year'] ?? 'Unknown') . "\n";
-        echo "Name (EN): " . htmlspecialchars($c['translations']['en']['name'] ?? 'Unknown') . "\n";
-        echo "Name (JA): " . htmlspecialchars($c['translations']['ja']['name'] ?? 'Unknown') . "\n";
-        echo "Professors: ";
-        foreach ($c['professors'] as $prof) {
-            echo htmlspecialchars($prof['name']['en'] ?? 'Unknown') . ", ";
-        }
-        echo "\n\n";
-    }
-    echo "</pre>
-    </div>
-</body>
-</html>";
-    exit;
-}
-
-// If viewing from account page (direct ID), create a minimal course object for display
-if ($skipJsonRequirement && !$course) {
-    // Get course details from database
-    try {
-        $stmt = $db->prepare("SELECT name, course_code, description, semester FROM courses WHERE id = :id LIMIT 1");
-        $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
-        $result = $stmt->execute();
-        $courseDetails = $result->fetchArray(SQLITE3_ASSOC);
-        
-        if ($courseDetails) {
-            // Extract field information from description if possible
-            $fieldInfo = 'Fundamental Subjects - Interdisciplinary Subjects';
-            
-            // Try to extract field info from description
-            if (!empty($courseDetails['description'])) {
-                // Parse description for field info
-                if (preg_match('/Japanese Field:\s*([^\n]+)/i', $courseDetails['description'], $matches)) {
-                    $jaField = trim($matches[1]);
-                    $fieldInfo = $jaField;
-                }
-                if (preg_match('/English Field:\s*([^\n]+)/i', $courseDetails['description'], $matches)) {
-                    $enField = trim($matches[1]);
-                    if ($lang === 'en') {
-                        $fieldInfo = $enField;
-                    }
-                }
-            }
-            
-            // Special handling for course ID 30 (パーソナリティ発達論)
-            if ($courseId == 30) {
-                $fieldInfo = $lang === 'ja' ? '基盤科目-超域科目' : 'Fundamental Subjects - Interdisciplinary Subjects';
-                
-                // Check if professor Yoko Hamada exists
-                $profStmt = $db->prepare("SELECT id, name FROM professors WHERE name LIKE '%Hamada%' OR name LIKE '%Yoko%' LIMIT 1");
-                $profResult = $profStmt->execute();
-                $professorDetails = $profResult->fetchArray(SQLITE3_ASSOC);
-                
-                // Create a professor entry if found
-                $professors = [];
-                if ($professorDetails) {
-                    $professors[] = [
-                        'id' => $professorDetails['id'],
-                        'name' => [
-                            'en' => 'Yoko Hamada',
-                            'ja' => '濱田 陽子'
-                        ],
-                        'department' => [
-                            'en' => 'Faculty of Environment and Information Studies',
-                            'ja' => '環境情報学部'
-                        ]
-                    ];
-                }
-            } else {
-                // Default empty professors array for other courses
-                $professors = [];
-            }
-            
-            // Create a minimal course object
-            $course = [
-                'course_id' => $courseDetails['course_code'] ?? $courseId,
-                'year' => '2023&2024',
-                'semester' => $courseDetails['semester'] ?? 'spring',  // Include semester from database, default to spring if not set
-                'translations' => [
-                    'en' => ['name' => $courseDetails['name'], 'field' => $fieldInfo],
-                    'ja' => ['name' => $courseDetails['name'], 'field' => $fieldInfo]
-                ],
-                'professors' => $professors
-            ];
-            
-            // Set translation to current language
-            $translation = $course['translations'][$lang];
-            
-            error_log("Created enhanced course object for DB ID: $courseId, Name: {$courseDetails['name']}");
-        } else {
-            error_log("Failed to get course details for ID: $courseId");
-        }
-    } catch (Exception $e) {
-        error_log("Error getting course details: " . $e->getMessage());
-    }
-}
-
-// Language was already set above
-
-// Get translation for this language
-$translation = $course['translations'][$lang] ?? null;
-if (!$translation) {
-    echo "Translation not available for selected language.";
-    exit;
-}
-
-// Connect to database to get ratings (only if we don't already have a connection)
-if (!isset($db) || $db === null) {
-    try {
-        error_log("Attempting to connect to database");
-        $db = new SQLite3('database/ratemyteacher.db');
-        error_log("Database connection successful");
-    } catch (Exception $e) {
-        error_log("Database connection error: " . $e->getMessage());
-        $db = null;
-    }
-} 
-
-// If we have a database connection, proceed with querying
-if ($db) {
-    try {
-        error_log("Using database connection");
-        
-        // Let's check database structure to avoid errors
-        $tables = [];
-        $result = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
-        while ($table = $result->fetchArray(SQLITE3_ASSOC)) {
-            $tables[] = $table['name'];
-        }
-        
-        // Debug info
-        error_log("Database tables: " . implode(", ", $tables));
-        
-        // Only proceed if courses table exists
-        $dbCourse = null;
-        if (in_array('courses', $tables)) {
-        // Check columns in courses table to avoid "no such column" errors
-        $columns = [];
-        $result = $db->query("PRAGMA table_info(courses)");
-        while ($column = $result->fetchArray(SQLITE3_ASSOC)) {
-            $columns[] = $column['name'];
-        }
-        
-        error_log("Courses table columns: " . implode(", ", $columns));
-        
-        // Attempt to find the course in the database using appropriate columns
-        // First try to find by direct ID match (when linked from account page)
-        if ($courseId && is_numeric($courseId)) {
-            $stmt = $db->prepare("SELECT id FROM courses WHERE id = :id LIMIT 1");
-            $stmt->bindValue(':id', $courseId, SQLITE3_INTEGER);
-            $result = $stmt->execute();
-            $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-            error_log("Looking up course by direct ID: $courseId, found: " . ($dbCourse ? "yes" : "no"));
-        }
-        
-        // If not found by direct ID, try course_id field
-        if (!$dbCourse && in_array('course_id', $columns) && $courseId) {
-            $stmt = $db->prepare("SELECT id FROM courses WHERE course_id = :course_id LIMIT 1");
-            $stmt->bindValue(':course_id', $courseId, SQLITE3_TEXT);
-            $result = $stmt->execute();
-            $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-            error_log("Looking up course by course_id field: $courseId, found: " . ($dbCourse ? "yes" : "no"));
-        } 
-        
-        // If still not found, try by name
-        if (!$dbCourse && in_array('name', $columns) && isset($translation['name'])) {
-            $stmt = $db->prepare("SELECT id FROM courses WHERE name = :name LIMIT 1");
-            $stmt->bindValue(':name', $translation['name'], SQLITE3_TEXT);
-            $result = $stmt->execute();
-            $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
-            error_log("Looking up course by name: " . $translation['name'] . ", found: " . ($dbCourse ? "yes" : "no"));
-        } 
-        
-        if (!$dbCourse) {
-            error_log("Could not find course in database. Course ID: $courseId");
-        }
-    } else {
-        error_log("Courses table not found in database");
-    }
-    } catch (Exception $e) {
-        error_log("Database error: " . $e->getMessage());
-        $dbCourse = null;
-        $db = null;
-    }
-}
-
-$hasRatings = false;
-$avgRating = 0;
-$ratingCount = 0;
-$reviews = [];
-
-// Get a courseId variable for backward compatibility with existing code
-$courseId = $dbCourse['id'] ?? null;
-
-// If course exists in the database and database is connected, get ratings
-if ($dbCourse && $db) {
-    try {
-        $courseDbId = $dbCourse['id'];
-        
-        // Check if ratings table exists
-        $tablesResult = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='ratings'");
-        $ratingsTableExists = $tablesResult->fetchArray(SQLITE3_ASSOC) !== false;
-        
-        if ($ratingsTableExists) {
-            // Check columns in ratings table
-            $columns = [];
-            $result = $db->query("PRAGMA table_info(ratings)");
-            while ($column = $result->fetchArray(SQLITE3_ASSOC)) {
-                $columns[] = $column['name'];
-            }
-            
-            error_log("Ratings table columns: " . implode(", ", $columns));
-            
-            // Only proceed if needed columns exist
-            if (in_array('course_id', $columns) && in_array('rating', $columns)) {
-                // For debugging purposes, check if there are any ratings at all
-                $checkStmt = $db->prepare("SELECT COUNT(*) as total FROM ratings");
-                $checkResult = $checkStmt->execute();
-                $totalRatings = $checkResult->fetchArray(SQLITE3_ASSOC)['total'];
-                error_log("DEBUG: Total ratings in database: $totalRatings");
-                echo "<!-- DEBUG: Total ratings in database: $totalRatings -->";
-                
-                // Simplified approach - just get all ratings for this course
-                $stmt = $db->prepare("
-                    SELECT AVG(rating) as avg_rating, COUNT(id) as rating_count 
-                    FROM ratings 
-                    WHERE course_id = :course_id
-                ");
-                $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-                error_log("Using only course_id filter to get all ratings for this course");
-                $result = $stmt->execute();
-                $ratingData = $result->fetchArray(SQLITE3_ASSOC);
-                
-                error_log("DEBUG: Found " . ($ratingData ? $ratingData['rating_count'] : 0) . " ratings for course ID: $courseDbId");
-                echo "<!-- DEBUG: Rating data for courseDbId $courseDbId: " . print_r($ratingData, true) . " -->";
-                
-                if ($ratingData && $ratingData['rating_count'] > 0) {
-                    $hasRatings = true;
-                    $avgRating = number_format((float)$ratingData['avg_rating'], 1);
-                    $ratingCount = $ratingData['rating_count'];
-                    
-                    // Wrap this section in a try/catch to isolate errors
-                    try {
-                        // Get reviews if user is logged in
-                        // Debug reviews
-                        error_log("Fetching reviews for course ID: $courseDbId");
-                        
-                        // Always try to fetch reviews (not just when logged in)
-                        // Check users table
-                        $usersTableExists = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")->fetchArray(SQLITE3_ASSOC) !== false;
-                        
-                        if ($usersTableExists) {
-                            // First, check how many raw ratings we have for this course
-                            $countStmt = $db->prepare("SELECT COUNT(*) as count FROM ratings WHERE course_id = :course_id");
-                            $countStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-                            $countResult = $countStmt->execute();
-                            $ratingCount = $countResult->fetchArray(SQLITE3_ASSOC)['count'];
-                            
-                            error_log("DEBUG: Found $ratingCount ratings for course ID $courseDbId");
-                            echo "<!-- DEBUG: Found $ratingCount ratings for course ID $courseDbId -->";
-                            
-                            // Simplify the process - just get raw ratings
-                            error_log("Fetching raw ratings for course ID: $courseDbId");
-                            
-                            try {
-                                // Create simple reviews with minimal error potential
-                                $reviews = [];
-                                
-                                // First check what columns are available in the ratings table
-                                $availableColumns = $columns; // We already have this from earlier PRAGMA query
-                                
-                                // Build the SQL query based on available columns
-                                $selectColumns = "id, rating"; // These should always exist
-                                
-                                // Add optional columns if they exist
-                                if (in_array('content_rating', $availableColumns)) $selectColumns .= ", content_rating";
-                                if (in_array('difficulty_rating', $availableColumns)) $selectColumns .= ", difficulty_rating";
-                                if (in_array('grade', $availableColumns)) $selectColumns .= ", grade";
-                                if (in_array('comment', $availableColumns)) $selectColumns .= ", comment";
-                                if (in_array('textbook', $availableColumns)) $selectColumns .= ", textbook";
-                                if (in_array('attendance_check', $availableColumns)) $selectColumns .= ", attendance_check";
-                                if (in_array('first_half', $availableColumns)) $selectColumns .= ", first_half";
-                                if (in_array('second_half', $availableColumns)) $selectColumns .= ", second_half";
-                                if (in_array('user_id', $availableColumns)) $selectColumns .= ", user_id";
-                                if (in_array('created_at', $availableColumns)) $selectColumns .= ", created_at";
-                                
-                                // Modify SQL to specifically look for reviews for this exact course with professor
-                                // We need to get professor_id to make this work
-                                $professorId = null;
-                                
-                                // Try to get the professor ID based on the professor parameter
-                                if ($professorParam) {
-                                    $profStmt = $db->prepare("
-                                        SELECT id FROM professors 
-                                        WHERE REPLACE(name, ' ', '') = :name 
-                                        LIMIT 1
-                                    ");
-                                    $profStmt->bindValue(':name', $professorParam, SQLITE3_TEXT);
-                                    $profResult = $profStmt->execute();
-                                    $profRow = $profResult->fetchArray(SQLITE3_ASSOC);
-                                    
-                                    if ($profRow) {
-                                        $professorId = $profRow['id'];
-                                        error_log("Found professor ID: $professorId for $professorParam");
-                                    }
-                                }
-                                
-                                // We're going to use professor filtering when available
-                                // This will ensure reviews are properly filtered by both course and professor
-                                $sql = "SELECT $selectColumns FROM ratings WHERE course_id = :course_id";
-                                
-                                // Add professor filtering if we have a professor ID
-                                if ($professorId) {
-                                    $sql .= " AND professor_id = :professor_id";
-                                    error_log("Including professor filter in query with ID: $professorId");
-                                }
-                                
-                                $sql .= " ORDER BY created_at DESC";
-                                error_log("SQL Query for reviews: $sql");
-                                
-                                // Get ratings without any joins but get all rating fields
-                                $simpleStmt = $db->prepare($sql);
-                                
-                                // Check if prepare was successful
-                                if ($simpleStmt === false) {
-                                    error_log("Error preparing statement: " . $db->lastErrorMsg());
-                                    throw new Exception("Database prepare error: " . $db->lastErrorMsg());
-                                }
-                                
-                                $simpleStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-                                
-                                // Bind professor ID if we're filtering by professor
-                                if ($professorId) {
-                                    $simpleStmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
-                                }
-                                $simpleResult = $simpleStmt->execute();
-                                
-                                // Process each rating
-                                while ($row = $simpleResult->fetchArray(SQLITE3_ASSOC)) {
-                                    // Format the date if possible
-                                    $formattedDate = 'Unknown Date';
-                                    if (isset($row['created_at']) && !empty($row['created_at'])) {
-                                        try {
-                                            $timestamp = strtotime($row['created_at']);
-                                            if ($timestamp !== false) {
-                                                $formattedDate = date('F j, Y', $timestamp);
-                                            }
-                                        } catch (Exception $dateEx) {
-                                            error_log("Error formatting date: " . $dateEx->getMessage());
-                                        }
-                                    }
-                                    
-                                    // Add to reviews array with default username and user_id for deletion
-                                    $reviewData = [
-                                        'id' => $row['id'],
-                                        'rating' => $row['rating'] ?? 3, // Default to 3 if missing
-                                        'created_at' => $formattedDate,
-                                        'username' => 'Student', // Simple default username
-                                        'user_id' => isset($row['user_id']) ? $row['user_id'] : 0  // Include user_id for permission checking
-                                    ];
-                                    
-                                    // Add optional fields if they exist (cast numeric values to appropriate types)
-                                    if (array_key_exists('content_rating', $row)) $reviewData['content_rating'] = (float)$row['content_rating'];
-                                    if (array_key_exists('difficulty_rating', $row)) $reviewData['difficulty_rating'] = (float)$row['difficulty_rating'];
-                                    if (array_key_exists('grade', $row)) $reviewData['grade'] = $row['grade'];
-                                    if (array_key_exists('comment', $row)) $reviewData['comment'] = $row['comment'];
-                                    if (array_key_exists('textbook', $row)) $reviewData['textbook'] = $row['textbook'];
-                                    if (array_key_exists('attendance_check', $row)) $reviewData['attendance_check'] = $row['attendance_check'];
-                                    if (array_key_exists('first_half', $row)) $reviewData['first_half'] = $row['first_half'];
-                                    if (array_key_exists('second_half', $row)) $reviewData['second_half'] = $row['second_half'];
-                                    
-                                    // Debug review data
-                                    error_log("Review data for ID " . $row['id'] . ": " . print_r($reviewData, true));
-                                    
-                                    $reviews[] = $reviewData;
-                                }
-                                
-                                error_log("DEBUG: Processed " . count($reviews) . " reviews for display");
-                            } catch (Exception $ratingEx) {
-                                error_log("Error processing ratings: " . $ratingEx->getMessage());
-                                // Create a sample review to show the error
-                                $reviews = [[
-                                    'id' => 0,
-                                    'rating' => 3,
-                                    'comment' => 'Error loading reviews: ' . $ratingEx->getMessage(),
-                                    'created_at' => date('F j, Y'),
-                                    'username' => 'System'
-                                ]];
-                            }
-                        } else {
-                            error_log("Users table not found in database");
-                        }
-                    } catch (Exception $reviewEx) {
-                        error_log("Error in review section: " . $reviewEx->getMessage());
-                        // Create a fallback review to display the error
-                        $reviews = [[
-                            'id' => 0, 
-                            'rating' => 3,
-                            'comment' => 'Error loading reviews section: ' . $reviewEx->getMessage(),
-                            'created_at' => date('F j, Y'),
-                            'username' => 'System'
-                        ]];
-                    }
-                }
-            } else {
-                error_log("Required columns not found in ratings table");
-            }
-        } else {
-            error_log("Ratings table not found in database");
-        }
-    } catch (Exception $e) {
-        error_log("Error fetching ratings: " . $e->getMessage());
-    }
-}
-
-// Create the star rating display
-function generateStarRating($rating) {
-    $fullStars = floor($rating);
-    $halfStar = $rating - $fullStars >= 0.5;
-    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-    
-    $html = '';
-    
-    // Full stars
-    for ($i = 0; $i < $fullStars; $i++) {
-        $html .= '★';
-    }
-    
-    // Half star
-    if ($halfStar) {
-        $html .= '★';
-    }
-    
-    // Empty stars
-    for ($i = 0; $i < $emptyStars; $i++) {
-        $html .= '☆';
-    }
-    
-    return $html;
-}
-
-// Get the opposite language for language switcher
-$oppositeLang = $lang === 'ja' ? 'en' : 'ja';
-$oppositeLabel = $lang === 'ja' ? 'English' : '日本語';
-
-// Page title based on course name
-$pageTitle = htmlspecialchars($translation['name']);
-
-// Get semester info
-$semester = $lang === 'ja' ? '春学期' : 'Spring Semester'; // Default value
-
-// Get semester from database if available
-if (isset($course['semester'])) {
-    // Format the semester based on the value and language
-    if ($course['semester'] === 'spring') {
-        $semester = $lang === 'ja' ? '春学期' : 'Spring Semester';
-    } elseif ($course['semester'] === 'fall') {
-        $semester = $lang === 'ja' ? '秋学期' : 'Fall Semester';
-    } else {
-        // For any other value, just display it with the word "Semester"
-        $semester = ucfirst($course['semester']) . ($lang === 'ja' ? '学期' : ' Semester');
-    }
-}
-
-// Set up category scores for display
-$categoryScores = [
-    'content' => [
-        'score' => 0, 
-        'percent' => 0, 
-        'label' => $lang === 'ja' ? '授業の質' : 'Content Quality',
-        'description' => $lang === 'ja' ? '高いほど良い' : 'Higher is better',
-        'color' => '#6c757d' // Default grey (no reviews)
+        // Other subject categories
+        '総合政策・環境情報学部/2014/基盤科目-総合講座科目',
+        '総合政策・環境情報学部/2014/基盤科目-言語コミュニケーション科目',
+        '総合政策・環境情報学部/2014/基盤科目-データサイエンス科目-データサイエンス2',
+        '総合政策・環境情報学部/2014/基盤科目-情報技術基礎科目',
+        '総合政策・環境情報学部/2014/基盤科目-共通科目',
+        '総合政策・環境情報学部/2014/先端科目-総合政策系',
+        '総合政策・環境情報学部/2014/先端科目-環境情報系',
+        '総合政策・環境情報学部/2014/特設科目',
+        '基盤科目-総合講座科目',
+        '基盤科目-言語コミュニケーション科目',
+        '基盤科目-共通科目',
+        '先端科目-総合政策系',
+        '先端科目-環境情報系',
+        '特設科目'
     ],
-    'difficulty' => [
-        'score' => 0, 
-        'percent' => 0, 
-        'raw_score' => 0,
-        'label' => $lang === 'ja' ? '難易度' : 'Difficulty',
-        'description' => $lang === 'ja' ? '高いほど難しい' : 'Higher = more difficult',
-        'color' => '#6c757d' // Default grey (no reviews)
+    'en' => [
+        // Data Science
+        'DATA SCIENCE 1',
+        'DATA SCIENCE I',
+        'FUNDAMENTAL SUBJECTS - SUBJECTS OF DATA SCIENCE - DATA SCIENCE 1',
+        '23/11/2014/4.FUNDAMENTAL SUBJECTS - SUBJECTS OF DATA SCIENCE - DATA SCIENCE 1',
+        'Subjects of Data Science - Data Science 2',
+        'DATA SCIENCE 2',
+
+        // Information Technology
+        'FUNDAMENTALS OF INFORMATION TECHNOLOGY',
+        'PROGRAMMING',
+        'SYSTEM PROGRAMMING',
+        'OBJECT-ORIENTED PROGRAMMING',
+        'SCRIPT LANGUAGES',
+        'Subjects of Fundamentals of Information Technology',
+
+        // Other subject categories
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Fundamental Subjects - Introductory Subjects',
+        'Fundamental Subjects - Introductory Subjects',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Fundamental Subjects - Subjects of Language Communication',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Fundamental Subjects - Subjects of Data Science - Data Science 2',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Fundamental Subjects - Subjects of Fundamentals of Information Technology',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Fundamental Subjects - Interdisciplinary Subjects',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Advanced Subjects - Series of Policy Management',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Advanced Subjects - Series of Environment And Information Studies',
+        'FACULTY OF POLICY MANAGEMENT / ENVIRONMENT AND INFORMATION STUDIES/2014/Special Subjects',
+        'Fundamental Subjects - Subjects of Language Communication',
+        'Interdisciplinary Subjects',
+        'Advanced Subjects - Series of Policy Management',
+        'Advanced Subjects - Series of Environment And Information Studies',
+        'Special Subjects'
     ]
 ];
 
-// If we have reviews, calculate average content and difficulty ratings
-if (!empty($reviews)) {
-    $totalContent = 0;
-    $totalDifficulty = 0;
-    $reviewsWithRatings = 0;
-    
-    // We'll calculate scores based on properly filtered reviews
-    // The reviews array has already been filtered to specific course+professor
-    foreach ($reviews as $review) {
-        if (isset($review['content_rating'])) {
-            $totalContent += $review['content_rating'];
-            $totalDifficulty += $review['difficulty_rating'] ?? $review['content_rating'];
-            $reviewsWithRatings++;
-        }
-    }
-    
-    if ($reviewsWithRatings > 0) {
-        // Content quality: higher is better
-        $categoryScores['content']['score'] = round($totalContent / $reviewsWithRatings, 1);
-        $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
-        
-        // Content quality colors: Red (bad) -> Orange (average) -> Green (good)
-        if ($categoryScores['content']['score'] >= 3.5) {
-            $categoryScores['content']['color'] = '#28a745'; // green for good quality (3.5-5)
-        } else if ($categoryScores['content']['score'] >= 2.5) {
-            $categoryScores['content']['color'] = '#fd7e14'; // orange for average quality (2.5-3.5)
-        } else {
-            $categoryScores['content']['color'] = '#dc3545'; // red for poor quality (1-2.5)
-        }
-        
-        // Difficulty: for difficulty, higher score = more difficult = worse
-        $categoryScores['difficulty']['score'] = round($totalDifficulty / $reviewsWithRatings, 1);
-        $categoryScores['difficulty']['raw_score'] = $categoryScores['difficulty']['score'];
-        
-        // For difficulty, show the actual percentage of difficulty (1/5 = 20% filled, 5/5 = 100% filled)
-        $difficultyPercent = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
-        
-        // Difficulty colors: Green (easy) -> Orange (medium) -> Red (hard)
-        if ($categoryScores['difficulty']['score'] <= 2.5) {
-            $categoryScores['difficulty']['color'] = '#28a745'; // green for easy (1-2.5)
-        } else if ($categoryScores['difficulty']['score'] <= 3.5) {
-            $categoryScores['difficulty']['color'] = '#fd7e14'; // orange for medium (2.5-3.5)
-        } else {
-            $categoryScores['difficulty']['color'] = '#dc3545'; // red for hard (3.5-5)
-        }
-        
-        // Show the actual difficulty percentage (1 = 20% filled, 5 = 100% filled)
-        $categoryScores['difficulty']['percent'] = $difficultyPercent;
-    } else {
-        // If we don't have reviews with ratings but we have professor_id and course_id
-        // Try to get content quality and difficulty direct from ratings table
-        if (isset($professorId) && $professorId && isset($db) && $db) {
-            try {
-                $contentStmt = $db->prepare("
-                    SELECT AVG(content_rating) as avg_content, AVG(difficulty_rating) as avg_difficulty
-                    FROM ratings
-                    WHERE course_id = :course_id AND professor_id = :professor_id
-                    AND content_rating IS NOT NULL AND difficulty_rating IS NOT NULL
-                ");
-                $contentStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-                $contentStmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
-                $contentResult = $contentStmt->execute();
-                $contentData = $contentResult->fetchArray(SQLITE3_ASSOC);
-                
-                if ($contentData && $contentData['avg_content'] > 0) {
-                    // Content quality: higher is better
-                    $categoryScores['content']['score'] = round($contentData['avg_content'], 1);
-                    $categoryScores['content']['percent'] = min(100, ($categoryScores['content']['score'] / 5) * 100);
-                    
-                    // Content quality colors: Red (bad) -> Orange (average) -> Green (good)
-                    if ($categoryScores['content']['score'] >= 3.5) {
-                        $categoryScores['content']['color'] = '#28a745'; // green for good quality (3.5-5)
-                    } else if ($categoryScores['content']['score'] >= 2.5) {
-                        $categoryScores['content']['color'] = '#fd7e14'; // orange for average quality (2.5-3.5)
-                    } else {
-                        $categoryScores['content']['color'] = '#dc3545'; // red for poor quality (1-2.5)
-                    }
-                    
-                    // Difficulty
-                    $categoryScores['difficulty']['score'] = round($contentData['avg_difficulty'], 1);
-                    $categoryScores['difficulty']['raw_score'] = $categoryScores['difficulty']['score'];
-                    
-                    // For difficulty, show the actual percentage of difficulty (1/5 = 20% filled, 5/5 = 100% filled)
-                    $difficultyPercent = min(100, ($categoryScores['difficulty']['score'] / 5) * 100);
-                    
-                    // Difficulty colors: Green (easy) -> Orange (medium) -> Red (hard)
-                    if ($categoryScores['difficulty']['score'] <= 2.5) {
-                        $categoryScores['difficulty']['color'] = '#28a745'; // green for easy (1-2.5)
-                    } else if ($categoryScores['difficulty']['score'] <= 3.5) {
-                        $categoryScores['difficulty']['color'] = '#fd7e14'; // orange for medium (2.5-3.5)
-                    } else {
-                        $categoryScores['difficulty']['color'] = '#dc3545'; // red for hard (3.5-5)
-                    }
-                    
-                    // Show the actual difficulty percentage (1 = 20% filled, 5 = 100% filled)
-                    $categoryScores['difficulty']['percent'] = $difficultyPercent;
-                }
-            } catch (Exception $e) {
-                error_log("Error getting content/difficulty ratings: " . $e->getMessage());
-            }
-        }
-    }
-}
-
-// Initialize grade distribution and count variables
-$gradeDistribution = [
-    'S' => 0,
-    'A' => 0,
-    'B' => 0,
-    'C' => 0,
-    'D' => 0,
-    'F' => 0,
-    'P' => 0
+// URLs for testing Data Science courses only
+$urlsToScrape = [
+    //Fundamental Subjects - Introductory Subjects 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F2.Fundamental+Subjects+-+Introductory+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Language Communication 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F3.Fundamental+Subjects+-+Subjects+of+Language+Communication&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Data Science - Data Science 1 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F4.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+1&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Data Science - Data Science 2 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F5.Fundamental+Subjects+-+Subjects+of+Data+Science+-+Data+Science+2&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Subjects of Fundamentals of Information Technology 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F6.Fundamental+Subjects+-+Subjects+of+Fundamentals+of+Information+Technology&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Fundamental Subjects - Interdisciplinary Subjects 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F8.Fundamental+Subjects+-+Interdisciplinary+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Advanced Subjects - Series of Policy Management 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2025",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F9.Advanced+Subjects+-+Series+of+Policy+Management&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Advanced Subjects - Series of Environment And Information Studies 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F10.Advanced+Subjects+-+Series+of+Environment+And+Information+Studies&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    //Special Subjects 2025&2024&2023
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2024",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=ja&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023",
+    "https://syllabus.sfc.keio.ac.jp/courses?locale=en&search%5Bsemester%5D=&search%5Bsfc_guide_title%5D=23%2F11%2F2014%2F11.Special+Subjects&search%5Bsub_semester%5D=&search%5Bsummary%5D=&search%5Bteacher_name%5D=&search%5Btitle%5D=&search%5Byear%5D=2023"
 ];
-$totalGradeCount = 0;
-$failureCount = 0;
-$failureRate = 0;
 
-// If we have a database connection and course ID, get grade distribution data
-if ($dbCourse && $db) {
-    try {
-        $courseDbId = $dbCourse['id'];
-        
-        // If we have reviews, use them to calculate grade distribution
-        // This ensures we display the data immediately after review submission
-        if (!empty($reviews)) {
-            foreach ($reviews as $review) {
-                if (!empty($review['grade']) && isset($gradeDistribution[$review['grade']])) {
-                    $gradeDistribution[$review['grade']]++;
-                    $totalGradeCount++;
-                    
-                    // Count failures
-                    if ($review['grade'] === 'D' || $review['grade'] === 'F') {
-                        $failureCount++;
+// Maximum number of pages to process per URL
+$maxPagesPerUrl = 200;
+
+// Function to fetch URL content
+function fetchUrlContent($url)
+{
+    $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+    $content = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo "Error fetching URL: " . curl_error($ch) . "\n";
+        return false;
+    }
+
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($httpCode != 200) {
+        echo "HTTP Error: $httpCode for URL: $url\n";
+    }
+
+    curl_close($ch);
+    return $content;
+}
+
+// Function to clean instructor names properly
+function cleanInstructorName($name)
+{
+    $name = trim($name);
+    // Remove any non-breaking spaces, regular spaces at start/end
+    $name = preg_replace('/^[\s\xA0]+|[\s\xA0]+$/u', '', $name);
+    return $name;
+}
+
+// Enhanced instructor name extraction with detection of language in the names
+function extractInstructorNames($xpath, $courseLi, $language = 'ja')
+{
+    $instructors = [];
+
+    // Different approach based on language of the page
+    if ($language == 'en') {
+        $instructorText = "Lecturer Name";
+
+        echo "\nExtracting English instructors for a course...\n";
+
+        // Method 1: Try to get from instructor element directly
+        $instructorElement = $xpath->query('.//dt[contains(text(), "' . $instructorText . '")]/following-sibling::dd[1]', $courseLi)->item(0);
+
+        if ($instructorElement) {
+            echo "Found instructor element by direct query\n";
+
+            // Clean and process the text content
+            $content = trim($instructorElement->textContent);
+            $content = str_replace("\xC2\xA0", " ", $content); // Replace non-breaking spaces
+
+            echo "Raw instructor content: '$content'\n";
+
+            // Split by commas, non-breaking spaces, and line breaks
+            $instructorLines = preg_split('/\s*[\r\n,]+\s*/', $content);
+
+            echo "Found " . count($instructorLines) . " instructor lines after splitting\n";
+
+            foreach ($instructorLines as $line) {
+                $name = trim($line);
+                if (!empty($name)) {
+                    // Make sure this is a valid English name (not blank or just spaces)
+                    if (strlen($name) > 1) {
+                        $instructors[] = $name;
+                        echo "Added instructor: '$name'\n";
                     }
                 }
             }
-            
-            // Calculate failure rate
-            if ($totalGradeCount > 0) {
-                $failureRate = round(($failureCount / $totalGradeCount) * 100);
-                
-                // Convert counts to percentages
-                foreach ($gradeDistribution as $grade => $count) {
-                    $gradeDistribution[$grade] = round(($count / $totalGradeCount) * 100);
+
+            // If we have instructors, return them
+            if (!empty($instructors)) {
+                return $instructors;
+            }
+        } else {
+            echo "No instructor element found by direct query\n";
+        }
+
+        // Method 2: Try to get from links in the instructor section
+        $instructorLinks = $xpath->query('.//dt[contains(text(), "' . $instructorText . '")]/following-sibling::dd[1]//a', $courseLi);
+
+        if ($instructorLinks && $instructorLinks->length > 0) {
+            echo "Found " . $instructorLinks->length . " instructor links\n";
+
+            foreach ($instructorLinks as $link) {
+                $name = trim($link->textContent);
+                if (!empty($name) && strlen($name) > 1) {
+                    $instructors[] = $name;
+                    echo "Added instructor from link: '$name'\n";
+                }
+            }
+
+            if (!empty($instructors)) {
+                return $instructors;
+            }
+        } else {
+            echo "No instructor links found\n";
+        }
+
+        // Method 3: Try a broader approach with just looking for dt tags
+        $dtElements = $xpath->query('.//dt', $courseLi);
+        echo "Scanning " . $dtElements->length . " dt elements for instructor info\n";
+
+        foreach ($dtElements as $dt) {
+            $dtText = trim($dt->textContent);
+            if (stripos($dtText, 'Lecturer') !== false || stripos($dtText, 'Instructor') !== false) {
+                echo "Found possible instructor dt element: '$dtText'\n";
+
+                // Get the next dd element
+                $dd = $dt->nextSibling;
+                while ($dd && $dd->nodeName !== 'dd') {
+                    $dd = $dd->nextSibling;
+                }
+
+                if ($dd) {
+                    $content = trim($dd->textContent);
+                    echo "Found instructor dd with content: '$content'\n";
+
+                    $names = preg_split('/\s*[\r\n,]+\s*/', $content);
+                    foreach ($names as $name) {
+                        $cleanName = trim($name);
+                        if (!empty($cleanName) && strlen($cleanName) > 1) {
+                            $instructors[] = $cleanName;
+                            echo "Added instructor from dt scan: '$cleanName'\n";
+                        }
+                    }
+
+                    if (!empty($instructors)) {
+                        return $instructors;
+                    }
+                }
+            }
+        }
+
+        // Method 4: Try alternate HTML structures with class-info
+        $instructorContent = $xpath->query('.//div[contains(@class, "class-info")]//dt[contains(text(), "' . $instructorText . '")]/following-sibling::dd[1]', $courseLi);
+
+        if ($instructorContent && $instructorContent->length > 0) {
+            echo "Found instructor content in class-info div\n";
+
+            $content = trim($instructorContent->item(0)->textContent);
+            echo "Raw content from class-info: '$content'\n";
+
+            $names = preg_split('/\s*[\r\n,]+\s*/', $content);
+
+            foreach ($names as $name) {
+                $cleanName = trim($name);
+                if (!empty($cleanName) && strlen($cleanName) > 1) {
+                    $instructors[] = $cleanName;
+                    echo "Added instructor from class-info: '$cleanName'\n";
+                }
+            }
+
+            if (!empty($instructors)) {
+                return $instructors;
+            }
+        } else {
+            echo "No instructor content found in class-info div\n";
+        }
+    } else {
+        // Japanese page extraction - much simpler and more direct
+        $instructorText = "授業教員名";
+
+        echo "\nExtracting Japanese instructors for a course...\n";
+
+        // Look for the exact instructor element
+        $instructorElement = $xpath->query('.//dt[contains(text(), "' . $instructorText . '")]/following-sibling::dd[1]', $courseLi)->item(0);
+
+        if ($instructorElement) {
+            echo "Found Japanese instructor element\n";
+
+            // Get the raw content
+            $content = trim($instructorElement->textContent);
+            echo "Raw Japanese instructor content: '$content'\n";
+
+            // Replace non-breaking spaces with regular ones
+            $content = str_replace("\xC2\xA0", " ", $content);
+
+            // Split by new lines to get each professor's full name
+            $instructorLines = preg_split('/\s*[\r\n]+\s*/', $content);
+
+            echo "Found " . count($instructorLines) . " Japanese instructor names\n";
+
+            foreach ($instructorLines as $line) {
+                $line = trim($line);
+                if (!empty($line)) {
+                    // Don't split the name into parts, keep as a single full name
+                    $instructors[] = $line;
+                    echo "Added Japanese instructor: '$line'\n";
                 }
             }
         } else {
-            // As a fallback, check if the ratings table has a grade column
-            $hasGradeColumn = false;
-            $ratingColumns = [];
-            $columnsResult = $db->query("PRAGMA table_info('ratings')");
-            while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
-                $ratingColumns[] = $col['name'];
-                if ($col['name'] === 'grade') {
-                    $hasGradeColumn = true;
-                }
-            }
-            
-            error_log("Rating columns: " . implode(", ", $ratingColumns));
-            echo "<!-- Rating columns: " . implode(", ", $ratingColumns) . " -->";
-            
-            // Only attempt to query grades if the column exists
-            if ($hasGradeColumn) {
-                // Build SQL with optional professor filter for grade distribution
-                $gradeSql = "
-                    SELECT grade, COUNT(*) as count
-                    FROM ratings
-                    WHERE course_id = :course_id 
-                      AND grade IS NOT NULL 
-                      AND grade != ''
-                ";
-                
-                // Add professor filtering if we have a professor ID
-                if (isset($professorId) && $professorId) {
-                    $gradeSql .= " AND professor_id = :professor_id";
-                    error_log("Including professor filter in grade distribution query with ID: $professorId");
-                }
-                
-                $gradeSql .= " GROUP BY grade";
-                
-                $stmt = $db->prepare($gradeSql);
-                $stmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
-                
-                // Bind professor ID if we're filtering by professor
-                if (isset($professorId) && $professorId) {
-                    $stmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
-                }
-                
-                error_log("Grade distribution SQL: $gradeSql");
-                $result = $stmt->execute();
-            } else {
-                error_log("No grade column in ratings table, skipping grade distribution");
-                // Skip grade distribution calculation
-            }
-            
-            // Process each grade group if we have grade data
-            if ($hasGradeColumn && isset($result)) {
-                while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-                    $grade = $row['grade'];
-                    $count = $row['count'];
-                    
-                    // Only count valid grades
-                    if (isset($gradeDistribution[$grade])) {
-                        $gradeDistribution[$grade] = $count;
-                        $totalGradeCount += $count;
-                        
-                        // Count failures (D and F)
-                        if ($grade === 'D' || $grade === 'F') {
-                            $failureCount += $count;
-                        }
+            echo "No Japanese instructor element found\n";
+
+            // Try alternate method specifically for Japanese
+            $classInfoInstructors = $xpath->query('.//div[contains(@class, "class-info")]//dt[contains(text(), "授業教員")]/following-sibling::dd[1]', $courseLi);
+
+            if ($classInfoInstructors && $classInfoInstructors->length > 0) {
+                echo "Found Japanese instructor in class-info\n";
+                $content = trim($classInfoInstructors->item(0)->textContent);
+                echo "Raw Japanese instructor from class-info: '$content'\n";
+
+                $names = preg_split('/\s*[\r\n]+\s*/', $content);
+                foreach ($names as $name) {
+                    $cleanName = trim($name);
+                    if (!empty($cleanName)) {
+                        $instructors[] = $cleanName;
+                        echo "Added Japanese instructor from class-info: '$cleanName'\n";
                     }
-                }
-                
-                // Calculate failure rate if we have any grades
-                if ($totalGradeCount > 0) {
-                    $failureRate = round(($failureCount / $totalGradeCount) * 100);
-                }
-                
-                // Convert counts to percentages for display
-                if ($totalGradeCount > 0) {
-                    foreach ($gradeDistribution as $grade => $count) {
-                        // Calculate percentage and round to nearest whole number
-                        $gradeDistribution[$grade] = round(($count / $totalGradeCount) * 100);
-                    }
-                }
-            } else {
-                // No grade data available from database query, but we might have data from reviews
-                if (empty($reviews)) {
-                    error_log("No grade data available for distribution");
                 }
             }
         }
-    } catch (Exception $e) {
-        error_log("Error calculating grade distribution: " . $e->getMessage());
+    }
+
+    // Check if we have instructor names that appear to be in the wrong language
+    if (!empty($instructors)) {
+        $validInstructors = [];
+
+        foreach ($instructors as $key => $instructor) {
+            $hasJapaneseChars = preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $instructor);
+            $instructor = trim($instructor);
+
+            // Skip empty or very short names
+            if (empty($instructor) || strlen($instructor) <= 1) {
+                continue;
+            }
+
+            // For English pages, we want English names
+            if ($language == 'en') {
+                if ($hasJapaneseChars) {
+                    echo "Warning: Found Japanese instructor name ($instructor) on English page, will exclude\n";
+                    // Skip Japanese names on English pages
+                    continue;
+                }
+            }
+            // For Japanese pages, we want Japanese names
+            else if ($language == 'ja') {
+                if (!$hasJapaneseChars && strpos($instructor, ' ') !== false) {
+                    echo "Warning: Found English instructor name ($instructor) on Japanese page, will exclude\n";
+                    // Skip English names on Japanese pages
+                    continue;
+                }
+            }
+
+            // Add valid instructor names
+            $validInstructors[] = $instructor;
+        }
+
+        return $validInstructors;
+    }
+
+    return $instructors;
+}
+
+// Function to compare arrays of instructors (ignoring order)
+function compareInstructors($instructors1, $instructors2)
+{
+    if (count($instructors1) !== count($instructors2)) {
+        return false;
+    }
+
+    // Sort both arrays for comparison
+    sort($instructors1);
+    sort($instructors2);
+
+    // Compare each element
+    for ($i = 0; $i < count($instructors1); $i++) {
+        if ($instructors1[$i] !== $instructors2[$i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Function to extract the language from a URL
+function getLanguageFromUrl($url)
+{
+    if (strpos($url, 'locale=ja') !== false) {
+        return 'ja';
+    } elseif (strpos($url, 'locale=en') !== false) {
+        return 'en';
+    }
+    return 'unknown';
+}
+
+// Function to find matching course for integration of ja/en translations
+function findCourseByNameAndInstructors($courses, $courseName, $instructors, $regNumber, $year, $language, $courseData)
+{
+    // First try: Look for matching registration number (most reliable method)
+    foreach ($courses as $index => $course) {
+        if ($course['reg_number'] === $regNumber && $course['year'] === $year) {
+            echo "Found course match by registration number and year: $regNumber, $year\n";
+            return $index;
+        }
+    }
+
+    // Second try: If not found by registration number, try by name and instructors
+    // This helps identify the same course taught in different years
+    foreach ($courses as $index => $course) {
+        // Skip courses from the same year but with different reg numbers
+        // These are different courses from the same year
+        if ($course['year'] === $year && $course['reg_number'] !== $regNumber) {
+            continue;
+        }
+
+        // Check if course name matches in any translation
+        $nameMatched = false;
+        foreach ($course['translations'] as $langData) {
+            if (isset($langData['course_name']) && strtolower($langData['course_name']) === strtolower($courseName)) {
+                $nameMatched = true;
+                break;
+            } elseif (isset($langData['name']) && strtolower($langData['name']) === strtolower($courseName)) {
+                $nameMatched = true;
+                break;
+            }
+        }
+
+        // If name matches, check if instructors are the same
+        if ($nameMatched) {
+            // Extract instructor names from course (ignoring numeric keys)
+            $existingInstructors = array_values($course['instructors']);
+
+            // Sort both arrays for case-insensitive comparison
+            $instructorsToCheck = array_map('strtolower', $instructors);
+            $existingInstructorsLower = array_map('strtolower', $existingInstructors);
+
+            sort($instructorsToCheck);
+            sort($existingInstructorsLower);
+
+            // If instructors are the same, consider it the same course
+            if ($instructorsToCheck == $existingInstructorsLower) {
+                return $index;
+            }
+        }
+    }
+    return -1;
+}
+
+// Function to extract semester information from year-semester text
+function extractSemester($yearSemester, $language) {
+    if ($language == 'ja') {
+        // Japanese semester detection - using exact patterns from HTML
+        if (preg_match('/春学期/u', $yearSemester)) {
+            return 'spring';
+        } elseif (preg_match('/秋学期/u', $yearSemester)) {
+            return 'fall';
+        } elseif (preg_match('/通年/u', $yearSemester)) {
+            return 'full_year';
+        } 
+    } else {
+        // English semester detection - using exact patterns from HTML
+        if (preg_match('/Spring/i', $yearSemester)) {
+            return 'spring';
+        } elseif (preg_match('/Fall/i', $yearSemester)) {
+            return 'fall';
+        } elseif (preg_match('/Full Year/i', $yearSemester)) {
+            return 'full_year';
+        }
+    }
+    
+    // Default if not found
+    return 'unknown';
+}
+
+// We need to keep track of the English professor names by registration number
+// so we can pair them with Japanese professor names
+$englishProfessorNames = [];
+
+// Function to extract course information from an HTML page
+function parseCourses($html, $existingCourses, $courseCounter = 0, $language = 'ja', $url = '')
+{
+    global $englishProfessorNames;
+    global $targetFields;
+
+    // New courses array
+    $newCourses = [];
+
+    // Save debug files
+    file_put_contents(__DIR__ . '/debug_' . $language . '_body.html', $html);
+
+    // Load HTML content
+    $dom = new DOMDocument();
+    @$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+    $xpath = new DOMXPath($dom);
+
+    // Find all course listings
+    $courseLiElements = $xpath->query('//div[@class="result"]/ul/li');
+
+    echo "Found " . $courseLiElements->length . " course elements on this page ($language).\n";
+
+    foreach ($courseLiElements as $courseLi) {
+        $courseCounter++;
+
+        // Extract course name from h2 tag
+        $courseNameElement = $xpath->query('.//h2', $courseLi)->item(0);
+
+        // Extract course name from h2 tag without any manipulation
+        $courseName = $courseNameElement ? trim($courseNameElement->textContent) : 'Unknown Course';
+
+        // Clean up the course name based on language
+        if ($language == 'ja') {
+            // Make sure the Japanese name only has Japanese characters or doesn't contain obvious English words
+            if (!preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $courseName)) {
+                echo "Warning: Japanese course with non-Japanese name: $courseName\n";
+                $courseName = 'Unknown Course ' . $courseCounter;
+            }
+        } else {
+            // Make sure the English name doesn't contain Japanese characters
+            if (preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $courseName)) {
+                echo "Warning: English course with Japanese characters: $courseName\n";
+                $courseName = 'Unknown Course ' . $courseCounter;
+            }
+        }
+
+        echo "[$courseCounter] Processing course: $courseName\n";
+
+        // Create a courseData array to store all extracted information
+        $courseData = [
+            'name' => $courseName,
+            'language' => $language
+        ];
+
+        // We're no longer using K-Numbers as they're unreliable
+        // Just using registration numbers to match courses instead
+
+        // Extract field/category name based on language
+        if ($language == 'ja') {
+            $fieldText = "分野";
+            $fieldElement = $xpath->query('.//dt[contains(text(), "' . $fieldText . '")]/following-sibling::dd[1]', $courseLi)->item(0);
+            $field = $fieldElement ? trim($fieldElement->textContent) : 'Unknown Field';
+
+            // Verify the field has Japanese characters
+            if (!preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $field)) {
+                echo "Warning: Japanese course with non-Japanese field: $field\n";
+                $field = '不明な分野';
+            }
+        } else {
+            // For English, explicitly look for the Field label
+            $fieldElement = $xpath->query('.//dt[text()="Field"]/following-sibling::dd[1]', $courseLi)->item(0);
+
+            if ($fieldElement) {
+                $field = trim($fieldElement->textContent);
+            } else {
+                // If Field not found, try looking for Category as fallback
+                $categoryElement = $xpath->query('.//dt[contains(text(), "Category")]/following-sibling::dd[1]', $courseLi)->item(0);
+                if ($categoryElement) {
+                    $field = trim($categoryElement->textContent);
+                } else {
+                    $field = 'Unknown Field';
+                }
+            }
+
+            // Verify the field doesn't have Japanese characters
+            if (preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $field)) {
+                echo "Warning: English course with Japanese characters in field: $field\n";
+                $field = 'Unknown Field';
+            }
+        }
+
+        $courseData['field'] = $field;
+
+        echo "Field detected: $field\n";
+
+        // Check if the field is one of our target fields or if the course name contains Data Science 1
+        $fieldMatched = false;
+        if (isset($targetFields[$language]) && is_array($targetFields[$language])) {
+            foreach ($targetFields[$language] as $targetField) {
+                if (stripos($field, $targetField) !== false) {
+                    $fieldMatched = true;
+                    echo "Field matched: $targetField\n";
+                    break;
+                }
+            }
+        }
+
+        // For Data Science courses, they might not have the field explicitly marked
+        // So we'll also match by course name for these special cases
+        if (!$fieldMatched && (
+            stripos($courseName, 'データサイエンス1') !== false ||
+            stripos($courseName, 'データサイエンス１') !== false ||
+            stripos($courseName, 'DATA SCIENCE 1') !== false ||
+            stripos($courseName, 'DATA SCIENCE I') !== false
+        )) {
+            $fieldMatched = true;
+            echo "Matched course by name for Data Science: $courseName\n";
+        }
+
+        // Skip this course if its field doesn't match our targets
+        if (!$fieldMatched) {
+            echo "Skipping course: $courseName with field: $field (not in target fields)\n";
+            continue;
+        }
+
+        // Extract Course Registration Number
+        $regNumberText = ($language == 'ja') ? "登録番号" : "Registration Number";
+        $regNumberElement = $xpath->query('.//dt[contains(text(), "' . $regNumberText . '")]/following-sibling::dd[1]', $courseLi)->item(0);
+        $regNumber = $regNumberElement ? trim($regNumberElement->textContent) : '';
+
+        if (empty($regNumber)) {
+            // Try alternative way of extracting registration number
+            $courseDetailsElement = $xpath->query('.//div[@class="class-info"]', $courseLi)->item(0);
+            if ($courseDetailsElement) {
+                $regNumberAlternative = $xpath->query('.//dt[contains(text(), "' . $regNumberText . '")]/following-sibling::dd[1]', $courseDetailsElement)->item(0);
+                if ($regNumberAlternative) {
+                    $regNumber = trim($regNumberAlternative->textContent);
+                    echo "Found registration number using alternative method: $regNumber\n";
+                }
+            }
+        }
+
+        if (empty($regNumber)) {
+            echo "Warning: No Registration Number found for course: $courseName\n";
+            // Generate a temporary number based on course name
+            $regNumber = 'NO_REGNUMBER_' . md5($courseName . '_' . $language);
+        }
+
+        $courseData['reg_number'] = $regNumber;
+
+        // Extract credits
+        $creditsText = ($language == 'ja') ? "単位" : "Unit";
+        $creditsElement = $xpath->query('.//dt[contains(text(), "' . $creditsText . '")]/following-sibling::dd[1]', $courseLi)->item(0);
+        $credits = $creditsElement ? trim($creditsElement->textContent) : 'Unknown Credits';
+
+        // Clean up credits based on language
+        if ($language == 'ja') {
+            // Make sure Japanese credits have 単位 in them
+            if (strpos($credits, '単位') === false) {
+                // Try to extract just the number
+                if (preg_match('/(\d+)/', $credits, $matches)) {
+                    $credits = $matches[1] . '単位';
+                } else {
+                    $credits = '2単位'; // Default fallback
+                }
+            }
+        } else {
+            // Make sure English credits have proper Unit/Credits format
+            if (strpos(strtolower($credits), 'unit') === false && strpos(strtolower($credits), 'credit') === false) {
+                // Try to extract just the number
+                if (preg_match('/(\d+)/', $credits, $matches)) {
+                    $credits = $matches[1] . ' Unit';
+                } else {
+                    $credits = '2 Unit'; // Default fallback
+                }
+            }
+        }
+
+        $courseData['credits'] = $credits;
+
+        // Extract year-semester based on language
+        $yearSemesterText = ($language == 'ja') ? "開講年度・学期" : "Year/Semester";
+        $yearSemesterElement = $xpath->query('.//dt[contains(text(), "' . $yearSemesterText . '")]/following-sibling::dd[1]', $courseLi)->item(0);
+        $yearSemester = $yearSemesterElement ? trim($yearSemesterElement->textContent) : 'Unknown';
+        $courseData['year_semester'] = $yearSemester;
+
+        // Extract semester year from year-semester text (e.g., "2023 春学期" -> "2023")
+        preg_match('/(\d{4})/', $yearSemester, $yearMatches);
+        $year = isset($yearMatches[1]) ? $yearMatches[1] : "Unknown";
+
+        if ($year == "Unknown") {
+            // Try to extract year from URL
+            if (strpos($url, '2023') !== false) {
+                $year = "2023";
+            } elseif (strpos($url, '2024') !== false) {
+                $year = "2024";
+            }
+        }
+
+        $courseData['year'] = $year;
+        
+        // Extract semester information (spring/fall)
+        $semester = extractSemester($yearSemester, $language);
+        $courseData['semester'] = $semester;
+        
+        echo "Extracted semester: $semester from '$yearSemester'\n";
+
+        // Extract instructor(s) using our enhanced method
+        $instructors = extractInstructorNames($xpath, $courseLi, $language);
+        $courseData['instructors'] = $instructors;
+
+        if (!empty($instructors)) {
+            // For English syllabi, store professor names by registration number
+            if ($language == 'en') {
+                $key = $regNumber . '_' . $year;
+                $englishProfessorNames[$key] = $instructors;
+                echo "EN[$key]: Stored English professor names: " . implode(", ", $instructors) . "\n";
+            }
+
+            // Check if we already have this course by registration number, k-number, or by name and instructors
+            $existingIndex = findCourseByNameAndInstructors($existingCourses, $courseName, $instructors, $regNumber, $year, $language, $courseData);
+
+            if ($existingIndex >= 0) {
+                // Course already exists, update with this language's information
+                echo "Found existing course with name: \"$courseName\" / Reg#: $regNumber. Adding $language translation.\n";
+
+                // Create a formatted instructor list for this language
+                $languageInstructors = [];
+                foreach ($instructors as $index => $instructor) {
+                    $languageInstructors[($index + 1)] = $instructor;
+                }
+
+                // We're no longer using K-Numbers
+
+                // Add the translation data (excluding instructors - they'll be merged separately)
+                $existingCourses[$existingIndex]['translations'][$language] = [
+                    'name' => $courseName,
+                    'field' => $field,
+                    'credits' => $credits,
+                    'semester' => $semester
+                ];
+                
+                // Also add semester to the course object
+                if (!isset($existingCourses[$existingIndex]['semester'])) {
+                    $existingCourses[$existingIndex]['semester'] = $semester;
+                }
+            } else {
+                // Create a numbered array of instructors
+                $numberedInstructors = [];
+                foreach ($instructors as $index => $instructor) {
+                    $numberedInstructors[($index + 1)] = $instructor;
+                }
+
+                // This is a new course
+                $newCourse = [
+                    'reg_number' => $regNumber,
+                    'instructors' => $numberedInstructors,
+                    'year' => $year,
+                    'semester' => $semester,
+                    'translations' => [
+                        $language => [
+                            'name' => $courseName,
+                            'field' => $field,
+                            'credits' => $credits,
+                            'semester' => $semester
+                        ]
+                    ]
+                ];
+
+                // We're no longer tracking K-Numbers
+
+                $newCourses[] = $newCourse;
+                echo "Added new course: \"$courseName\" (Registration Number: $regNumber) with " . count($instructors) . " instructor(s)\n";
+            }
+        } else {
+            // Handle courses with unknown instructors
+            $unknownInstructors = ["1" => "Unknown Instructor"];
+
+            // Check if course exists by reg number or by name and unknown instructor
+            $existingIndex = findCourseByNameAndInstructors($existingCourses, $courseName, ["Unknown Instructor"], $regNumber, $year, $language, $courseData);
+
+            if ($existingIndex >= 0) {
+                // Update existing course
+                $existingCourses[$existingIndex]['translations'][$language] = [
+                    'course_name' => $courseName,
+                    'field' => $field,
+                    'credits' => $credits,
+                    'semester' => $semester,
+                    'instructors' => $unknownInstructors
+                ];
+                
+                // Also add semester to the course object
+                if (!isset($existingCourses[$existingIndex]['semester'])) {
+                    $existingCourses[$existingIndex]['semester'] = $semester;
+                }
+            } else {
+                // Add new course with unknown instructor
+                $newCourse = [
+                    'reg_number' => $regNumber,
+                    'instructors' => $unknownInstructors,
+                    'year' => $year,
+                    'semester' => $semester,
+                    'translations' => [
+                        $language => [
+                            'name' => $courseName,
+                            'field' => $field,
+                            'credits' => $credits,
+                            'semester' => $semester
+                        ]
+                    ]
+                ];
+
+                $newCourses[] = $newCourse;
+                echo "Added course: \"$courseName\" (Registration Number: $regNumber) with unknown instructor\n";
+            }
+        }
+    }
+
+    return [
+        'new_courses' => $newCourses,
+        'updated_existing' => $existingCourses,
+        'course_counter' => $courseCounter
+    ];
+}
+
+// Function to process all pages of a given URL
+function processAllPages($baseUrl, $existingCourses)
+{
+    global $maxPagesPerUrl;
+
+    echo "Starting to process URL: $baseUrl\n";
+
+    // Extract language from URL
+    $language = getLanguageFromUrl($baseUrl);
+    echo "Detected language: $language\n";
+
+    // Extract year from URL for reference
+    preg_match('/search%5Byear%5D=(\d{4})/', $baseUrl, $yearMatches);
+    $year = isset($yearMatches[1]) ? $yearMatches[1] : "Unknown";
+
+    // Try to extract field from URL for reference
+    if (strpos($baseUrl, 'search%5Bsfc_guide_title%5D=') !== false) {
+        preg_match('/search%5Bsfc_guide_title%5D=([^&]+)/', $baseUrl, $fieldMatches);
+        $urlField = isset($fieldMatches[1]) ? urldecode($fieldMatches[1]) : "Unknown";
+    } elseif (strpos($baseUrl, 'search%5Btitle%5D=') !== false) {
+        // For Data Science, we're searching by title
+        preg_match('/search%5Btitle%5D=([^&]+)/', $baseUrl, $titleMatches);
+        $urlField = isset($titleMatches[1]) ? urldecode($titleMatches[1]) : "Unknown";
+    } else {
+        $urlField = "Unknown";
+    }
+
+    echo "Processing URL for Year: $year, Target: $urlField, Language: $language\n";
+
+    $allNewCourses = [];
+    $updatedExistingCourses = $existingCourses;
+    $currentPage = 1;
+    $currentUrl = $baseUrl;
+    $courseCounter = 0;
+
+    while ($currentPage <= $maxPagesPerUrl) {
+        echo "\nProcessing page $currentPage...\n";
+
+        // Fetch the content
+        $htmlContent = fetchUrlContent($currentUrl);
+
+        if (!$htmlContent) {
+            echo "Failed to fetch content for page $currentPage. Stopping pagination.\n";
+            break;
+        }
+
+        echo "Successfully fetched page $currentPage. Content length: " . strlen($htmlContent) . " bytes\n";
+
+        // Save the debug file with the actual HTML
+        file_put_contents(__DIR__ . '/debug_' . $language . '_body.html', $htmlContent);
+
+        // Parse courses from this page
+        $result = parseCourses($htmlContent, $updatedExistingCourses, $courseCounter, $language, $currentUrl);
+        $newCourses = $result['new_courses'];
+        $updatedExistingCourses = $result['updated_existing'];
+        $courseCounter = $result['course_counter'];
+
+        // Add these courses to our collection
+        $allNewCourses = array_merge($allNewCourses, $newCourses);
+
+        // Ensure the new courses are added to our tracking collection to prevent duplicates in later pages
+        $updatedExistingCourses = array_merge($updatedExistingCourses, $newCourses);
+
+        // Check if there's a next page
+        $dom = new DOMDocument();
+        @$dom->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
+        $xpath = new DOMXPath($dom);
+
+        // Look for the "next" link
+        $nextPageElement = $xpath->query('//span[@class="next"]/a[@rel="next"]')->item(0);
+
+        if ($nextPageElement) {
+            $nextPageUrl = $nextPageElement->getAttribute('href');
+            echo "Found next page link: $nextPageUrl\n";
+
+            // Add base URL if the href is relative
+            if (strpos($nextPageUrl, 'http') !== 0) {
+                $baseUrlParts = parse_url($baseUrl);
+                $baseUrlRoot = $baseUrlParts['scheme'] . '://' . $baseUrlParts['host'];
+                $nextPageUrl = $baseUrlRoot . $nextPageUrl;
+            }
+
+            // Update for next iteration
+            $currentUrl = $nextPageUrl;
+            $currentPage++;
+
+            // Add a short delay between requests
+            echo "Waiting 2 seconds before fetching next page...\n";
+            sleep(2);
+        } else {
+            echo "No next page found. This is the last page.\n";
+            break;
+        }
+    }
+
+    if ($currentPage > $maxPagesPerUrl) {
+        echo "Reached maximum page limit ($maxPagesPerUrl). Stopping pagination.\n";
+    }
+
+    echo "Finished processing all pages for this URL. Found " . count($allNewCourses) . " new courses and updated "
+        . (count($updatedExistingCourses) - count($existingCourses)) . " existing courses.\n";
+
+    return [
+        'language' => $language,
+        'year' => $year,
+        'new_courses' => $allNewCourses,
+        'updated_existing' => $updatedExistingCourses
+    ];
+}
+
+// Main execution
+
+// Step 1: Load existing courses from JSON file
+$existingCourses = [];
+if (file_exists($jsonFilePath)) {
+    $jsonContent = file_get_contents($jsonFilePath);
+    if ($jsonContent) {
+        $existingCourses = json_decode($jsonContent, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo "Warning: Error parsing existing JSON file: " . json_last_error_msg() . "\n";
+            $existingCourses = [];
+        } else {
+            echo "Loaded " . count($existingCourses) . " existing courses from $jsonFilePath\n";
+        }
     }
 }
 
-// No sample reviews
-$sampleReviews = [];
-?>
-<!DOCTYPE html>
-<html lang="<?php echo $lang; ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
-    crossorigin="anonymous"></script>
-    <title><?php echo $pageTitle; ?> - Rate My Teacher</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #6c757d;
-            --light-gray: #f8f9fa;
-            --dark-gray: #343a40;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-        }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .logo a {
-            color: white;
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-links a:hover {
-            opacity: 0.8;
-        }
-        
-        .language-toggle {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-        
-        .language-toggle button {
-            background: transparent;
-            border: 1px solid white;
-            color: white;
-            padding: 5px 10px;
-            margin: 0 5px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .language-toggle button.active {
-            background-color: white;
-            color: var(--primary-color);
-        }
-        
-        .course-header {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .course-title {
-            font-size: 32px;
-            margin-bottom: 5px;
-            color: var(--dark-gray);
-        }
-        
-        .course-subtitle {
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .course-subtitle span {
-            display: flex;
-            align-items: center;
-        }
-        
-        .course-subtitle svg {
-            margin-right: 5px;
-        }
-        
-        .rating-overview {
-            display: flex;
-            margin: 30px 0;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .overall-rating {
-            flex: 0 0 200px;
-            text-align: center;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .rating-number {
-            font-size: 64px;
-            font-weight: bold;
-            color: var(--primary-color);
-            line-height: 1;
-        }
-        
-        .stars {
-            color: var(--warning-color);
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        
-        .rating-label {
-            color: var(--secondary-color);
-            font-size: 14px;
-        }
-        
-        .rating-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .rating-category {
-            display: flex;
-            align-items: center;
-        }
-        
-        .category-name {
-            flex: 0 0 150px;
-            font-weight: 500;
-        }
-        
-        .progress-bar {
-            height: 10px;
-            flex: 1;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background-color: var(--primary-color);
-        }
-        
-        .category-score {
-            flex: 0 0 40px;
-            text-align: right;
-            font-weight: 500;
-            color: var(--primary-color);
-        }
-        
-        .professor-info {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .section-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: var(--dark-gray);
-            border-bottom: 2px solid var(--light-gray);
-            padding-bottom: 10px;
-        }
-        
-        .professors {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .professor-card {
-            flex: 1 0 200px;
-            max-width: 300px;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--light-gray);
-            background-color: white;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .professor-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .professor-card a {
-            text-decoration: none;
-            color: var(--dark-gray);
-        }
-        
-        .professor-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .professor-department {
-            color: var(--secondary-color);
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        
-        .professor-rating {
-            display: flex;
-            align-items: center;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        .professor-rating .stars {
-            font-size: 16px;
-            margin: 0 5px 0 0;
-        }
-        
-        .reviews {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .review-card {
-            border-bottom: 1px solid var(--light-gray);
-            padding: 20px 0;
-            margin-bottom: 10px;
-        }
-        
-        .review-card:last-child {
-            border-bottom: none;
-        }
-        
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .reviewer {
-            font-weight: bold;
-        }
-        
-        .review-date {
-            color: var(--secondary-color);
-            font-size: 14px;
-        }
-        
-        .review-rating {
-            color: var(--warning-color);
-            margin: 10px 0;
-        }
-        
-        .review-content {
-            line-height: 1.6;
-        }
-        
-        .review-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .tag {
-            background-color: var(--light-gray);
-            color: var(--secondary-color);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        
-        .add-review-btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-            transition: background-color 0.3s;
-        }
-        
-        .add-review-btn:hover {
-            background-color: #3a70c5;
-        }
-        
-        .course-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-/* More aggressive fix for the grade distribution title and chart */
-        .info-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            overflow: visible;
-        }
+// Step 2: Process URLs in pairs (Japanese and English versions of same courses)
+$allCourses = $existingCourses;
 
-        .info-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 60px; /* Drastically increased space below title */
-            color: var(--dark-gray);
-            border-bottom: 2px solid var(--light-gray);
-            padding-bottom: 10px;
-            position: relative;
-        }
+// Group URLs by pairs (Japanese and English versions should be adjacent)
+$urlPairs = [];
+for ($i = 0; $i < count($urlsToScrape); $i += 2) {
+    // Make sure we have enough URLs left
+    if ($i + 1 < count($urlsToScrape)) {
+        // Determine which URL is Japanese and which is English
+        $jaUrl = strpos($urlsToScrape[$i], 'locale=ja') !== false ? $urlsToScrape[$i] : $urlsToScrape[$i + 1];
+        $enUrl = strpos($urlsToScrape[$i], 'locale=en') !== false ? $urlsToScrape[$i] : $urlsToScrape[$i + 1];
 
-        /* Add this completely new section for title container */
-        .grade-title-container {
-            position: relative;
-            padding-bottom: 70px; /* Large padding to push the chart down */
-            margin-bottom: 20px;
-        }
-
-        .grades-chart {
-            display: flex;
-            height: 180px;
-            align-items: flex-end;
-            margin-top: 80px; /* Very large margin */
-            padding-bottom: 40px;
-            border-bottom: 2px solid var(--light-gray);
-            position: relative;
-            clear: both; /* Force it to clear previous elements */
-        }
-
-/* Modify the CSS to place percentage values in the middle of the bars */
-        .grade-bar {
-            flex: 1;
-            margin: 0 5px;
-            background-color: var(--primary-color);
-            position: relative;
-            min-height: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center; /* For vertical centering */
-        }
-
-        .grade-percentage {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font-weight: bold;
-            color: white;
-            white-space: nowrap;
-            font-size: 14px;
-            text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);
-            z-index: 2;
-            background-color: transparent; /* Remove any background */
-            padding: 0; /* Remove any padding */
-            box-shadow: none; /* Remove any shadow */
-            border: none; /* Remove any border */
-        }
-
-        /* For percentages above bars (for small bars) */
-        .grade-bar[style*="height: 5px"] .grade-percentage,
-        .grade-bar[style*="height: 0px"] .grade-percentage {
-            top: -25px;
-            color: var(--primary-color);
-            text-shadow: none;
-            background-color: transparent; /* Ensure no background for small bars too */
-            padding: 0;
-            box-shadow: none;
-            border: none;
+        $urlPairs[] = [
+            'ja' => $jaUrl,
+            'en' => $enUrl
+        ];
+    } else {
+        // Handle odd number of URLs
+        $lastUrl = $urlsToScrape[$i];
+        $urlPairs[] = [
+            'ja' => strpos($lastUrl, 'locale=ja') !== false ? $lastUrl : '',
+            'en' => strpos($lastUrl, 'locale=en') !== false ? $lastUrl : ''
+        ];
+    }
 }
 
+// Process each URL pair
+foreach ($urlPairs as $index => $pair) {
+    echo "\n" . str_repeat("=", 80) . "\n";
+    echo "[URL Pair " . ($index + 1) . "/" . count($urlPairs) . "]\n";
 
-        /* Remove the old top margin spacing since we don't need it anymore */
-        .grades-chart {
-            display: flex;
-            height: 180px;
-            align-items: flex-end;
-            margin-top: 30px; /* Reduced from previous large values */
-            padding-bottom: 40px;
-            border-bottom: 2px solid var(--light-gray);
-            position: relative;
-        }
+    // First process Japanese version
+    $jaResults = null;
+    if (!empty($pair['ja'])) {
+        echo "Processing Japanese version...\n";
+        $jaResults = processAllPages($pair['ja'], $allCourses);
+        echo "Found " . count($jaResults['new_courses']) . " new Japanese courses.\n";
+    }
 
-        /* Adjust title spacing to normal */
-        .info-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px; /* Return to normal spacing */
-            color: var(--dark-gray);
-            border-bottom: 2px solid var(--light-gray);
-            padding-bottom: 10px;
-        }
+    // Next process English version
+    $enResults = null;
+    if (!empty($pair['en'])) {
+        echo "Processing English version...\n";
+        $enResults = processAllPages($pair['en'], $allCourses);
+        echo "Found " . count($enResults['new_courses']) . " new English courses.\n";
+    }
 
+    // Merge Japanese and English data for the same courses
+    if ($jaResults && $enResults) {
+        echo "Matching and merging Japanese and English courses...\n";
 
-        footer {
-            background-color: #1e3a8a;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: auto;
-        }
-        
-        .professor-card {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 15px;
-            min-width: 200px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-        }
-        
-        .professor-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .professor-name {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: #1e3a8a;
-            margin-bottom: 5px;
-        }
-        
-        .professor-department {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-        
-        .professor-rating {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .stars {
-            color: #ffc107;
-            font-size: 0.9em;
-        }
-        
-        .footer-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .footer-section {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .footer-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: white;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 5px;
-        }
-        
-        .footer-links a {
-            display: block;
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            margin-bottom: 8px;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            margin-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.5);
-            font-size: 14px;
-        }
-        
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 10px 20px;
-            }
-            
-            .nav-links {
-                margin-top: 10px;
-            }
-            
-            .nav-links a {
-                margin-left: 0;
-                margin-right: 15px;
-            }
-            
-            .rating-overview {
-                flex-direction: column;
-            }
-            
-            .overall-rating {
-                flex: 0 0 auto;
-            }
-            
-            .course-title {
-                font-size: 24px;
-            }
-            
-            .section-title {
-                font-size: 20px;
-            }
-        }
-        
-        /* Unified Color Scheme */
-        :root {
-            --primary-color: #1e3a8a;
-            --primary-light: #f0f4ff;
-            --secondary-color: #6c757d;
-            --light-gray: #f8f9fa;
-            --dark-gray: #343a40;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            --hover-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            --border-color: #f0f0f0;
-        }
+        // Print debug information about the English courses first
+        echo "\nDEBUG: English courses info:\n";
+        foreach ($enResults['new_courses'] as $enCourse) {
+            $regNum = $enCourse['reg_number'] ?? 'unknown';
+            $courseName = isset($enCourse['translations']['en']['name']) ?
+                $enCourse['translations']['en']['name'] :
+                'unnamed';
+            $instrCount = isset($enCourse['instructors']) ? count($enCourse['instructors']) : 0;
 
-        /* Global Style Improvements */
-        body {
-            background-color: #f5f5f5;
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        /* Container Styles */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Content Box Styling */
-        .content-box {
-            background-color: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: var(--box-shadow);
-        }
-
-        /* Course Header Styling */
-        .course-title {
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .course-subtitle {
-            color: var(--secondary-color);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        /* Rating Styles */
-        .overall-rating {
-            background-color: var(--primary-light);
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: var(--box-shadow);
-        }
-
-        .rating-number {
-            color: var(--primary-color);
-            font-size: 42px;
-            font-weight: bold;
-        }
-
-        .stars {
-            color: var(--warning-color);
-        }
-
-        /* Professor Card Styling */
-        .professor-card {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 15px;
-            min-width: 200px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: var(--box-shadow);
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
-
-        .professor-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--hover-shadow);
-        }
-
-        .professor-name {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-
-        .professor-department {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
-        /* Section Titles */
-        .section-title {
-            color: var(--primary-color);
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        /* Review Cards */
-        .review-card {
-            border-bottom: 1px solid var(--border-color);
-            padding: 20px 0;
-            margin-bottom: 10px;
-        }
-
-        /* Button Styles */
-        .add-review-btn, .primary-btn, #rateButton, #writeReviewButton {
-            background-color: var(--primary-color) !important;
-            color: white !important;
-            padding: 10px 20px !important;
-            border-radius: 5px !important;
-            text-decoration: none !important;
-            font-weight: bold !important;
-            border: none !important;
-            cursor: pointer !important;
-            transition: background-color 0.3s !important;
-            display: inline-block !important;
-        }
-
-        .add-review-btn:hover, .primary-btn:hover, #rateButton:hover, #writeReviewButton:hover {
-            background-color: #2a4db0 !important;
-        }
-    </style>
-</head>
-<body>
-    <header style="background-color: #1e3a8a; color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; height: 60px;">
-        <div class="header-left" style="width: 25%;">
-            <div class="dropdown" style="position: relative; display: inline-block;">
-                <button class="dropbtn" style="background-color: transparent; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center;">Menu <span style="margin-left: 5px; font-size: 12px;">▼</span></button>
-                <div class="dropdown-content" style="position: absolute; background-color: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; display: none;">
-                    <?php if ($isLoggedIn): ?>
-                        <a href="my_account.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">My Account</a>
-                        <a href="logout.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Logout</a>
-                    <?php else: ?>
-                        <a href="login.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Login</a>
-                        <a href="register.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Register</a>
-                    <?php endif; ?>
-                    <a href="home.php#popular-professors" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Professors</a>
-                    <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Professors</a>
-                    <a href="home.php#top-courses" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Courses</a>
-                    <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Courses</a>
-                    <a href="tipsandtricks.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Tips and Tricks</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="header-center" style="width: 50%; text-align: center;">
-            <div class="logo" style="display: flex; flex-direction: column; align-items: center;">
-                <h1 style="font-size: 1.5rem; margin: 0;"><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
-            </div>
-        </div>
-        
-        <div class="header-right" style="width: 25%; display: flex; justify-content: flex-end; align-items: center;">
-            <?php if ($isLoggedIn): ?>
-                <span class="welcome-message" style="margin-right: 15px; font-size: 14px;">Welcome, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</span>
-            <?php endif; ?>
-            <div class="auth-links" style="margin-right: 15px;">
-                <?php if ($isLoggedIn): ?>
-                    <a href="logout.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Logout</a>
-                <?php else: ?>
-                    <a href="login.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Login</a>
-                    <a href="register.php" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Register</a>
-                <?php endif; ?>
-            </div>
-            <div class="language-toggle" style="display: flex; align-items: center;">
-                <a href="?<?php $queryParams = $_GET; $queryParams['lang'] = 'en'; echo http_build_query($queryParams); ?>" style="display:inline-block; width:80px; text-align:center; padding:8px 0; margin-right:5px; background:<?php echo $lang == 'en' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'en' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">English</a>
-                <a href="?<?php $queryParams = $_GET; $queryParams['lang'] = 'ja'; echo http_build_query($queryParams); ?>" style="display:inline-block; width:80px; text-align:center; padding:8px 0; background:<?php echo $lang == 'ja' ? 'white' : 'transparent'; ?>; color:<?php echo $lang == 'ja' ? '#1e3a8a' : 'white'; ?>; text-decoration:none; border:1px solid white; border-radius:4px;">日本語</a>
-            </div>
-        </div>
-    </header>
-
-    <div class="container" style="width: 100%; min-height: 100vh; display: flex; flex-direction: column; max-width: 1200px; margin: 0 auto; padding: 2rem;">
-        <div class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <div class="course-header">
-                <h1 class="course-title" style="color: #1e3a8a; margin-bottom: 1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;"><?php echo htmlspecialchars($translation['name']); ?></h1>
-                <div class="course-subtitle" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; color: #666;">
-                    <span style="display: flex; align-items: center;">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
-                            <path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 11a5 5 0 110-10 5 5 0 010 10z"/>
-                            <path d="M8 4a.5.5 0 01.5.5v3.5H11a.5.5 0 010 1H8a.5.5 0 01-.5-.5V4.5A.5.5 0 018 4z"/>
-                        </svg>
-                        <?php echo $semester; ?>
-                    </span>
-                    <span style="display: flex; align-items: center;">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
-                            <path d="M3.5 0a.5.5 0 01.5.5V1h8V.5a.5.5 0 011 0V1h1a2 2 0 012 2v11a2 2 0 01-2 2H2a2 2 0 01-2-2V3a2 2 0 012-2h1V.5a.5.5 0 01.5-.5zM2 2a1 1 0 00-1 1v11a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1H2z"/>
-                            <path d="M2.5 4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/>
-                        </svg>
-                        <?php echo htmlspecialchars($course['year']); ?>
-                    </span>
-                    <span style="display: flex; align-items: center;">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 5px;">
-                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 000 2.5v11a.5.5 0 00.707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 00.78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0016 13.5v-11a.5.5 0 00-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
-                        </svg>
-                        <?php echo htmlspecialchars($translation['field']); ?>
-                    </span>
-                </div>
-            </div>
-
-        <div class="rating-overview" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
-            <div class="rating-details" style="flex-grow: 1; min-width: 300px;">
-                <?php foreach ($categoryScores as $key => $category): ?>
-                <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 12px;">
-                    <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;">
-                        <?php echo $category['label']; ?>
-                        <div style="font-size: 0.8em; color: #666;">
-                            <?php echo $category['description']; ?>
-                        </div>
-                    </div>
-                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 15px; overflow: hidden;">
-                        <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: <?php echo $category['color'] ?? '#1e3a8a'; ?>;"></div>
-                    </div>
-                    <div class="category-score" style="width: 40px; text-align: right; font-weight: bold; color: #1e3a8a;">
-                        <?php echo isset($category['raw_score']) ? $category['raw_score'] : $category['score']; ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <div class="professor-info" style="margin-bottom: 30px;">
-            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当教員' : 'Professors'; ?></h2>
-            <div class="professors">
-                <?php foreach ($course['professors'] as $professor): ?>
-                    <div class="professor-card" onclick="window.location.href='professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>'">
-                    <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
-                    <div class="professor-department"><?php echo htmlspecialchars($professor['department'][$lang]); ?></div>
-                    <?php
-                    // Try to get professor rating from database
-                    $profRating = '?';
-                    $profStars = '☆☆☆☆☆';
-                    
-                    if (isset($db)) {
-                        // Try to find professor in database
-                        $profName = str_replace(' ', '', $professor['name']['en']);
-                        $stmt = $db->prepare("SELECT id, overall_rating FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like LIMIT 1");
-                        $stmt->bindValue(':name', $profName, SQLITE3_TEXT);
-                        $stmt->bindValue(':name_like', '%' . $profName . '%', SQLITE3_TEXT);
-                        $result = $stmt->execute();
-                        $profRow = $result->fetchArray(SQLITE3_ASSOC);
-                        
-                        if ($profRow && isset($profRow['overall_rating']) && $profRow['overall_rating'] > 0) {
-                            $profRating = round($profRow['overall_rating'], 1);
-                            // Generate star display
-                            $fullStars = floor($profRating);
-                            $halfStar = ($profRating - $fullStars) >= 0.5;
-                            $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-                            
-                            $profStars = str_repeat('★', $fullStars) . ($halfStar ? '★' : '') . str_repeat('☆', $emptyStars);
-                        }
-                    }
-                    ?>
-                    <div class="professor-rating">
-                        <div class="stars" style="color: #ffc107; font-size: 16px;"><?php echo $profStars; ?></div>
-                        <span><?php echo $profRating; ?></span>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <!-- Replace your existing course-info grid with this centered layout -->
-        <div style="text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
-            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; width: 100%; text-align: center;">
-                <?php echo $lang === 'ja' ? '成績分布と落単率' : 'Grade Distribution and Failure Rate'; ?>
-            </h2>
-            
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; width: 100%; max-width: 1000px;">
-                <!-- Grade Distribution -->
-                <div style="flex: 1; min-width: 300px; max-width: 500px;">
-                    <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--dark-gray); text-align: center;">
-                        <?php echo $lang === 'ja' ? '成績分布' : 'Grade Distribution'; ?>
-                    </h3>
-                    <?php if ($totalGradeCount > 0): ?>
-                    <div style="display: flex; height: 200px; align-items: flex-end; margin-top: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--light-gray);">
-                        <?php 
-                        // Define grade colors
-                        $gradeColors = [
-                            'S' => '#FFD700', // Yellow
-                            'A' => '#28a745', // Green
-                            'B' => '#1e3a8a', // Blue
-                            'C' => '#fd7e14', // Orange
-                            'D' => '#dc3545', // Red
-                            'P' => '#1e3a8a', // Blue
-                            'F' => '#dc3545', // Red
-                        ];
-                        
-                        foreach ($gradeDistribution as $grade => $percent): 
-                            // Calculate bar height (minimum 5px for visibility even at 0%)
-                            $barHeight = max(5, $percent * 2);
-                        ?>
-                        <div class="grade-bar" data-grade="<?php echo $grade; ?>" style="flex: 1; margin: 0 5px; background-color: <?php echo $gradeColors[$grade]; ?>; height: <?php echo $barHeight; ?>px; position: relative; display: flex; justify-content: center; align-items: center;">
-                            <?php if ($percent > 0): // Only show percentage if there's any data ?>
-                                <?php if ($barHeight > 30): // Only show percentage inside if bar is tall enough ?>
-                                    <div class="grade-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5); background-color: transparent; padding: 0; box-shadow: none; border: none; font-size: 14px;">
-                                        <?php echo $percent; ?>%
-                                    </div>
-                                <?php else: // Show percentage above the bar if it's too small ?>
-                                    <div class="grade-percentage" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: <?php echo $gradeColors[$grade]; ?>; font-weight: bold; background-color: transparent; padding: 0; box-shadow: none; border: none; font-size: 14px;">
-                                        <?php echo $percent; ?>%
-                                    </div>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <div class="grade-label" style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-weight: bold;">
-                                <?php echo $grade; ?>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
-                        <?php echo $lang === 'ja' ? '総回答数' : 'Total responses'; ?>: <?php echo $totalGradeCount; ?>
-                    </div>
-                    <?php else: ?>
-                    <div style="text-align: center; padding: 40px 0;">
-                        <div style="color: #6c757d; font-size: 18px;">
-                            <?php echo $lang === 'ja' ? 'まだ成績データがありません' : 'No grade data available yet'; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Failure Rate -->
-                <div style="flex: 1; min-width: 300px; max-width: 500px;">
-                    <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--dark-gray); text-align: center;">
-                        <?php echo $lang === 'ja' ? '落単率' : 'Failure Rate'; ?>
-                    </h3>
-                    <?php if ($totalGradeCount > 0): ?>
-                    <div style="text-align: center; padding: 40px 0;">
-                        <div style="font-size: 64px; font-weight: bold; color: <?php 
-                            if ($failureRate <= 25) {
-                                echo '#2ecc71'; // Green for low failure rate (0-25%)
-                            } elseif ($failureRate <= 50) {
-                                echo '#3498db'; // Blue for medium-low failure rate (26-50%)
-                            } elseif ($failureRate <= 75) {
-                                echo '#f39c12'; // Orange for medium-high failure rate (51-75%)
-                            } else {
-                                echo '#e74c3c'; // Red for high failure rate (76-100%)
-                            }
-                        ?>;">
-                            <?php echo $failureRate; ?>%
-                        </div>
-                        <div style="font-size: 16px; color: #666; margin-top: 10px;">
-                            <?php echo $lang === 'ja' ? 'D または F の割合' : 'Percentage of D or F grades'; ?>
-                        </div>
-                    </div>
-                    <?php else: ?>
-                    <div style="text-align: center; padding: 40px 0;">
-                        <div style="font-size: 64px; font-weight: bold; color: #4a86e8;">-</div>
-                        <div style="font-size: 16px; color: #6c757d; margin-top: 10px;">
-                            <?php echo $lang === 'ja' ? 'データなし' : 'No data available'; ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-
-<!-- Student Reviews section follows after the grade distribution and failure rate -->
-
-        <div class="reviews">
-            <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
-            <?php if (!empty($reviews)): ?>
-                <?php foreach ($reviews as $review): ?>
-                <div class="review-card" id="review-<?php echo $review['id']; ?>">
-                    <div class="review-header">
-                        <div class="reviewer"><?php echo htmlspecialchars($review['username']); ?></div>
-                        <div class="review-date">
-                            <?php echo $review['created_at']; ?>
-                            
-                            <?php if ($isLoggedIn && isset($_SESSION['id']) && $_SESSION['id'] === $review['user_id']): ?>
-                            <!-- Delete button only shown for the user's own reviews -->
-                            <button onclick="deleteReview(<?php echo $review['id']; ?>)" class="delete-review-btn" style="margin-left: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">
-                                <?php echo $lang === 'ja' ? '削除' : 'Delete'; ?>
-                            </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    
-                    <!-- Ratings Section -->
-                    <div class="review-rating" style="margin-bottom: 15px;">
-                        <!-- Overall Rating -->
-                        <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
-                            <?php echo $lang === 'ja' ? '総合評価:' : 'Overall Rating:'; ?> 
-                            <span style="color: #1e3a8a; font-size: 18px;"><?php echo $review['rating']; ?>/5</span>
-                        </div>
-                        <div style="color: #ffc107; font-size: 18px;">
-                            <?php echo generateStarRating($review['rating']); ?>
-                        </div>
-                        
-                        <!-- Content & Difficulty Ratings -->
-                        <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 10px; font-size: 14px;">
-                            <?php if (isset($review['content_rating'])): ?>
-                            <div>
-                                <span><?php echo $lang === 'ja' ? '授業内容:' : 'Content:'; ?></span>
-                                <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['content_rating']; ?>/5</span>
-                            </div>
-                            <?php endif; ?>
-                            
-                            <?php if (isset($review['difficulty_rating'])): ?>
-                            <div>
-                                <span><?php echo $lang === 'ja' ? '難易度:' : 'Difficulty:'; ?></span>
-                                <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['difficulty_rating']; ?>/5</span>
-                            </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($review['grade'])): ?>
-                            <div>
-                                <span><?php echo $lang === 'ja' ? '成績:' : 'Grade:'; ?></span>
-                                <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['grade']; ?></span>
-                            </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($review['textbook'])): ?>
-                            <div>
-                                <span><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></span>
-                                <span style="color: #1e3a8a; font-weight: bold;">
-                                    <?php 
-                                    echo $lang === 'ja' ? 
-                                        match($review['textbook']) {
-                                            'required' => '必須',
-                                            'recommended' => '推奨',
-                                            'not_needed' => '不要',
-                                            default => $review['textbook'],
-                                        } : 
-                                        match($review['textbook']) {
-                                            'required' => 'Required',
-                                            'recommended' => 'Recommended',
-                                            'not_needed' => 'Not Needed',
-                                            default => $review['textbook'],
-                                        }; 
-                                    ?>
-                                </span>
-                            </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($review['attendance_check'])): ?>
-                            <div>
-                                <span><?php echo $lang === 'ja' ? '出席確認:' : 'Attendance:'; ?></span>
-                                <span style="color: #1e3a8a; font-weight: bold;">
-                                    <?php 
-                                    echo $lang === 'ja' ? 
-                                        match($review['attendance_check']) {
-                                            'always' => '毎回取る',
-                                            'sometimes' => '時々取る',
-                                            'never' => '取らない',
-                                            default => $review['attendance_check'],
-                                        } : 
-                                        match($review['attendance_check']) {
-                                            'always' => 'Always',
-                                            'sometimes' => 'Sometimes',
-                                            'never' => 'Never',
-                                            default => $review['attendance_check'],
-                                        }; 
-                                    ?>
-                                </span>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <!-- Assessment Methods -->
-                        <?php
-                        // Parse first_half and second_half JSON if they exist
-                        $firstHalf = [];
-                        $secondHalf = [];
-                        
-                        error_log("first_half value: " . (isset($review['first_half']) ? $review['first_half'] : 'not set'));
-                        error_log("second_half value: " . (isset($review['second_half']) ? $review['second_half'] : 'not set'));
-                        
-                        if (!empty($review['first_half'])) {
-                            if (is_string($review['first_half'])) {
-                                try {
-                                    $decoded = json_decode($review['first_half'], true);
-                                    if ($decoded !== null) {
-                                        $firstHalf = $decoded;
-                                    } else {
-                                        // If JSON decode fails, try as a simple string
-                                        $firstHalf = [$review['first_half']];
-                                        error_log("JSON decode failed for first_half, using as string: " . $review['first_half']);
-                                    }
-                                } catch (Exception $e) {
-                                    $firstHalf = [$review['first_half']];
-                                    error_log("Exception decoding first_half: " . $e->getMessage());
-                                }
-                            } elseif (is_array($review['first_half'])) {
-                                $firstHalf = $review['first_half'];
-                            }
-                        }
-                        
-                        if (!empty($review['second_half'])) {
-                            if (is_string($review['second_half'])) {
-                                try {
-                                    $decoded = json_decode($review['second_half'], true);
-                                    if ($decoded !== null) {
-                                        $secondHalf = $decoded;
-                                    } else {
-                                        // If JSON decode fails, try as a simple string
-                                        $secondHalf = [$review['second_half']];
-                                        error_log("JSON decode failed for second_half, using as string: " . $review['second_half']);
-                                    }
-                                } catch (Exception $e) {
-                                    $secondHalf = [$review['second_half']];
-                                    error_log("Exception decoding second_half: " . $e->getMessage());
-                                }
-                            } elseif (is_array($review['second_half'])) {
-                                $secondHalf = $review['second_half'];
-                            }
-                        }
-                        
-                        error_log("Parsed first_half: " . print_r($firstHalf, true));
-                        error_log("Parsed second_half: " . print_r($secondHalf, true));
-                        
-                        // Only display assessment methods if we have data
-                        if (!empty($firstHalf) || !empty($secondHalf)):
-                        ?>
-                        <div style="margin-top: 15px; font-size: 14px;">
-                            <?php if (!empty($firstHalf)): ?>
-                            <div style="margin-bottom: 8px;">
-                                <span style="font-weight: bold; color: #666;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></span>
-                                <span>
-                                    <?php 
-                                    $firstHalfLabels = [];
-                                    foreach ($firstHalf as $method) {
-                                        $firstHalfLabels[] = $lang === 'ja' ? 
-                                            match($method) {
-                                                'report' => 'レポート',
-                                                'test' => 'テスト',
-                                                'presentation' => '発表',
-                                                'project' => 'プロジェクト',
-                                                'nothing' => 'なし',
-                                                default => $method,
-                                            } : 
-                                            match($method) {
-                                                'report' => 'Report',
-                                                'test' => 'Test',
-                                                'presentation' => 'Presentation',
-                                                'project' => 'Project',
-                                                'nothing' => 'Nothing',
-                                                default => $method,
-                                            };
-                                    }
-                                    echo implode(', ', $firstHalfLabels);
-                                    ?>
-                                </span>
-                            </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($secondHalf)): ?>
-                            <div>
-                                <span style="font-weight: bold; color: #666;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></span>
-                                <span>
-                                    <?php 
-                                    $secondHalfLabels = [];
-                                    foreach ($secondHalf as $method) {
-                                        $secondHalfLabels[] = $lang === 'ja' ? 
-                                            match($method) {
-                                                'report' => 'レポート',
-                                                'test' => 'テスト',
-                                                'presentation' => '発表',
-                                                'project' => 'プロジェクト',
-                                                'nothing' => 'なし',
-                                                default => $method,
-                                            } : 
-                                            match($method) {
-                                                'report' => 'Report',
-                                                'test' => 'Test',
-                                                'presentation' => 'Presentation',
-                                                'project' => 'Project',
-                                                'nothing' => 'Nothing',
-                                                default => $method,
-                                            };
-                                    }
-                                    echo implode(', ', $secondHalfLabels);
-                                    ?>
-                                </span>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <!-- Review Content -->
-                    <?php if (!empty($review['comment'])): ?>
-                    <div class="review-content" style="margin-bottom: 10px;">
-                        <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <div class="review-tags">
-                        <span class="tag"><?php echo $lang === 'ja' ? '学生レビュー' : 'Student Review'; ?></span>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div style="text-align: center; padding: 40px 20px; color: var(--secondary-color); background-color: white; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-size: 64px; margin-bottom: 10px;">
-                        <i class="far fa-comment-dots"></i>
-                    </div>
-                    <h3><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
-                    <p><?php echo $lang === 'ja' ? 'この講義の最初のレビューを投稿しましょう！' : 'Be the first to review this course!'; ?></p>
-                </div>
-            <?php endif; ?>
-            
-            <a href="#rating-form" class="add-review-btn">
-                <?php echo $lang === 'ja' ? 'レビューを投稿する' : 'Post a Review'; ?>
-            </a>
-        </div>
-        
-        <?php if ($isLoggedIn): ?>
-        <div class="info-card" style="margin-top: 20px;" id="rating-form">
-            <h3 class="info-title"><?php echo $lang === 'ja' ? 'この講義を評価する' : 'Rate This Course'; ?></h3>
-            
-            <?php if (isset($_GET['error'])): ?>
-            <div style="background-color: #ffebee; color: #c62828; padding: 12px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #c62828;">
-                <strong><?php echo $lang === 'ja' ? 'エラー:' : 'Error:'; ?></strong> 
-                <?php 
-                    $errorMessage = '';
-                    switch($_GET['error']) {
-                        case 'submission_failed':
-                            $errorMessage = $lang === 'ja' ? 'レビューの送信に失敗しました。もう一度お試しください。' : 'Failed to submit your review. Please try again.';
-                            break;
-                        case 'database_error':
-                            $errorMessage = $lang === 'ja' ? 'データベースエラーが発生しました。管理者にお問い合わせください。' : 'A database error occurred. Please contact the administrator.';
-                            break;
-                        default:
-                            $errorMessage = $lang === 'ja' ? '不明なエラーが発生しました。' : 'An unknown error occurred.';
-                    }
-                    echo $errorMessage;
-                ?>
-            </div>
-            <?php endif; ?>
-            <form action="submit_rating.php" method="post" style="padding: 15px 0;">
-                <!-- Include both course_id and course_name for better identification -->
-                <input type="hidden" name="course_id" value="<?php echo $courseId ?? $course['course_id'] ?? ''; ?>">
-                <input type="hidden" name="course_name" value="<?php echo htmlspecialchars($translation['name'] ?? ''); ?>">
-                <!-- Store current URL for redirect after submission -->
-                <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                <!-- Debug info -->
-                <input type="hidden" name="debug_info" value="<?php echo htmlspecialchars(json_encode(['course_id' => $courseId, 'course_name' => $translation['name'] ?? ''])); ?>">
-                
-
-                <!-- Content and Difficulty Ratings -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-                    <div>
-                        <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                            <?php echo $lang === 'ja' ? '授業の質:' : 'Content Quality:'; ?>
-                        </label>
-                        <select name="content_rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
-                            <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
-                            <?php for($i = 5; $i >= 1; $i--): ?>
-                            <option value="<?php echo $i; ?>">
-                                <?php echo $i; ?> - <?php echo $lang === 'ja' ? 
-                                    match($i) {
-                                        5 => '非常に良い',
-                                        4 => '良い',
-                                        3 => '普通',
-                                        2 => 'やや悪い',
-                                        1 => '悪い',
-                                        default => '',
-                                    } : 
-                                    match($i) {
-                                        5 => 'Excellent',
-                                        4 => 'Good',
-                                        3 => 'Average',
-                                        2 => 'Below Average',
-                                        1 => 'Poor',
-                                        default => '',
-                                    }; 
-                                ?>
-                            </option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                            <?php echo $lang === 'ja' ? '授業難易度:' : 'Difficulty:'; ?>
-                        </label>
-                        <select name="difficulty_rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
-                            <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
-                            <option value="5"><?php echo $lang === 'ja' ? '非常に難しい' : 'Very Difficult'; ?></option>
-                            <option value="4"><?php echo $lang === 'ja' ? '難しい' : 'Difficult'; ?></option>
-                            <option value="3"><?php echo $lang === 'ja' ? '普通' : 'Average'; ?></option>
-                            <option value="2"><?php echo $lang === 'ja' ? '簡単' : 'Easy'; ?></option>
-                            <option value="1"><?php echo $lang === 'ja' ? '非常に簡単' : 'Very Easy'; ?></option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Attendance -->
-                <div style="margin-bottom: 30px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                        <?php echo $lang === 'ja' ? '出席確認:' : 'Takes Attendance:'; ?>
-                    </label>
-                    <select name="attendance_check" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
-                        <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
-                        <option value="always"><?php echo $lang === 'ja' ? '毎回取る' : 'Always'; ?></option>
-                        <option value="sometimes"><?php echo $lang === 'ja' ? '時々取る' : 'Sometimes'; ?></option>
-                        <option value="never"><?php echo $lang === 'ja' ? '取らない' : 'Never'; ?></option>
-                    </select>
-                </div>
-
-                <!-- Grade Received -->
-                <div style="margin-bottom: 30px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                        <?php echo $lang === 'ja' ? '成績:' : 'Grade Received:'; ?>
-                    </label>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                        <?php foreach(['S', 'A', 'B', 'C', 'D', 'F', 'P'] as $grade): ?>
-                        <label style="cursor: pointer; display: inline-block; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; transition: all 0.3s;">
-                            <input type="radio" name="grade" value="<?php echo $grade; ?>" style="margin-right: 5px;" required>
-                            <?php echo $grade; ?>
-                        </label>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <!-- Course Attributes -->
-                <div style="margin-bottom: 30px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                        <?php echo $lang === 'ja' ? '授業の特徴:' : 'Course Attributes:'; ?>
-                    </label>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <p style="margin-bottom: 10px; font-weight: 500;"><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></p>
-                        <div style="display: flex; gap: 15px;">
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="radio" name="textbook" value="required" required>
-                                <?php echo $lang === 'ja' ? '必須' : 'Required'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="radio" name="textbook" value="recommended">
-                                <?php echo $lang === 'ja' ? '推奨' : 'Recommended'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="radio" name="textbook" value="not_needed">
-                                <?php echo $lang === 'ja' ? '不要' : 'Not needed'; ?>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <p style="margin-bottom: 10px; font-weight: 500;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></p>
-                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="first_half[]" value="report">
-                                <?php echo $lang === 'ja' ? 'レポート' : 'Report'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="first_half[]" value="test">
-                                <?php echo $lang === 'ja' ? 'テスト' : 'Test'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="first_half[]" value="presentation">
-                                <?php echo $lang === 'ja' ? '発表' : 'Presentation'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="first_half[]" value="project">
-                                <?php echo $lang === 'ja' ? 'プロジェクト' : 'Project'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="first_half[]" value="nothing">
-                                <?php echo $lang === 'ja' ? 'なし' : 'Nothing'; ?>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <p style="margin-bottom: 10px; font-weight: 500;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></p>
-                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="second_half[]" value="report">
-                                <?php echo $lang === 'ja' ? 'レポート' : 'Report'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="second_half[]" value="test">
-                                <?php echo $lang === 'ja' ? 'テスト' : 'Test'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="second_half[]" value="presentation">
-                                <?php echo $lang === 'ja' ? '発表' : 'Presentation'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="second_half[]" value="project">
-                                <?php echo $lang === 'ja' ? 'プロジェクト' : 'Project'; ?>
-                            </label>
-                            <label style="cursor: pointer; display: inline-block;">
-                                <input type="checkbox" name="second_half[]" value="nothing">
-                                <?php echo $lang === 'ja' ? 'なし' : 'Nothing'; ?>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Comment (Optional) -->
-                <div style="margin-bottom: 30px;">
-                    <label for="comment" style="display: block; margin-bottom: 10px; font-weight: 500;">
-                        <?php echo $lang === 'ja' ? 'コメント (任意):' : 'Comment (Optional):'; ?>
-                    </label>
-                    <textarea name="comment" id="comment" rows="5" 
-                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"
-                        placeholder="<?php echo $lang === 'ja' ? 'この講義についての感想や意見を書いてください...' : 'Share your thoughts about this course...'; ?>"></textarea>
-                </div>
-                
-                <!-- Submit Button -->
-                <div>
-                    <button type="submit" class="add-review-btn" style="border: none; cursor: pointer;">
-                        <?php echo $lang === 'ja' ? '評価を送信' : 'Submit Rating'; ?>
-                    </button>
-                </div>
-            </form>
-        </div>
-        <?php endif; ?>
-    </div>
-
-    <style>
-        /* Add hover effect for dropdown menu */
-        .dropdown:hover .dropdown-content {
-            display: block !important;
-        }
-    </style>
-    <script>
-    </script>
-
-<!-- 1. First, find and close your content div before the footer -->
-</div> <!-- End of the .container or .content-box div -->
-
-    <!-- 2. Replace the footer with this implementation that sits outside any containers -->
-    <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100vw; position: relative; left: 0; right: 0; margin-left: -50vw; margin-right: -50vw; left: 50%; box-sizing: border-box;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-            <p>2025 Rate My Teacher</p>
-            <p style="margin-top: 10px;">
-                <a href="ToS.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
-                    <?php echo $lang === 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
-                </a>
-            </p>
-        </div>
-    </footer>
-    </body>
-    </html>
-
-    <script>
-        // Function to handle review deletion
-        function deleteReview(reviewId) {
-            if (!confirm('<?php echo $lang === "ja" ? "このレビューを削除してもよろしいですか？" : "Are you sure you want to delete this review?"; ?>')) {
-                return; // User cancelled
-            }
-            
-            // Send AJAX request to delete the review
-            fetch('delete_review.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'review_id=' + reviewId
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove the review from the page
-                    const reviewElement = document.getElementById('review-' + reviewId);
-                    if (reviewElement) {
-                        reviewElement.style.backgroundColor = '#ffebee';
-                        reviewElement.style.opacity = '0.5';
-                        reviewElement.innerHTML = '<div style="padding: 20px; text-align: center;">' + 
-                            '<?php echo $lang === "ja" ? "レビューが削除されました" : "Review has been deleted"; ?>' +
-                            '</div>';
-                        
-                        // After a short delay, remove the element entirely
-                        setTimeout(() => {
-                            reviewElement.style.display = 'none';
-                        }, 2000);
-                    }
-                } else {
-                    // Show error message
-                    alert(data.error || '<?php echo $lang === "ja" ? "レビューの削除中にエラーが発生しました" : "An error occurred while deleting the review"; ?>');
+            echo "EN Course: $regNum - '$courseName' with $instrCount instructors\n";
+            if (isset($enCourse['instructors']) && is_array($enCourse['instructors'])) {
+                foreach ($enCourse['instructors'] as $idx => $instr) {
+                    echo "  EN Instructor $idx: $instr\n";
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('<?php echo $lang === "ja" ? "エラーが発生しました" : "An error occurred"; ?>');
-            });
+            }
         }
-        
-        // Debug function to help identify search issues
-        function debug(message) {
-            console.log(`[Search Debug] ${message}`);
+
+        // Map all Japanese courses by registration number
+        $jaCoursesByRegNum = [];
+        foreach ($jaResults['new_courses'] as $jaCourse) {
+            $regNum = $jaCourse['reg_number'] ?? '';
+            if (!empty($regNum)) {
+                $jaCoursesByRegNum[$regNum] = $jaCourse;
+            }
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click event to review button if not logged in
-            const reviewBtn = document.querySelector('.add-review-btn');
-            if (reviewBtn && !reviewBtn.getAttribute('href').startsWith('#')) {
-                reviewBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    alert('<?php echo $lang === 'ja' ? 'レビューを投稿するにはログインが必要です。' : 'You need to log in to post a review.'; ?>');
-                    window.location.href = 'login.php';
-                });
+
+        // Go through English courses and look for matches
+        $mergedCourses = [];
+        foreach ($enResults['new_courses'] as $enCourse) {
+            $regNum = $enCourse['reg_number'] ?? '';
+
+            // Check if there's a matching Japanese course
+            if (!empty($regNum) && isset($jaCoursesByRegNum[$regNum])) {
+                $jaCourse = $jaCoursesByRegNum[$regNum];
+
+                // Debug information about the English course we're merging
+                echo "\nMerging JP and EN for course reg# $regNum:\n";
+                if (isset($enCourse['translations']['en']['name'])) {
+                    echo "  EN name: " . $enCourse['translations']['en']['name'] . "\n";
+                }
+                if (isset($jaCourse['translations']['ja']['name'])) {
+                    echo "  JP name: " . $jaCourse['translations']['ja']['name'] . "\n";
+                }
+
+                // Debug instructor information
+                echo "  EN instructors: ";
+                if (isset($enCourse['instructors']) && is_array($enCourse['instructors'])) {
+                    echo implode(", ", $enCourse['instructors']) . "\n";
+                } else {
+                    echo "none\n";
+                }
+
+                echo "  JP instructors: ";
+                if (isset($jaCourse['instructors']) && is_array($jaCourse['instructors'])) {
+                    echo implode(", ", $jaCourse['instructors']) . "\n";
+                } else {
+                    echo "none\n";
+                }
+
+                // Create a merged course with data from both languages
+                $mergedCourse = [
+                    'reg_number' => $regNum,
+                    'year' => $enCourse['year'] ?? $jaCourse['year'],
+                    'semester' => $enCourse['semester'] ?? $jaCourse['semester'],
+                    'translations' => [
+                        'ja' => isset($jaCourse['translations']['ja']) ? $jaCourse['translations']['ja'] : [],
+                        'en' => isset($enCourse['translations']['en']) ? $enCourse['translations']['en'] : []
+                    ],
+                    'instructors' => array_merge(
+                        $jaCourse['instructors'] ?? [],
+                        $enCourse['instructors'] ?? []
+                    )
+                ];
+
+                $mergedCourses[] = $mergedCourse;
+                echo "  Merged course: $regNum\n";
+
+                // Remove this course from the Japanese map to mark it as processed
+                unset($jaCoursesByRegNum[$regNum]);
+            } else {
+                // English-only course
+                $mergedCourses[] = $enCourse;
+                echo "  English-only course: $regNum\n";
+            }
+        }
+
+        // Add any remaining Japanese courses that didn't have an English match
+        foreach ($jaCoursesByRegNum as $regNum => $jaCourse) {
+            $mergedCourses[] = $jaCourse;
+            echo "  Japanese-only course: $regNum\n";
+        }
+
+        // Add these merged courses to our collection
+        $allCourses = array_merge($allCourses, $mergedCourses);
+        echo "Added " . count($mergedCourses) . " courses after merging Japanese and English data.\n";
+    } elseif ($jaResults) {
+        // Only Japanese courses available
+        $allCourses = array_merge($allCourses, $jaResults['new_courses']);
+        echo "Added " . count($jaResults['new_courses']) . " Japanese-only courses.\n";
+    } elseif ($enResults) {
+        // Only English courses available
+        $allCourses = array_merge($allCourses, $enResults['new_courses']);
+        echo "Added " . count($enResults['new_courses']) . " English-only courses.\n";
+    }
+
+    echo "Current total unique courses: " . count($allCourses) . "\n";
+
+    // Add a delay between URL pairs
+    if ($index < count($urlPairs) - 1) {
+        echo "Waiting 3 seconds before processing next URL pair...\n";
+        sleep(3);
+    }
+}
+
+echo "\n" . str_repeat("=", 80) . "\n";
+echo "POST-PROCESSING: Preparing courses for website integration\n";
+
+// The data structure should already properly contain both Japanese and English versions
+// of the same course when they have the same registration number and year
+// Let's count the stats
+$fullTranslationCount = 0;
+$jaOnlyCount = 0;
+$enOnlyCount = 0;
+
+// First, find courses that appear in both 2023 and 2024
+echo "Finding courses available in multiple years...\n";
+$coursesByNameAndInstructor = [];
+$multiyearCourses = [];
+$combinedCourses = [];
+$indicesToRemove = [];
+
+// Group courses by name and instructors to identify courses available in multiple years
+foreach ($allCourses as $index => $course) {
+    $hasJa = isset($course['translations']['ja']);
+    $hasEn = isset($course['translations']['en']);
+
+    // Check if we have name field in either translation
+    if ($hasJa && isset($course['translations']['ja']['course_name'])) {
+        $courseName = $course['translations']['ja']['course_name'];
+    } elseif ($hasJa && isset($course['translations']['ja']['name'])) {
+        $courseName = $course['translations']['ja']['name'];
+    } elseif ($hasEn && isset($course['translations']['en']['course_name'])) {
+        $courseName = $course['translations']['en']['course_name'];
+    } elseif ($hasEn && isset($course['translations']['en']['name'])) {
+        $courseName = $course['translations']['en']['name'];
+    } else {
+        // If no name is found, use registration number
+        $courseName = "Unknown Course: " . $course['reg_number'];
+    }
+
+    // Create a key from course name and instructors to identify the "same" course
+    $instructorNames = [];
+    if (isset($course['instructors']) && is_array($course['instructors'])) {
+        foreach ($course['instructors'] as $instructor) {
+            $instructorNames[] = $instructor;
+        }
+        sort($instructorNames); // Sort to ensure consistent order
+    }
+
+    // Try to extract professors differently
+    $professorNames = [];
+    if (isset($course['professors']) && is_array($course['professors'])) {
+        foreach ($course['professors'] as $professor) {
+            if (isset($professor['name']['ja'])) {
+                $professorNames[] = $professor['name']['ja'];
+            } elseif (isset($professor['name']['en'])) {
+                $professorNames[] = $professor['name']['en'];
+            }
+        }
+        sort($professorNames); // Sort to ensure consistent order
+    }
+
+    // Create key (use mb_strtolower for UTF-8 support)
+    // Use either instructors or professors, depending on which is available
+    if (!empty($professorNames)) {
+        $key = mb_strtolower($courseName, 'UTF-8') . '|' . implode(',', $professorNames);
+    } else {
+        $key = mb_strtolower($courseName, 'UTF-8') . '|' . implode(',', $instructorNames);
+    }
+
+    if (!isset($coursesByNameAndInstructor[$key])) {
+        $coursesByNameAndInstructor[$key] = [];
+    }
+
+    $coursesByNameAndInstructor[$key][] = [
+        'index' => $index,
+        'year' => $course['year'],
+        'reg_number' => $course['reg_number']
+    ];
+}
+
+// Combine courses that appear in multiple years
+foreach ($coursesByNameAndInstructor as $key => $courseInstances) {
+    if (count($courseInstances) > 1) {
+        $years = array_column($courseInstances, 'year');
+        $uniqueYears = array_unique($years);
+
+        if (count($uniqueYears) > 1) {
+            // This course appears in multiple years
+            // Take the first instance as the base and combine years
+            $baseInstanceIndex = $courseInstances[0]['index'];
+            $baseCourse = $allCourses[$baseInstanceIndex];
+
+            // Combine years into a single string like "2023&2024"
+            sort($uniqueYears);
+            $combinedYear = implode('&', $uniqueYears);
+
+            // Create a combined course with information from the base course
+            $combinedCourse = $baseCourse;
+            $combinedCourse['year'] = $combinedYear;
+            $combinedCourse['available_years'] = $uniqueYears;
+
+            // Add this combined course to our special array
+            $combinedCourses[] = $combinedCourse;
+
+            // Mark all instances for removal from the original array
+            foreach ($courseInstances as $instance) {
+                $indicesToRemove[] = $instance['index'];
             }
 
-            // Rating form enhancements for logged in users
-            const ratingInputs = document.querySelectorAll('input[name="rating"]');
-            if (ratingInputs.length > 0) {
-                ratingInputs.forEach(input => {
-                    const label = input.closest('label');
-                    label.addEventListener('click', function() {
-                        // Reset all labels
-                        ratingInputs.forEach(inp => {
-                            inp.closest('label').style.backgroundColor = '';
-                            inp.closest('label').style.borderColor = '#ddd';
-                        });
-                        // Highlight selected label
-                        this.style.backgroundColor = '#f8f9fa';
-                        this.style.borderColor = '#4a86e8';
-                    });
-                });
+            echo "Combined course '$key' available in years: " . implode(', ', $uniqueYears) . "\n";
+            $multiyearCourses[] = $key;
+        }
+    }
+}
+
+// Remove original courses that are now part of combined courses
+$indicesToRemove = array_unique($indicesToRemove);
+rsort($indicesToRemove); // Sort in reverse order to safely remove items
+
+foreach ($indicesToRemove as $index) {
+    unset($allCourses[$index]);
+}
+
+// Add the combined courses to the main array
+$allCourses = array_merge($allCourses, $combinedCourses);
+
+echo "Combined " . count($multiyearCourses) . " courses that appear in multiple years.\n";
+
+// Now count translation stats
+foreach ($allCourses as $index => $course) {
+    $hasJa = isset($course['translations']['ja']);
+    $hasEn = isset($course['translations']['en']);
+
+    if ($hasJa && $hasEn) {
+        $fullTranslationCount++;
+    } elseif ($hasJa) {
+        $jaOnlyCount++;
+        // No need to create a fake English translation since the real one should have been linked
+        // If we get here, it means the English version wasn't found in the source
+        echo "Warning: Course with reg# {$course['reg_number']} from {$course['year']} only has Japanese translation.\n";
+    } elseif ($hasEn) {
+        $enOnlyCount++;
+        // No need to create a fake Japanese translation since the real one should have been linked
+        // If we get here, it means the Japanese version wasn't found in the source
+        echo "Warning: Course with reg# {$course['reg_number']} from {$course['year']} only has English translation.\n";
+    }
+}
+
+echo "\n" . str_repeat("=", 80) . "\n";
+echo "SUMMARY:\n";
+echo "Total courses collected: " . count($allCourses) . "\n";
+echo "Courses with both Japanese and English translations: $fullTranslationCount\n";
+echo "Courses with only Japanese translation: $jaOnlyCount\n";
+echo "Courses with only English translation: $enOnlyCount\n";
+echo "Courses available in multiple years: " . count($multiyearCourses) . "\n";
+echo "Each course with both translations can be displayed in either language on the website.\n";
+echo "Courses available in multiple years are marked with available_years property listing all years offered.\n";
+
+// Format the data for the Rate My Teacher website
+// Convert to a structure that's compatible with the website's needs
+$formattedCourses = [];
+
+// This line was causing issues since ob_start() wasn't called
+// Removing it
+
+foreach ($allCourses as $course) {
+    // Only process courses that have complete information
+    if (!isset($course['translations']['ja']) || !isset($course['translations']['en'])) {
+        // If we're missing either language, use what we have for both languages
+        if (isset($course['translations']['ja']) && !isset($course['translations']['en'])) {
+            // Create an English translation based on the Japanese version
+            echo "Notice: Creating English translation from Japanese for course {$course['reg_number']}.\n";
+
+            // Start with a copy of the Japanese translation
+            $course['translations']['en'] = [];
+
+            // For each field in Japanese translation, create an English equivalent
+            foreach ($course['translations']['ja'] as $field => $value) {
+                // Only copy values if field doesn't already exist
+                if (!isset($course['translations']['en'][$field])) {
+                    $course['translations']['en'][$field] = $value;
+                }
             }
 
-            // Grade selection enhancement
-            const gradeInputs = document.querySelectorAll('input[name="grade"]');
-            if (gradeInputs.length > 0) {
-                gradeInputs.forEach(input => {
-                    const label = input.closest('label');
-                    label.addEventListener('click', function() {
-                        // Reset all labels
-                        gradeInputs.forEach(inp => {
-                            inp.closest('label').style.backgroundColor = '';
-                            inp.closest('label').style.borderColor = '#ddd';
-                        });
-                        // Highlight selected label
-                        this.style.backgroundColor = '#f8f9fa';
-                        this.style.borderColor = '#4a86e8';
-                    });
-                });
+            // Make sure we'll translate these fields later, and not just use Japanese text in English fields
+
+        } else if (isset($course['translations']['en']) && !isset($course['translations']['ja'])) {
+            // Create a Japanese translation based on the English version  
+            echo "Notice: Creating Japanese translation from English for course {$course['reg_number']}.\n";
+
+            // For a proper website, we'd want to maintain both languages separately
+            // But for now, we'll create a Japanese version from the English
+            $course['translations']['ja'] = [];
+
+            // For each field in English translation, create a Japanese version
+            foreach ($course['translations']['en'] as $field => $value) {
+                // Only copy values if field doesn't already exist
+                if (!isset($course['translations']['ja'][$field])) {
+                    $course['translations']['ja'][$field] = $value;
+                }
+            }
+
+            // We'll need to check for and fix English text in Japanese fields later
+        } else {
+            // Skip courses with no translations at all
+            echo "Warning: Skipping course with no translations: {$course['reg_number']}.\n";
+            continue;
+        }
+    }
+
+    // Fix the translations to ensure English translations have English text
+    // First make sure all necessary keys exist in translations to avoid undefined array key errors
+    foreach (['ja', 'en'] as $lang) {
+        if (isset($course['translations'][$lang])) {
+            if (!isset($course['translations'][$lang]['name']) && isset($course['translations'][$lang]['course_name'])) {
+                $course['translations'][$lang]['name'] = $course['translations'][$lang]['course_name'];
+            } elseif (!isset($course['translations'][$lang]['name'])) {
+                $course['translations'][$lang]['name'] = "Unknown Course " . $course['reg_number'];
+            }
+
+            if (!isset($course['translations'][$lang]['field'])) {
+                $course['translations'][$lang]['field'] = $lang == 'en' ? "Unknown Field" : "不明な分野";
+            }
+
+            if (!isset($course['translations'][$lang]['credits'])) {
+                $course['translations'][$lang]['credits'] = $lang == 'en' ? "Unknown Credits" : "不明な単位";
             }
             
-            // Live search functionality
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResults');
-            
-            if (searchInput && searchResults) {
-                let searchTimeout;
-                
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(searchTimeout);
-                    const query = this.value.trim();
-                    
-                    debug(`Search input event: query="${query}"`);
-                    
-                    if (query.length < 2) {
-                        searchResults.style.display = 'none';
-                        debug("Query too short, hiding results");
-                        return;
-                    }
-                    
-                    searchTimeout = setTimeout(function() {
-                        const url = `search.php?query=${encodeURIComponent(query)}&limit=true&lang=<?php echo $lang; ?>`;
-                        debug(`Making fetch request to: ${url}`);
-                        
-                        fetch(url)
-                            .then(response => {
-                                debug(`Received response: status=${response.status}`);
-                                return response.text(); // Get raw text first for debugging
-                            })
-                            .then(text => {
-                                try {
-                                    debug(`Response text: ${text.substring(0, 100)}...`);
-                                    const data = JSON.parse(text);
-                                    debug(`Parsed JSON: ${data.professors.length} professors, ${data.courses.length} courses`);
-                                    return data;
-                                } catch (e) {
-                                    debug(`ERROR parsing JSON: ${e.message}`);
-                                    console.error("Full response text:", text);
-                                    return { professors: [], courses: [] };
-                                }
-                            })
-                            .then(data => {
-                                searchResults.innerHTML = '';
-                                
-                                if (data.professors.length === 0 && data.courses.length === 0) {
-                                    searchResults.innerHTML = `<p style="padding: 10px; text-align: center; color: #666;"><?php echo $lang === 'ja' ? '結果が見つかりませんでした' : 'No results found'; ?></p>`;
-                                    searchResults.style.display = 'block';
-                                    return;
-                                }
-                                
-                                // Display professors
-                                if (data.professors.length > 0) {
-                                    const profSection = document.createElement('div');
-                                    profSection.innerHTML = `<h3 style="margin: 10px; font-size: 16px; color: #666;"><?php echo $lang === 'ja' ? '教授' : 'Professors'; ?> (${data.professors.length})</h3>`;
-                                    
-                                    data.professors.forEach(prof => {
-                                        const item = document.createElement('div');
-                                        item.style.padding = '10px';
-                                        item.style.borderBottom = '1px solid #eee';
-                                        item.style.cursor = 'pointer';
-                                        
-                                        // Use Japanese name if in Japanese mode and available
-                                        const displayName = '<?php echo $lang; ?>' === 'ja' && prof.name_ja ? prof.name_ja : prof.name;
-                                        const displayDept = '<?php echo $lang; ?>' === 'ja' && prof.department_ja ? prof.department_ja : prof.department;
-                                        
-                                        // For debug purposes, show both names during development
-                                        item.innerHTML = `
-                                            <div style="font-weight: bold;">${displayName}</div>
-                                            <div style="font-size: 13px; color: #666;">${displayDept || ''}</div>
-                                            <div style="font-size: 10px; color: #999; margin-top: 4px;">
-                                                EN: ${prof.name || ''} | JA: ${prof.name_ja || ''}
-                                            </div>
-                                        `;
-                                        
-                                        item.addEventListener('click', () => {
-                                            // Make sure to remove all spaces from professor name for URL
-                                            const nameForUrl = prof.name.replace(/\s+/g, '');
-                                            window.location.href = `professor_page_template.php?name=${encodeURIComponent(nameForUrl)}&lang=<?php echo $lang; ?>`;
-                                            debug(`Navigating to professor: ${nameForUrl}`);
-                                        });
-                                        
-                                        profSection.appendChild(item);
-                                    });
-                                    
-                                    searchResults.appendChild(profSection);
-                                }
-                                
-                                // Display courses
-                                if (data.courses.length > 0) {
-                                    const courseSection = document.createElement('div');
-                                    courseSection.innerHTML = `<h3 style="margin: 10px; font-size: 16px; color: #666;"><?php echo $lang === 'ja' ? 'コース' : 'Courses'; ?> (${data.courses.length})</h3>`;
-                                    
-                                    data.courses.forEach(course => {
-                                        const item = document.createElement('div');
-                                        item.style.padding = '10px';
-                                        item.style.borderBottom = '1px solid #eee';
-                                        item.style.cursor = 'pointer';
-                                        
-                                        // Use Japanese name if in Japanese mode and available
-                                        const displayName = '<?php echo $lang; ?>' === 'ja' && course.name_ja ? course.name_ja : course.name;
-                                        const displayProf = '<?php echo $lang; ?>' === 'ja' && course.professor_name_ja ? course.professor_name_ja : course.professor_name;
-                                        
-                                        item.innerHTML = `
-                                            <div style="font-weight: bold;">${displayName}</div>
-                                            <div style="font-size: 13px; color: #666;">
-                                                ${displayProf ? ('<?php echo $lang === 'ja' ? '担当教員: ' : 'Taught by: '; ?>' + displayProf) : ''}
-                                            </div>
-                                            <div style="font-size: 10px; color: #999; margin-top: 4px;">
-                                                EN: ${course.name || ''} | JA: ${course.name_ja || ''}
-                                            </div>
-                                        `;
-                                        
-                                        item.addEventListener('click', () => {
-                                            // Use the name in the matching language
-                                            const nameForUrl = '<?php echo $lang; ?>' === 'ja' && course.name_ja ? course.name_ja : course.name;
-                                            // Add professor if available
-                                            let url = `course_page_template.php?course=${encodeURIComponent(nameForUrl)}`;
-                                            if (course.professor_name) {
-                                                // Remove spaces from professor name for URL
-                                                const profNameForUrl = course.professor_name.replace(/\s+/g, '');
-                                                url += `&professor=${encodeURIComponent(profNameForUrl)}`;
-                                            }
-                                            url += `&lang=<?php echo $lang; ?>`;
-                                            window.location.href = url;
-                                            debug(`Navigating to course: ${nameForUrl}`);
-                                        });
-                                        
-                                        courseSection.appendChild(item);
-                                    });
-                                    
-                                    searchResults.appendChild(courseSection);
-                                }
-                                
-                                // Add "See all results" link
-                                const footer = document.createElement('div');
-                                footer.style.padding = '10px';
-                                footer.style.textAlign = 'center';
-                                footer.style.borderTop = '1px solid #eee';
-                                
-                                const link = document.createElement('a');
-                                link.href = `search.php?q=${encodeURIComponent(query)}&lang=<?php echo $lang; ?>`;
-                                link.style.color = '#4a86e8';
-                                link.style.textDecoration = 'none';
-                                link.style.fontWeight = 'bold';
-                                link.textContent = '<?php echo $lang === 'ja' ? 'すべての結果を表示' : 'See all results'; ?>';
-                                
-                                footer.appendChild(link);
-                                searchResults.appendChild(footer);
-                                
-                                searchResults.style.display = 'block';
-                            })
-                            .catch(error => {
-                                console.error('Error fetching search results:', error);
-                            });
-                    }, 300);
-                });
-                
-                // Hide search results when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.style.display = 'none';
-                    }
-                });
-                
-                // Hide search results when pressing Escape
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        searchResults.style.display = 'none';
-                    }
-                });
+            // Make sure semester is set
+            if (!isset($course['translations'][$lang]['semester'])) {
+                $course['translations'][$lang]['semester'] = isset($course['semester']) ? $course['semester'] : 'unknown';
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    }
+
+    // First, check if Japanese fields accidentally contain English text
+    if (isset($course['translations']['ja'])) {
+        // Map of common English course names to Japanese
+        $englishToJapaneseTranslations = [
+            'Basic Statistics' => '統計基礎',
+            'Statistics' => '統計',
+            'Probability' => '確率',
+            'Data Science' => 'データサイエンス',
+            'Machine Learning' => '機械学習',
+            'Programming' => 'プログラミング',
+            'Computer' => 'コンピュータ',
+            'Information' => '情報',
+            'Research' => '研究',
+            'Mathematics' => '数学',
+            'Physics' => '物理',
+            'Chemistry' => '化学',
+            'Biology' => '生物',
+            'Psychology' => '心理',
+            'Economics' => '経済',
+            'Business' => '経営',
+            'Law' => '法律',
+            'Political Science' => '政治',
+            'Sociology' => '社会',
+            'History' => '歴史',
+            'Literature' => '文学',
+            'Linguistics' => '言語',
+            'Philosophy' => '哲学',
+            'Art' => '芸術',
+            'Music' => '音楽',
+            'Basic' => '基礎',
+            'Applied' => '応用',
+            'Special' => '特別',
+            'Advanced' => '上級',
+            'Practice' => '実践',
+            'Introduction' => '概論',
+            'Theory' => '理論',
+            'Algorithms' => 'アルゴリズム',
+            'Networks' => 'ネットワーク',
+            'Security' => 'セキュリティ',
+            'Software' => 'ソフトウェア',
+            'Systems' => 'システム',
+            'Database' => 'データベース',
+            'Web' => 'ウェブ',
+            'Mobile' => 'モバイル',
+            'Artificial Intelligence' => '人工知能',
+            'Robotics' => 'ロボット',
+            'Graphics' => 'グラフィックス',
+            'Media' => 'メディア',
+            'Design' => 'デザイン',
+            'Communications' => '通信',
+            'Game' => 'ゲーム',
+            'Human' => '人間',
+            'Language Processing' => '言語処理',
+            'Image Processing' => '画像処理',
+            'Speech Processing' => '音声処理',
+            'Big Data' => 'ビッグデータ',
+            'Cloud' => 'クラウド',
+            'Internet' => 'インターネット',
+            'Cyber' => 'サイバー',
+            'Analysis' => '分析',
+            'Optimization' => '最適化',
+            'Cognition' => '認知',
+            'Vision' => '視覚',
+            'Auditory' => '聴覚',
+            'Foundation Course' => '基盤科目',
+            'Data Science 1' => 'データサイエンス1',
+            'Language Communication' => '言語コミュニケーション',
+            'Interdisciplinary' => '共通科目',
+            'Policy Management' => '総合政策系',
+            'Environment And Information Studies' => '環境情報系',
+            'Special Subjects' => '特設科目',
+            'Unit' => '単位',
+            'credits' => '単位',
+            'Korean' => '朝鮮語',
+            'Skill' => 'スキル',
+            'Listening' => '聴解',
+            'Outline' => '概論',
+            'Earth' => '地球',
+            'Environment' => '環境',
+            'spring' => '春学期',
+            'fall' => '秋学期',
+            'full_year' => '通年',
+            'unknown' => '不明'
+        ];
+
+        // Check Japanese fields for English text and translate
+        if (
+            isset($course['translations']['ja']['name']) &&
+            !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $course['translations']['ja']['name'])
+        ) {
+
+            $englishName = $course['translations']['ja']['name'];
+            $japaneseName = $englishName;
+
+            // Try to translate using our English to Japanese dictionary
+            foreach ($englishToJapaneseTranslations as $en => $ja) {
+                $japaneseName = str_ireplace($en, $ja, $japaneseName);
+            }
+
+            // If after translation it still doesn't have any Japanese characters, 
+            // and we have the English name, use "コース" + ID
+            if (!preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $japaneseName)) {
+                $japaneseName = "コース " . $course['course_id'];
+            }
+
+            $course['translations']['ja']['name'] = $japaneseName;
+            echo "  Translated English name in Japanese field: $englishName -> $japaneseName\n";
+        }
+
+        // Translate field/department if needed
+        if (
+            isset($course['translations']['ja']['field']) &&
+            !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $course['translations']['ja']['field'])
+        ) {
+
+            $englishField = $course['translations']['ja']['field'];
+            $japaneseField = $englishField;
+
+            // Try to translate using our dictionary
+            foreach ($englishToJapaneseTranslations as $en => $ja) {
+                $japaneseField = str_ireplace($en, $ja, $japaneseField);
+            }
+
+            // If it still has no Japanese characters, use a default
+            if (!preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $japaneseField)) {
+                $japaneseField = "基盤科目";
+            }
+
+            $course['translations']['ja']['field'] = $japaneseField;
+            echo "  Translated English field in Japanese field: $englishField -> $japaneseField\n";
+        }
+
+        // Translate credits if needed
+        if (
+            isset($course['translations']['ja']['credits']) &&
+            !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $course['translations']['ja']['credits'])
+        ) {
+
+            // Convert "2 credits" or "2 Unit" to "2単位"
+            if (preg_match('/(\d+)\s*(credits|Units|Unit)/i', $course['translations']['ja']['credits'], $matches)) {
+                $creditNum = $matches[1];
+                $course['translations']['ja']['credits'] = $creditNum . "単位";
+                echo "  Translated credits: {$course['translations']['ja']['credits']} -> {$creditNum}単位\n";
+            }
+        }
+        
+        // Translate semester information if needed
+        if (
+            isset($course['translations']['ja']['semester']) &&
+            !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $course['translations']['ja']['semester'])
+        ) {
+            $englishSemester = $course['translations']['ja']['semester'];
+            
+            // Map English semester values to Japanese
+            $semesterMap = [
+                'spring' => '春学期',
+                'fall' => '秋学期',
+                'full_year' => '通年',
+                'unknown' => '不明'
+            ];
+            
+            if (isset($semesterMap[$englishSemester])) {
+                $course['translations']['ja']['semester'] = $semesterMap[$englishSemester];
+                echo "  Translated semester: $englishSemester -> {$semesterMap[$englishSemester]}\n";
+            }
+        }
+    }
+
+    // Process English fields 
+    if (isset($course['translations']['en'])) {
+        // No translation maps - we'll use direct scraping instead
+
+        // We need to keep field translations because these are consistent in the syllabus
+        // and need to be mapped between languages
+
+        // Post-process course names to ensure proper language and fix cross-language issues
+        // 1. Fix English course names that contain Japanese characters
+        if (isset($course['translations']['en']) && isset($course['translations']['en']['name'])) {
+            $enName = $course['translations']['en']['name'];
+            $hasJapaneseChars = preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $enName);
+            $isCourseId = preg_match('/Course ID:\s*\d+/', $enName) || preg_match('/^Course \d+$/', $enName);
+
+            // Only fix the English name if it's problematic
+            if ($hasJapaneseChars || $isCourseId) {
+                echo "Found problematic English name: '$enName'\n";
+
+                // Try to find a matching course by registration number
+                if (isset($course['reg_number'])) {
+                    $regNumber = $course['reg_number'];
+                    $courseYear = $course['year'];
+
+                    echo "Looking for English name for course with registration number: $regNumber (year: $courseYear)\n";
+
+                    // Check all existing courses for one with the same registration number
+                    foreach ($existingCourses as $existingCourse) {
+                        if (
+                            $existingCourse['reg_number'] === $regNumber &&
+                            $existingCourse['year'] === $courseYear &&
+                            isset($existingCourse['translations']['en']) &&
+                            isset($existingCourse['translations']['en']['name'])
+                        ) {
+
+                            $existingEnName = $existingCourse['translations']['en']['name'];
+
+                            // Check if the existing name is better
+                            if (
+                                !preg_match('/Course ID:|^Course \d+$/', $existingEnName) &&
+                                !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $existingEnName) &&
+                                strlen($existingEnName) > 3
+                            ) {
+
+                                echo "Found better English name: '$existingEnName'\n";
+                                $course['translations']['en']['name'] = $existingEnName;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // If we still have a problematic name and have a Japanese name available
+                if (($hasJapaneseChars || $isCourseId) &&
+                    isset($course['translations']['ja']) &&
+                    isset($course['translations']['ja']['name'])
+                ) {
+
+                    $jaName = $course['translations']['ja']['name'];
+
+                    // Try to find a match by Japanese name in existing courses
+                    $matchFound = false;
+                    foreach ($existingCourses as $existingCourse) {
+                        if (
+                            isset($existingCourse['translations']['ja']) &&
+                            isset($existingCourse['translations']['ja']['name']) &&
+                            isset($existingCourse['translations']['en']) &&
+                            isset($existingCourse['translations']['en']['name'])
+                        ) {
+
+                            $existingJaName = $existingCourse['translations']['ja']['name'];
+                            $existingEnName = $existingCourse['translations']['en']['name'];
+
+                            // If Japanese names match and English name is good
+                            if (
+                                $existingJaName === $jaName &&
+                                !preg_match('/Course ID:|^Course \d+$/', $existingEnName) &&
+                                !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $existingEnName) &&
+                                strlen($existingEnName) > 3
+                            ) {
+
+                                echo "Found match by Japanese name: $jaName -> $existingEnName\n";
+                                $course['translations']['en']['name'] = $existingEnName;
+                                $matchFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // As a last resort, use the Japanese name (better than Course ID)
+                    if (!$matchFound && $isCourseId) {
+                        echo "Using Japanese name as fallback: '$jaName'\n";
+                        $course['translations']['en']['name'] = $jaName;
+                    }
+                }
+            }
+        }
+
+        // 2. Fix Japanese course names that contain only English characters
+        if (isset($course['translations']['ja']) && isset($course['translations']['ja']['name'])) {
+            $jaName = $course['translations']['ja']['name'];
+            $hasJapaneseChars = preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $jaName);
+
+            // If the Japanese name doesn't have any Japanese characters
+            if (!$hasJapaneseChars && strlen($jaName) > 3) {
+                echo "Found Japanese name with only English characters: '$jaName'\n";
+
+                // Look for a matching course with proper Japanese name
+                if (isset($course['reg_number'])) {
+                    $regNumber = $course['reg_number'];
+
+                    foreach ($existingCourses as $existingCourse) {
+                        if (
+                            $existingCourse['reg_number'] === $regNumber &&
+                            $existingCourse['year'] === $course['year'] &&
+                            isset($existingCourse['translations']['ja']) &&
+                            isset($existingCourse['translations']['ja']['name'])
+                        ) {
+
+                            $existingJaName = $existingCourse['translations']['ja']['name'];
+
+                            // Only use if it actually has Japanese characters
+                            if (preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $existingJaName)) {
+                                echo "Found proper Japanese name: '$existingJaName'\n";
+                                $course['translations']['ja']['name'] = $existingJaName;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // If we still don't have a proper Japanese name and have a good English name
+                if (
+                    !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $course['translations']['ja']['name']) &&
+                    isset($course['translations']['en']) &&
+                    isset($course['translations']['en']['name'])
+                ) {
+
+                    $enName = $course['translations']['en']['name'];
+
+                    // Check if English name seems valid
+                    if (
+                        !preg_match('/Course ID:|^Course \d+$/', $enName) &&
+                        !preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $enName) &&
+                        strlen($enName) > 3
+                    ) {
+
+                        // In this rare case, we keep the English name in the Japanese field too
+                        // This often happens with course names that are proper nouns or standard terms
+                        echo "English-only course name, using in both languages: '$enName'\n";
+                    }
+                }
+            }
+        }
+
+        // For fields, we're using exactly what's in the HTML without any transformations
+        // This ensures consistency with the source data
+
+        // Translate credits from "2単位" to "2 credits"
+        if (
+            isset($course['translations']['en']['credits']) &&
+            preg_match('/(\d+)単位/', $course['translations']['en']['credits'], $matches)
+        ) {
+            $creditNum = $matches[1];
+            $course['translations']['en']['credits'] = $creditNum . " credits";
+        }
+        
+        // Translate semester from Japanese to English if needed
+        if (
+            isset($course['translations']['en']['semester']) &&
+            preg_match('/[春秋通]学期|通年/u', $course['translations']['en']['semester'])
+        ) {
+            $jaSemester = $course['translations']['en']['semester'];
+            
+            // Map Japanese semester values to English
+            if (strpos($jaSemester, '春') !== false) {
+                $course['translations']['en']['semester'] = 'spring';
+            } elseif (strpos($jaSemester, '秋') !== false) {
+                $course['translations']['en']['semester'] = 'fall';
+            } elseif (strpos($jaSemester, '通年') !== false) {
+                $course['translations']['en']['semester'] = 'full_year';
+            }
+        }
+    }
+
+    // Create a new course structure that works with Rate My Teacher
+    // Removed description field as requested
+    $formattedCourse = [
+        'course_id' => $course['reg_number'],
+        'year' => $course['year'],
+        'semester' => isset($course['semester']) ? $course['semester'] : 'unknown',
+        'translations' => [
+            'ja' => [
+                'name' => isset($course['translations']['ja']['name']) ? $course['translations']['ja']['name']
+                    : (isset($course['translations']['ja']['course_name']) ? $course['translations']['ja']['course_name']
+                        : ''),
+                'field' => isset($course['translations']['ja']['field']) ? $course['translations']['ja']['field'] : '基盤科目',
+                'credits' => isset($course['translations']['ja']['credits']) ? $course['translations']['ja']['credits'] : '2単位',
+                'semester' => isset($course['translations']['ja']['semester']) ? $course['translations']['ja']['semester'] : (isset($course['semester']) ? $course['semester'] : 'unknown')
+            ],
+            'en' => [
+                'name' => isset($course['translations']['en']['name']) ? $course['translations']['en']['name']
+                    : (isset($course['translations']['en']['course_name']) ? $course['translations']['en']['course_name']
+                        : 'Course ' . $course['reg_number']),
+                'field' => isset($course['translations']['en']['field']) ? $course['translations']['en']['field'] : 'Foundation Course',
+                'credits' => isset($course['translations']['en']['credits']) ? $course['translations']['en']['credits'] : '2 credits',
+                'semester' => isset($course['translations']['en']['semester']) ? $course['translations']['en']['semester'] : (isset($course['semester']) ? $course['semester'] : 'unknown')
+            ]
+        ],
+        'professors' => []
+    ];
+
+    // If Japanese name is empty or just "コース", try to use the English name or proper Japanese title
+    if (
+        empty($formattedCourse['translations']['ja']['name']) ||
+        $formattedCourse['translations']['ja']['name'] == 'コース ' . $course['reg_number'] ||
+        $formattedCourse['translations']['ja']['name'] == 'コース'
+    ) {
+
+        // Check if we can find a proper Japanese name from another course with the same registration number
+        $foundProperJaName = false;
+        foreach ($existingCourses as $existingCourse) {
+            if (
+                $existingCourse['reg_number'] === $course['reg_number'] &&
+                isset($existingCourse['translations']['ja']) &&
+                isset($existingCourse['translations']['ja']['name']) &&
+                !empty($existingCourse['translations']['ja']['name']) &&
+                $existingCourse['translations']['ja']['name'] != 'コース' &&
+                $existingCourse['translations']['ja']['name'] != 'コース ' . $course['reg_number']
+            ) {
+
+                $formattedCourse['translations']['ja']['name'] = $existingCourse['translations']['ja']['name'];
+                echo "Found proper Japanese name: {$existingCourse['translations']['ja']['name']}\n";
+                $foundProperJaName = true;
+                break;
+            }
+        }
+
+        // If we still don't have a proper Japanese name, try to use the English one
+        if (
+            !$foundProperJaName && isset($formattedCourse['translations']['en']['name']) &&
+            !empty($formattedCourse['translations']['en']['name']) &&
+            $formattedCourse['translations']['en']['name'] != 'Course ' . $course['reg_number']
+        ) {
+
+            $formattedCourse['translations']['ja']['name'] = $formattedCourse['translations']['en']['name'];
+            echo "Using English name for Japanese: {$formattedCourse['translations']['en']['name']}\n";
+        }
+    }
+
+    // If we still have an empty Japanese name, use a fallback
+    if (empty($formattedCourse['translations']['ja']['name'])) {
+        $formattedCourse['translations']['ja']['name'] = "コース " . $course['reg_number'];
+    }
+
+    // No transformation of course names - use exactly what's in the HTML
+    // This ensures names including any special designations like (GIGA), 
+    // course numbers, EC05(Reading), etc. are preserved as-is
+
+    // We're no longer using K-Numbers
+
+    // Add the available_years attribute if this course occurs in multiple years
+    if (isset($course['available_years'])) {
+        $formattedCourse['available_years'] = $course['available_years'];
+    }
+
+    // Get department in both languages for professors
+    $jaDepartment = isset($course['translations']['ja']['field']) ?
+        $course['translations']['ja']['field'] : '';
+    $enDepartment = isset($course['translations']['en']['field']) ?
+        $course['translations']['en']['field'] : '';
+
+    // Get professor information from both language translations if available
+    $jaInstructors = [];
+    $enInstructors = [];
+
+    // Extract Japanese instructors if available
+    if (isset($course['translations']['ja']) && isset($course['translations']['ja']['instructors'])) {
+        foreach ($course['translations']['ja']['instructors'] as $instructor) {
+            $jaInstructors[] = $instructor;
+        }
+    }
+
+    // Extract English instructors if available
+    if (isset($course['translations']['en']) && isset($course['translations']['en']['instructors'])) {
+        foreach ($course['translations']['en']['instructors'] as $instructor) {
+            $enInstructors[] = $instructor;
+        }
+    }
+
+    // If we have no instructor data from translations, use the course's main instructors
+    if (empty($jaInstructors) && empty($enInstructors)) {
+        foreach ($course['instructors'] as $instructor) {
+            // Check if instructor name contains Japanese characters
+            if (preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $instructor)) {
+                $jaInstructors[] = $instructor;
+            } else {
+                $enInstructors[] = $instructor;
+            }
+        }
+    }
+
+    // Determine how many professors we have
+    $professorCount = max(count($jaInstructors), count($enInstructors));
+
+    // If we have no professors at all, add at least one "Unknown" entry
+    if ($professorCount == 0) {
+        $formattedCourse['professors'][] = [
+            'name' => [
+                'ja' => '不明な教授',
+                'en' => 'Unknown Professor'
+            ],
+            'department' => [
+                'ja' => $jaDepartment,
+                'en' => $enDepartment
+            ]
+        ];
+    } else {
+        // Add paired professors from both languages
+        // Making sure to maintain the order since the syllabus should have instructors in the same order
+        for ($i = 0; $i < $professorCount; $i++) {
+            $jaName = isset($jaInstructors[$i]) ? $jaInstructors[$i] : '';
+            $enName = isset($enInstructors[$i]) ? $enInstructors[$i] : '';
+
+            // Simply use the names as they are from the source HTML
+            // If one language is missing, use the other language's name
+
+            // Use department values exactly as they are in the source HTML
+            // No transformations or mappings
+
+            // Check if we have both names or need to use one for both languages
+            if (empty($jaName) && !empty($enName)) {
+                $jaName = $enName; // Use English name for Japanese if Japanese is missing
+            } else if (empty($enName) && !empty($jaName)) {
+                $enName = $jaName; // Use Japanese name for English if English is missing
+            }
+
+            // Debug information to see what professor names we're including
+            echo "Professor: Japanese name = '$jaName', English name = '$enName'\n";
+
+            $formattedCourse['professors'][] = [
+                'name' => [
+                    'ja' => $jaName,
+                    'en' => $enName
+                ],
+                'department' => [
+                    'ja' => $jaDepartment,
+                    'en' => $enDepartment
+                ]
+            ];
+        }
+    }
+
+    $formattedCourses[] = $formattedCourse;
+}
+
+// Final post-processing to fix cross-language professor names
+echo "\nFinal check: ensuring professor names are correctly matched across languages...\n";
+
+// No post-processing of professors - use values exactly as they are in the source HTML
+echo "Using professor names exactly as provided in the syllabus HTML.\n";
+
+// Save the combined data with proper encoding for Japanese characters
+$jsonOptions = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+
+// Fix encoding issues by ensuring all text is properly encoded
+foreach ($formattedCourses as &$course) {
+    // Clean course translations
+    foreach (['ja', 'en'] as $lang) {
+        if (isset($course['translations'][$lang])) {
+            foreach ($course['translations'][$lang] as $key => $value) {
+                // Re-encode to ensure valid UTF-8
+                $course['translations'][$lang][$key] = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+            }
+        }
+    }
+
+    // Clean professor names
+    foreach ($course['professors'] as &$professor) {
+        foreach (['ja', 'en'] as $lang) {
+            if (isset($professor['name'][$lang])) {
+                // Re-encode to ensure valid UTF-8
+                $professor['name'][$lang] = mb_convert_encoding($professor['name'][$lang], 'UTF-8', 'UTF-8');
+            }
+            if (isset($professor['department'][$lang])) {
+                // Re-encode to ensure valid UTF-8
+                $professor['department'][$lang] = mb_convert_encoding($professor['department'][$lang], 'UTF-8', 'UTF-8');
+            }
+        }
+
+        // If we have an encoding issue in Japanese name, replace with English
+        if (
+            isset($professor['name']['ja']) &&
+            (strpos($professor['name']['ja'], '�') !== false || strlen($professor['name']['ja']) <= 1) &&
+            isset($professor['name']['en']) &&
+            strpos($professor['name']['en'], '�') === false &&
+            strlen($professor['name']['en']) > 1
+        ) {
+
+            echo "Fixing Japanese name with encoding issues: " . $professor['name']['ja'] . " -> " . $professor['name']['en'] . "\n";
+            $professor['name']['ja'] = $professor['name']['en'];
+        }
+
+        // If we have an encoding issue in English name, replace with Japanese
+        if (
+            isset($professor['name']['en']) &&
+            (strpos($professor['name']['en'], '�') !== false || strlen($professor['name']['en']) <= 1) &&
+            isset($professor['name']['ja']) &&
+            strpos($professor['name']['ja'], '�') === false &&
+            strlen($professor['name']['ja']) > 1
+        ) {
+
+            echo "Fixing English name with encoding issues: " . $professor['name']['en'] . " -> " . $professor['name']['ja'] . "\n";
+            $professor['name']['en'] = $professor['name']['ja'];
+        }
+    }
+}
+
+// Load the existing file to merge with new data
+$existingJsonContent = ['courses' => [], 'meta' => []];
+if (file_exists($jsonFilePath)) {
+    $existingJson = file_get_contents($jsonFilePath);
+    if ($existingJson) {
+        $tempContent = json_decode($existingJson, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo "Warning: Error parsing existing JSON file: " . json_last_error_msg() . "\n";
+        } elseif (!isset($tempContent['courses'])) {
+            echo "Warning: Existing JSON file has incorrect structure (missing 'courses' key).\n";
+        } else {
+            $existingJsonContent = $tempContent;
+            echo "Loaded existing JSON with " . count($existingJsonContent['courses']) . " courses.\n";
+        }
+    }
+}
+
+// Make sure the existingJsonContent has the expected structure
+if (!isset($existingJsonContent['courses'])) {
+    $existingJsonContent['courses'] = [];
+}
+
+// Create an index of existing courses by registration number and year
+$existingCourseIndex = [];
+foreach ($existingJsonContent['courses'] as $existingCourse) {
+    $key = $existingCourse['course_id'] . '_' . $existingCourse['year'];
+    $existingCourseIndex[$key] = true;
+}
+
+// Filter out courses that already exist in the file
+$newCoursesToAdd = [];
+foreach ($formattedCourses as $newCourse) {
+    $key = $newCourse['course_id'] . '_' . $newCourse['year'];
+    if (!isset($existingCourseIndex[$key])) {
+        $newCoursesToAdd[] = $newCourse;
+    } else {
+        echo "Skipping course already in file: " . $newCourse['course_id'] . " (" . $newCourse['year'] . ")\n";
+    }
+}
+
+echo "Adding " . count($newCoursesToAdd) . " new courses to existing " .
+    count($existingJsonContent['courses']) . " courses.\n";
+
+// Merge the courses
+$mergedCourses = array_merge($existingJsonContent['courses'], $newCoursesToAdd);
+
+// Update the metadata
+// Make sure we handle the field column safely
+$fields = [];
+if (!empty($newCoursesToAdd)) {
+    foreach ($newCoursesToAdd as $course) {
+        if (isset($course['field'])) {
+            $fields[] = $course['field'];
+        }
+    }
+}
+
+$meta = [
+    'total_count' => count($mergedCourses),
+    'languages' => ['ja', 'en'],
+    'generated_date' => date('Y-m-d H:i:s'),
+    'last_update_fields' => !empty($fields) ?
+        implode(', ', array_unique($fields)) :
+        'No new fields added'
+];
+
+// Make sure $mergedCourses is defined and is an array
+if (!isset($mergedCourses) || !is_array($mergedCourses)) {
+    $mergedCourses = [];
+}
+
+// Create the final JSON
+$jsonContent = json_encode([
+    'courses' => $mergedCourses,
+    'meta' => $meta
+], $jsonOptions);
+
+if ($jsonContent === false) {
+    echo "Error encoding JSON: " . json_last_error_msg() . "\n";
+} else {
+    // Do NOT include UTF-8 BOM as it can cause parsing issues
+    $jsonContent = $jsonContent;
+
+    $result = file_put_contents($jsonFilePath, $jsonContent);
+    if ($result === false) {
+        echo "Error writing to file: $jsonFilePath\n";
+    } else {
+        echo "Data saved to $jsonFilePath (" . strlen($jsonContent) . " bytes)\n";
+        echo "Done! The courses have been collected and formatted for the Rate My Teacher website.\n";
+        echo "All courses have both Japanese and English translations for language toggle functionality.\n";
+    }
+}
