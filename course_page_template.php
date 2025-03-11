@@ -2580,9 +2580,22 @@ $sampleReviews = [];
     <script>
     </script>
 
-    <footer>
-        <p>&copy; 2025 Rate My Teacher - SU2H1. All rights reserved.</p>
+<!-- 1. First, find and close your content div before the footer -->
+</div> <!-- End of the .container or .content-box div -->
+
+    <!-- 2. Replace the footer with this implementation that sits outside any containers -->
+    <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100vw; position: relative; left: 0; right: 0; margin-left: -50vw; margin-right: -50vw; left: 50%; box-sizing: border-box;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>2025 Rate My Teacher</p>
+            <p style="margin-top: 10px;">
+                <a href="ToS.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                    <?php echo $lang === 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
+                </a>
+            </p>
+        </div>
     </footer>
+    </body>
+    </html>
 
     <script>
         // Function to handle review deletion
