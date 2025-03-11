@@ -859,11 +859,12 @@ if ($reviewCount > 0) {
         </div>
         
         <!-- Review submission functionality is disabled -->
-      </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2025 Rate My Teacher - SU2H1. All rights reserved.</p>
+        </div>
+    </div><!-- End of .container div -->
+    
+    <!-- Footer outside the container to make it full width -->
+    <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
+        <p>2025 Rate My Teacher</p>
     </footer>
 
     <style>
