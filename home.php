@@ -401,7 +401,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher - SU2H1</title>
+    <title>Rate My Teacher</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -1130,7 +1130,7 @@ elseif (!isset($_COOKIE['language'])) {
         </div>
         
         <footer>
-        <p>&copy; 2025 Rate My Teacher. All rights reserved.</p>
+        <p>2025 Rate My Teacher</p>
     <p style="margin-top: 10px;">
         <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
             <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
@@ -1467,7 +1467,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "You need to be logged in to view this content.",
                 loginButton: "Login",
                 registerButton: "Register",
-                footer: "© 2025 Rate My Teacher. All rights reserved.",
+                footer: "2025 Rate My Teacher",
                 viewDetails: "View Details",
                 close: "Close",
                 reviews: "Reviews",
@@ -1499,7 +1499,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "このコンテンツを閲覧するにはログインが必要です。",
                 loginButton: "ログイン",
                 registerButton: "登録",
-                footer: "© 2025 レートマイティーチャー - SU2H1. 全著作権所有。",
+                footer: "2025 Rate My Teacher",
                 viewDetails: "詳細を表示",
                 close: "閉じる",
                 reviews: "レビュー",
