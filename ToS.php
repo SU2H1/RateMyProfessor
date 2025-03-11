@@ -404,7 +404,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>9. 連絡先</h2>
-                    <p>利用規約に関するご質問やご意見がございましたら、contact@ratemyteacher.jp までお問い合わせください。</p>
+                    <p>利用規約に関するご質問やご意見がございましたら、ratemyteachersfc@proton.me までお問い合わせください。</p>
                 </div>
             <?php else: ?>
                 <!-- English Terms and Conditions -->
@@ -477,7 +477,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>9. Contact Information</h2>
-                    <p>If you have any questions or concerns about these terms and conditions, please contact us at contact@ratemyteacher.com.</p>
+                    <p>If you have any questions or concerns about these terms and conditions, please contact us at ratemyteachersfc@proton.me.</p>
                 </div>
             <?php endif; ?>
         </div>
