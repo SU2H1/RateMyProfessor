@@ -221,7 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" name="terms" id="terms" value="agree">
-                    <label for="terms">I consent to the usage of this service</label>
+                    <label for="terms">I have read and agreed to the <a href="ToS.php">Terms of Service</a></label>
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btn-primary" id='submit-btn' value="Submit" disabled>
