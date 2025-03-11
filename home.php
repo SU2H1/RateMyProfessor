@@ -919,7 +919,7 @@ elseif (!isset($_COOKIE['language'])) {
                     $registerLabel = $currentLang == 'ja' ? '登録' : 'Register';
                     $topProfessorsLabel = $currentLang == 'ja' ? '人気の教授' : 'Top Professors';
                     $professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
-                    $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
+                    $topCoursesLabel = $currentLang == 'ja' ? '人気の授業' : 'Top Courses';
                     $coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
@@ -1026,7 +1026,7 @@ elseif (!isset($_COOKIE['language'])) {
             </div>
             
             <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
+                <h2><?php echo $currentLang == 'ja' ? '人気の授業' : 'Top Courses'; ?></h2>
                 <div class="course-list">
 
 
@@ -1486,12 +1486,12 @@ elseif (!isset($_COOKIE['language'])) {
                 myAccount: "マイアカウント",
                 logout: "ログアウト",
                 popularProfessors: "人気の教授",
-                topCourses: "人気のコース",
+                topCourses: "人気の授業",
                 tips: "裏ワザ",
                 studyLocations: "勉強場所",
                 studyLocationsDesc: "𝝮（オメガ）棟には、学生ポータルから予約できる個人学習室があります。",
                 courseRegistration: "履修登録",
-                courseRegistrationDesc: "人気のコースは、登録期間が始まってから最初の数時間以内に登録してください。",
+                courseRegistrationDesc: "人気の授業は、登録期間が始まってから最初の数時間以内に登録してください。",
                 transportation: "交通機関",
                 transportationDesc: "キャンパスシャトルは、ピーク時には15分ごとに運行し、駅への直接アクセスを提供しています。",
                 bestCafeterias: "おすすめの食堂",
