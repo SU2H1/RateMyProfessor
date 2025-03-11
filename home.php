@@ -1132,7 +1132,7 @@ elseif (!isset($_COOKIE['language'])) {
         <footer>
         <p>&copy; 2025 Rate My Teacher. All rights reserved.</p>
     <p style="margin-top: 10px;">
-        <a href="terms-conditions.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
+        <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
             <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
         </a>
     </p>
