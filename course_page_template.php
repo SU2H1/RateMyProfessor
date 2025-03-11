@@ -2088,13 +2088,13 @@ $sampleReviews = [];
                     <div style="text-align: center; padding: 40px 0;">
                         <div style="font-size: 64px; font-weight: bold; color: <?php 
                             if ($failureRate <= 25) {
-                                echo '#e74c3c'; // Red for low failure rate (0-25%)
+                                echo '#2ecc71'; // Green for low failure rate (0-25%)
                             } elseif ($failureRate <= 50) {
-                                echo '#f39c12'; // Orange for medium-low failure rate (26-50%)
+                                echo '#3498db'; // Blue for medium-low failure rate (26-50%)
                             } elseif ($failureRate <= 75) {
-                                echo '#3498db'; // Blue for medium-high failure rate (51-75%)
+                                echo '#f39c12'; // Orange for medium-high failure rate (51-75%)
                             } else {
-                                echo '#2ecc71'; // Green for high failure rate (76-100%)
+                                echo '#e74c3c'; // Red for high failure rate (76-100%)
                             }
                         ?>;">
                             <?php echo $failureRate; ?>%
