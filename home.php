@@ -366,6 +366,12 @@ if ($currentLang == 'ja') {
                         $course['course_name'] = $courseJa[$courseName];
                     }
                 }
+                // Update professor names inside courses to Japanese
+                foreach ($topCourses as &$course) {
+                    if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
+                        $course['professor_name'] = $professorJa[$course['professor_name']];
+                    }
+                }
             }
         }
     }
