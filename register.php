@@ -79,7 +79,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $confirm_password_err = "Password did not match.";
         }
     }
-    
+        
+        // Validate terms of use agreement
+    if (!isset($_POST["terms"]) || $_POST["terms"] != "agree") {
+        $terms_err = "You must agree to the Terms of Use to register.";
+    }
+
     // Check input errors before inserting in database
     if (empty($username_err) && empty($email_err) && empty($password_err) && empty($confirm_password_err)) {
         
@@ -123,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/style.css">
     <style>
         .wrapper {
-            width: 360px;
+            width: 400px;
             padding: 20px;
             margin: 0 auto;
         }
@@ -135,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 5px;
         }
         .form-control {
-            width: 100%;
+            width: 95%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -159,6 +164,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 20px;
             border-radius: 4px;
         }
+
+        .checkbox-group{
+            margin-bottom: 20px;
+        }
+
+        .btn-primary:disabled {
+            background-color: #cccccc; /* Grey background */
+            color: #666666; /* Darker text for better contrast */
+            cursor: not-allowed; /* Change cursor to indicate it's not clickable */
+            opacity: 0.7; /* Slightly transparent */
+            border: 1px solid #bbbbbb; /* Light border */
+        }
+
+
     </style>
 </head>
 <body>
@@ -194,13 +213,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="password" name="confirm_password" class="form-control">
                     <span class="help-block"><?php echo $confirm_password_err; ?></span>
                 </div>
+                <div class="terms-container">
+                    <p>By using our service, you agree to the <a href="">Terms of Use</a></p>
+                    <ol>
+                        <!-- Terms of use content -->
+                    </ol>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="terms" id="terms" value="agree">
+                    <label for="terms">I agree to the Terms of Use</label>
+                </div>
                 <div class="form-group">
-                    <input type="submit" class="btn-primary" value="Submit">
+                    <input type="submit" class="btn-primary" id='submit-btn' value="Submit" disabled>
                     <input type="reset" class="btn-default" value="Reset">
                 </div>
+
+
                 <p>Already have an account? <a href="login.php">Login here</a>.</p>
             </form>
         <?php endif; ?>
-    </div>    
+    </div> 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var termsCheckbox = document.getElementById('terms');
+            var submitButton = document.getElementById('submit-btn');
+            
+            if(termsCheckbox && submitButton) {
+                termsCheckbox.addEventListener('change', function() {
+                    submitButton.disabled = !this.checked;
+                });
+            } else {
+                console.error('Cannot find terms checkbox or submit button');
+            }
+        });
+    </script>   
 </body>
 </html>
