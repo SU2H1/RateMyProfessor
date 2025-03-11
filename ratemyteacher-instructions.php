@@ -465,7 +465,7 @@ $sortedProfessors = $sortedProfessorsByCount;
                     <button class="dropbtn">Menu</button>
                     <div class="dropdown-content">
                         <?php if ($isLoggedIn): ?>
-                            <a href="#account" id="account-link">My Account</a>
+                            <a href="account-section.php">My Account</a>
                             <a href="logout.php">Logout</a>
                         <?php else: ?>
                             <a href="login.php" id="account-link">Login</a>
