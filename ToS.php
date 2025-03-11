@@ -410,7 +410,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 <!-- English Terms and Conditions -->
                 <div class="terms-header">
                     <h1>Terms and Conditions</h1>
-                    <p>Last Updated: March 1, 2025</p>
+                    <p>Last Updated: March 11, 2025</p>
                 </div>
                 
                 <div class="terms-section">
