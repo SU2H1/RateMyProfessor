@@ -382,7 +382,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>5. プライバシーポリシー</h2>
-                    <p>当サイトは、ユーザーのプライバシーを尊重します。個人情報の収集と使用に関する詳細については、プライバシーポリシーをご参照ください。当サイトを利用することにより、ユーザーはプライバシーポリシーに同意したものとみなされます。</p>
+                    <p>当サイトは、ユーザーのプライバシーを尊重します。個人情報の収集と使用に関する詳細については、<a href="privacy_policy.php?lang=ja" style="color: #1e3a8a; text-decoration: underline;">プライバシーポリシー</a>をご参照ください。当サイトを利用することにより、ユーザーはプライバシーポリシーに同意したものとみなされます。</p>
                 </div>
                 
                 <div class="terms-section">
@@ -455,7 +455,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>5. Privacy Policy</h2>
-                    <p>The Site respects user privacy. Please refer to our Privacy Policy for details on how we collect and use personal information. By using the Site, users consent to our Privacy Policy.</p>
+                    <p>The Site respects user privacy. Please refer to our <a href="privacy_policy.php?lang=en" style="color: #1e3a8a; text-decoration: underline;">Privacy Policy</a> for details on how we collect and use personal information. By using the Site, users consent to our Privacy Policy.</p>
                 </div>
                 
                 <div class="terms-section">
