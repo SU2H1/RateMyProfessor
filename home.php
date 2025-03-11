@@ -333,6 +333,7 @@ if ($currentLang == 'ja') {
                 // Create mapping of professor names to Japanese versions
                 $professorJa = [];
                 $courseJa = [];
+                $departmentJa = [];
                 
                 foreach ($data['courses'] as $course) {
                     // Map course name
@@ -350,12 +351,36 @@ if ($currentLang == 'ja') {
                             $professorJa[$enName] = $jaName;
                         }
                     }
+                    
+                    // Map department names
+                    if (isset($course['department'])) {
+                        if (isset($course['department']['en']) && isset($course['department']['ja'])) {
+                            $enDept = $course['department']['en'];
+                            $jaDept = $course['department']['ja'];
+                            $departmentJa[$enDept] = $jaDept;
+                        }
+                    }
+                    
+                    // Check if professors have department info
+                    foreach ($course['professors'] as $prof) {
+                        if (isset($prof['department'])) {
+                            if (isset($prof['department']['en']) && isset($prof['department']['ja'])) {
+                                $enDept = $prof['department']['en'];
+                                $jaDept = $prof['department']['ja'];
+                                $departmentJa[$enDept] = $jaDept;
+                            }
+                        }
+                    }
                 }
                 
-                // Update professor names to Japanese
+                // Update professor names and departments to Japanese
                 foreach ($topProfessors as &$professor) {
                     if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
                         $professor['name'] = $professorJa[$professor['name']];
+                    }
+                    
+                    if (isset($professor['department']) && isset($departmentJa[$professor['department']])) {
+                        $professor['department'] = $departmentJa[$professor['department']];
                     }
                 }
                 
@@ -366,6 +391,7 @@ if ($currentLang == 'ja') {
                         $course['course_name'] = $courseJa[$courseName];
                     }
                 }
+                
                 // Update professor names inside courses to Japanese
                 foreach ($topCourses as &$course) {
                     if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
