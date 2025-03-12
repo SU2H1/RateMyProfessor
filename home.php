@@ -333,7 +333,6 @@ if ($currentLang == 'ja') {
                 // Create mapping of professor names to Japanese versions
                 $professorJa = [];
                 $courseJa = [];
-                $departmentJa = [];
                 
                 foreach ($data['courses'] as $course) {
                     // Map course name
@@ -351,36 +350,12 @@ if ($currentLang == 'ja') {
                             $professorJa[$enName] = $jaName;
                         }
                     }
-                    
-                    // Map department names
-                    if (isset($course['department'])) {
-                        if (isset($course['department']['en']) && isset($course['department']['ja'])) {
-                            $enDept = $course['department']['en'];
-                            $jaDept = $course['department']['ja'];
-                            $departmentJa[$enDept] = $jaDept;
-                        }
-                    }
-                    
-                    // Check if professors have department info
-                    foreach ($course['professors'] as $prof) {
-                        if (isset($prof['department'])) {
-                            if (isset($prof['department']['en']) && isset($prof['department']['ja'])) {
-                                $enDept = $prof['department']['en'];
-                                $jaDept = $prof['department']['ja'];
-                                $departmentJa[$enDept] = $jaDept;
-                            }
-                        }
-                    }
                 }
                 
-                // Update professor names and departments to Japanese
+                // Update professor names to Japanese
                 foreach ($topProfessors as &$professor) {
                     if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
                         $professor['name'] = $professorJa[$professor['name']];
-                    }
-                    
-                    if (isset($professor['department']) && isset($departmentJa[$professor['department']])) {
-                        $professor['department'] = $departmentJa[$professor['department']];
                     }
                 }
                 
@@ -389,13 +364,6 @@ if ($currentLang == 'ja') {
                     $courseName = isset($course['course_name']) ? $course['course_name'] : (isset($course['name']) ? $course['name'] : '');
                     if (!empty($courseName) && isset($courseJa[$courseName])) {
                         $course['course_name'] = $courseJa[$courseName];
-                    }
-                }
-                
-                // Update professor names inside courses to Japanese
-                foreach ($topCourses as &$course) {
-                    if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
-                        $course['professor_name'] = $professorJa[$course['professor_name']];
                     }
                 }
             }
@@ -433,7 +401,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher</title>
+    <title>Rate My Teacher - SU2H1</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -951,7 +919,7 @@ elseif (!isset($_COOKIE['language'])) {
                     $registerLabel = $currentLang == 'ja' ? '登録' : 'Register';
                     $topProfessorsLabel = $currentLang == 'ja' ? '人気の教授' : 'Top Professors';
                     $professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
-                    $topCoursesLabel = $currentLang == 'ja' ? '人気の授業' : 'Top Courses';
+                    $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
                     $coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
@@ -1058,7 +1026,7 @@ elseif (!isset($_COOKIE['language'])) {
             </div>
             
             <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h2><?php echo $currentLang == 'ja' ? '人気の授業' : 'Top Courses'; ?></h2>
+                <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
                 <div class="course-list">
 
 
@@ -1162,18 +1130,10 @@ elseif (!isset($_COOKIE['language'])) {
         </div>
         
         <footer>
-        <p>2025 Rate My Teacher</p>
-    <p style="margin-top: 10px;">
-        <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-            <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
-        </a>
-    </p>
         </footer>
     </div>
     
     <script>
-        const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
-
         // Search functionality
         const searchButton = document.querySelector('.search-bar button');
         const searchInput = document.querySelector('.search-bar input');
@@ -1335,96 +1295,99 @@ elseif (!isset($_COOKIE['language'])) {
             
             searchResultsDiv.appendChild(resultsContainer);
             searchResultsDiv.style.display = 'block';
+        }
 
-            // When creating course items
-        courseItem.addEventListener('click', () => {
-            // Check if login is required for this item
-            if (!isLoggedIn) { // You'll need to define isLoggedIn based on your PHP variable
-                showLoginPrompt();
-                return;
-            }
-            
-            // Only redirect if logged in
-            window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor_name || '')}&lang=${currentLang}`;
-        });
-
-        // When creating professor items
-        profItem.addEventListener('click', () => {
-            // Check if login is required for this item
-            if (!isLoggedIn) { // You'll need to define isLoggedIn based on your PHP variable
-                showLoginPrompt();
-                return;
-            }
-            
-            // Only redirect if logged in
-            window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
-        });
-        
-
-        // Modified event handlers for professor and course items
+        // Initialize the search bar by running a test search after page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded");
             
-            // Update professor click events
+            // Test click events on professors and courses
+            console.log("Adding test click handlers to professors and courses");
+            
             const profItems = document.querySelectorAll('.professor-item');
             console.log(`Found ${profItems.length} professor items`);
             profItems.forEach((item, i) => {
                 console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
                 
-                // Get the parent anchor element
-                const parentAnchor = item.closest('a');
-                
-                // Check if this is a login-required item
-                if (item.getAttribute('data-id') === 'login-required') {
-                    // If it's a login-required item, prevent the default link behavior
-                    if (parentAnchor) {
-                        parentAnchor.addEventListener('click', function(e) {
-                            e.preventDefault(); // Stop the redirect
-                            showLoginPrompt(); // Show the login prompt
-                            return false;
-                        });
+                // Add click event handler
+                item.addEventListener('click', () => {
+                    const profId = item.getAttribute('data-id');
+                    console.log("Professor clicked, ID:", profId);
+                    
+                    // Check if login is required
+                    if (profId === 'login-required') {
+                        showLoginPrompt();
+                        return;
                     }
                     
-                    // Also add click handler to the item itself
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault(); // Stop any default behavior
-                        e.stopPropagation(); // Stop event bubbling
-                        showLoginPrompt(); // Show the login prompt
-                        return false;
-                    });
-                }
+                    // Check if it's a real professor ID (numeric) or a placeholder
+                    if (!isNaN(profId)) {
+                        console.log("Redirecting professor with ID:", profId);
+                        
+                        // Get current language directly from the cookie instead of the variable
+                        const currentLang = document.cookie.split('; ')
+                            .find(row => row.startsWith('language='))
+                            ?.split('=')[1] || 'en';
+                        
+                        console.log("Language for redirect (from cookie):", currentLang);
+                        
+                        // Get professor name from the HTML
+                        const profName = item.querySelector('h3').textContent;
+                        console.log("Professor name from HTML:", profName);
+                        
+                        // Create the redirect URL with the current language - no ID needed
+                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profName)}&lang=${currentLang}`;
+                        console.log("Redirecting to:", redirectUrl);
+                        
+                        // Perform the redirect
+                        window.location.href = redirectUrl;
+                        return;
+                    }
+                });
             });
             
-            // Update course click events
             const courseItems = document.querySelectorAll('.course-item');
             console.log(`Found ${courseItems.length} course items`);
             courseItems.forEach((item, i) => {
                 console.log(`Course item ${i+1} id: ${item.getAttribute('data-id')}`);
                 
-                // Get the parent anchor element
-                const parentAnchor = item.closest('a');
-                
-                // Check if this is a login-required item
-                if (item.getAttribute('data-id') === 'login-required') {
-                    // If it's a login-required item, prevent the default link behavior
-                    if (parentAnchor) {
-                        parentAnchor.addEventListener('click', function(e) {
-                            e.preventDefault(); // Stop the redirect
-                            showLoginPrompt(); // Show the login prompt
-                            return false;
-                        });
+                // Add click event handler
+                item.addEventListener('click', () => {
+                    const courseId = item.getAttribute('data-id');
+                    console.log("Course clicked, ID:", courseId);
+                    
+                    // Check if login is required
+                    if (courseId === 'login-required') {
+                        showLoginPrompt();
+                        return;
                     }
                     
-                    // Also add click handler to the item itself
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault(); // Stop any default behavior
-                        e.stopPropagation(); // Stop event bubbling
-                        showLoginPrompt(); // Show the login prompt
-                        return false;
-                    });
-                }
+                    // Check if it's a real course ID (numeric) or a placeholder
+                    if (!isNaN(courseId)) {
+                        console.log("Redirecting course with ID:", courseId);
+                        
+                        // Get current language directly from the cookie instead of the variable
+                        const currentLang = document.cookie.split('; ')
+                            .find(row => row.startsWith('language='))
+                            ?.split('=')[1] || 'en';
+                            
+                        console.log("Language for redirect (from cookie):", currentLang);
+                        
+                        // Get course name from the HTML
+                        const courseName = item.querySelector('h3').textContent;
+                        console.log("Course name from HTML:", courseName);
+                        
+                        // Create the redirect URL with the current language - using course.php instead
+                        const redirectUrl = `course.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
+                        console.log("Redirecting to:", redirectUrl);
+                        
+                        // Perform the redirect
+                        location.href = redirectUrl;
+                        return;
+                    }
+                });
             });
-        });
+            
             // Update UI elements based on current language
             updateUILanguage();
             
@@ -1498,7 +1461,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "You need to be logged in to view this content.",
                 loginButton: "Login",
                 registerButton: "Register",
-                footer: "2025 Rate My Teacher",
+                footer: "© 2025 Rate My Teacher. All rights reserved.",
                 viewDetails: "View Details",
                 close: "Close",
                 reviews: "Reviews",
@@ -1517,12 +1480,12 @@ elseif (!isset($_COOKIE['language'])) {
                 myAccount: "マイアカウント",
                 logout: "ログアウト",
                 popularProfessors: "人気の教授",
-                topCourses: "人気の授業",
+                topCourses: "人気のコース",
                 tips: "裏ワザ",
                 studyLocations: "勉強場所",
                 studyLocationsDesc: "𝝮（オメガ）棟には、学生ポータルから予約できる個人学習室があります。",
                 courseRegistration: "履修登録",
-                courseRegistrationDesc: "人気の授業は、登録期間が始まってから最初の数時間以内に登録してください。",
+                courseRegistrationDesc: "人気のコースは、登録期間が始まってから最初の数時間以内に登録してください。",
                 transportation: "交通機関",
                 transportationDesc: "キャンパスシャトルは、ピーク時には15分ごとに運行し、駅への直接アクセスを提供しています。",
                 bestCafeterias: "おすすめの食堂",
@@ -1530,7 +1493,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "このコンテンツを閲覧するにはログインが必要です。",
                 loginButton: "ログイン",
                 registerButton: "登録",
-                footer: "2025 Rate My Teacher",
+                footer: "© 2025 レートマイティーチャー - SU2H1. 全著作権所有。",
                 viewDetails: "詳細を表示",
                 close: "閉じる",
                 reviews: "レビュー",
