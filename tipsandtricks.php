@@ -511,7 +511,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
         <section>
             <h2><?php echo $t['section_programming']; ?></h2>
             <ul>
-                <li><a href="https://github.com/SU2H1/fit2 target="_blank">FIT2 Answers</a></li>
+                <li><a href="https://github.com/SU2H1/fit2"_blank">FIT2 Answers</a></li>
                 <li><a href="https://leetcode.com/" target="_blank">LeetCode</a></li>
                 <li><a href="https://www.glassdoor.com/Interview/tech-interview-questions-SRCH_II.0,4_IL.5,16_IC2989922.htm" target="_blank">IT Technical Questions</a></li>
             </ul>
