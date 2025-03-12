@@ -547,22 +547,22 @@ function parseCourses($html, $existingCourses, $courseCounter = 0, $language = '
         $courseNameElement = $xpath->query('.//h2', $courseLi)->item(0);
 
         // Extract course name from h2 tag without any manipulation
-        $courseName = $courseNameElement ? trim($courseNameElement->textContent) : 'Unknown Course';
+        $courseName = $courseNameElement ? trim($courseNameElement->textContent) : 'Unknown Course Name';
 
         // Clean up the course name based on language
-        if ($language == 'ja') {
+        //if ($language == 'ja') {
             // Make sure the Japanese name only has Japanese characters or doesn't contain obvious English words
-            if (!preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $courseName)) {
-                echo "Warning: Japanese course with non-Japanese name: $courseName\n";
-                $courseName = 'Unknown Course ' . $courseCounter;
-            }
-        } else {
+            //if (!preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $courseName)) {
+            //    echo "Warning: Japanese course with non-Japanese name: $courseName\n";
+            //    $courseName = 'Unknown Course ' . $courseCounter;
+            //}
+        //} else {
             // Make sure the English name doesn't contain Japanese characters
-            if (preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $courseName)) {
-                echo "Warning: English course with Japanese characters: $courseName\n";
-                $courseName = 'Unknown Course ' . $courseCounter;
-            }
-        }
+            //if (preg_match('/[\p{Hiragana}\p{Katakana}\p{Han}]/u', $courseName)) {
+            //    echo "Warning: English course with Japanese characters: $courseName\n";
+            //    $courseName = 'Unknown Course ' . $courseCounter;
+            //}
+        //}
 
         echo "[$courseCounter] Processing course: $courseName\n";
 

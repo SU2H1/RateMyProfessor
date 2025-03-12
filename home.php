@@ -342,6 +342,7 @@ if ($currentLang == 'ja') {
                         $courseJa[$enName] = $jaName;
                     }
                     
+                    
                     // Map professor names
                     foreach ($course['professors'] as $prof) {
                         if (isset($prof['name']['en']) && isset($prof['name']['ja'])) {
@@ -350,6 +351,8 @@ if ($currentLang == 'ja') {
                             $professorJa[$enName] = $jaName;
                         }
                     }
+
+                    
                 }
                 
                 // Update professor names to Japanese
@@ -1031,7 +1034,7 @@ elseif (!isset($_COOKIE['language'])) {
 
 
                     <?php foreach ($topCourses as $course): ?>
-                    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
                         <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
@@ -1268,7 +1271,7 @@ elseif (!isset($_COOKIE['language'])) {
                             ?.split('=')[1] || 'en';
                         
                         // Redirect to course page
-                        window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor_name || '')}&lang=${currentLang}`;
+                        window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor_name || '')}&year=${encodeURIComponent(course.year || '2024')}&lang=${currentLang}`;
                     });
                     
                     courseList.appendChild(courseItem);
