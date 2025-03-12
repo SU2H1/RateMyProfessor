@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             // For SQLite3, we need to use a different approach than mysqli
             $sql = "SELECT id, username, email, password, is_verified FROM users WHERE email = :email";
-            
+    
             $stmt = $conn->prepare($sql);
             if ($stmt) {
                 // Bind parameters

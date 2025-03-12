@@ -1172,6 +1172,8 @@ elseif (!isset($_COOKIE['language'])) {
     </div>
     
     <script>
+        const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+
         // Search functionality
         const searchButton = document.querySelector('.search-bar button');
         const searchInput = document.querySelector('.search-bar input');
@@ -1333,99 +1335,96 @@ elseif (!isset($_COOKIE['language'])) {
             
             searchResultsDiv.appendChild(resultsContainer);
             searchResultsDiv.style.display = 'block';
-        }
 
-        // Initialize the search bar by running a test search after page load
+            // When creating course items
+        courseItem.addEventListener('click', () => {
+            // Check if login is required for this item
+            if (!isLoggedIn) { // You'll need to define isLoggedIn based on your PHP variable
+                showLoginPrompt();
+                return;
+            }
+            
+            // Only redirect if logged in
+            window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor_name || '')}&lang=${currentLang}`;
+        });
+
+        // When creating professor items
+        profItem.addEventListener('click', () => {
+            // Check if login is required for this item
+            if (!isLoggedIn) { // You'll need to define isLoggedIn based on your PHP variable
+                showLoginPrompt();
+                return;
+            }
+            
+            // Only redirect if logged in
+            window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
+        });
+        
+
+        // Modified event handlers for professor and course items
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded");
             
-            // Test click events on professors and courses
-            console.log("Adding test click handlers to professors and courses");
-            
+            // Update professor click events
             const profItems = document.querySelectorAll('.professor-item');
             console.log(`Found ${profItems.length} professor items`);
             profItems.forEach((item, i) => {
                 console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
                 
-                // Add click event handler
-                item.addEventListener('click', () => {
-                    const profId = item.getAttribute('data-id');
-                    console.log("Professor clicked, ID:", profId);
-                    
-                    // Check if login is required
-                    if (profId === 'login-required') {
-                        showLoginPrompt();
-                        return;
+                // Get the parent anchor element
+                const parentAnchor = item.closest('a');
+                
+                // Check if this is a login-required item
+                if (item.getAttribute('data-id') === 'login-required') {
+                    // If it's a login-required item, prevent the default link behavior
+                    if (parentAnchor) {
+                        parentAnchor.addEventListener('click', function(e) {
+                            e.preventDefault(); // Stop the redirect
+                            showLoginPrompt(); // Show the login prompt
+                            return false;
+                        });
                     }
                     
-                    // Check if it's a real professor ID (numeric) or a placeholder
-                    if (!isNaN(profId)) {
-                        console.log("Redirecting professor with ID:", profId);
-                        
-                        // Get current language directly from the cookie instead of the variable
-                        const currentLang = document.cookie.split('; ')
-                            .find(row => row.startsWith('language='))
-                            ?.split('=')[1] || 'en';
-                        
-                        console.log("Language for redirect (from cookie):", currentLang);
-                        
-                        // Get professor name from the HTML
-                        const profName = item.querySelector('h3').textContent;
-                        console.log("Professor name from HTML:", profName);
-                        
-                        // Create the redirect URL with the current language - no ID needed
-                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profName)}&lang=${currentLang}`;
-                        console.log("Redirecting to:", redirectUrl);
-                        
-                        // Perform the redirect
-                        window.location.href = redirectUrl;
-                        return;
-                    }
-                });
+                    // Also add click handler to the item itself
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault(); // Stop any default behavior
+                        e.stopPropagation(); // Stop event bubbling
+                        showLoginPrompt(); // Show the login prompt
+                        return false;
+                    });
+                }
             });
             
+            // Update course click events
             const courseItems = document.querySelectorAll('.course-item');
             console.log(`Found ${courseItems.length} course items`);
             courseItems.forEach((item, i) => {
                 console.log(`Course item ${i+1} id: ${item.getAttribute('data-id')}`);
                 
-                // Add click event handler
-                item.addEventListener('click', () => {
-                    const courseId = item.getAttribute('data-id');
-                    console.log("Course clicked, ID:", courseId);
-                    
-                    // Check if login is required
-                    if (courseId === 'login-required') {
-                        showLoginPrompt();
-                        return;
+                // Get the parent anchor element
+                const parentAnchor = item.closest('a');
+                
+                // Check if this is a login-required item
+                if (item.getAttribute('data-id') === 'login-required') {
+                    // If it's a login-required item, prevent the default link behavior
+                    if (parentAnchor) {
+                        parentAnchor.addEventListener('click', function(e) {
+                            e.preventDefault(); // Stop the redirect
+                            showLoginPrompt(); // Show the login prompt
+                            return false;
+                        });
                     }
                     
-                    // Check if it's a real course ID (numeric) or a placeholder
-                    if (!isNaN(courseId)) {
-                        console.log("Redirecting course with ID:", courseId);
-                        
-                        // Get current language directly from the cookie instead of the variable
-                        const currentLang = document.cookie.split('; ')
-                            .find(row => row.startsWith('language='))
-                            ?.split('=')[1] || 'en';
-                            
-                        console.log("Language for redirect (from cookie):", currentLang);
-                        
-                        // Get course name from the HTML
-                        const courseName = item.querySelector('h3').textContent;
-                        console.log("Course name from HTML:", courseName);
-                        
-                        // Create the redirect URL with the current language - using course.php instead
-                        const redirectUrl = `course.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
-                        console.log("Redirecting to:", redirectUrl);
-                        
-                        // Perform the redirect
-                        location.href = redirectUrl;
-                        return;
-                    }
-                });
+                    // Also add click handler to the item itself
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault(); // Stop any default behavior
+                        e.stopPropagation(); // Stop event bubbling
+                        showLoginPrompt(); // Show the login prompt
+                        return false;
+                    });
+                }
             });
-            
+        });
             // Update UI elements based on current language
             updateUILanguage();
             
