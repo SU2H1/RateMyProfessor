@@ -908,7 +908,7 @@ $categoryScores = [
     'content' => [
         'score' => 0, 
         'percent' => 0, 
-        'label' => $lang === 'ja' ? '授業内容の質' : 'Content Quality',
+        'label' => $lang === 'ja' ? '授業の質' : 'Content Quality',
         'description' => $lang === 'ja' ? '高いほど良い' : 'Higher is better',
         'color' => '#6c757d' // Default grey (no reviews)
     ],
@@ -1981,7 +1981,7 @@ $sampleReviews = [];
             <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当教員' : 'Professors'; ?></h2>
             <div class="professors">
                 <?php foreach ($course['professors'] as $professor): ?>
-                <div class="professor-card" onclick="window.location.href='professor.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>'">
+                    <div class="professor-card" onclick="window.location.href='professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>'">
                     <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
                     <div class="professor-department"><?php echo htmlspecialchars($professor['department'][$lang]); ?></div>
                     <?php
@@ -2088,13 +2088,13 @@ $sampleReviews = [];
                     <div style="text-align: center; padding: 40px 0;">
                         <div style="font-size: 64px; font-weight: bold; color: <?php 
                             if ($failureRate <= 25) {
-                                echo '#e74c3c'; // Red for low failure rate (0-25%)
+                                echo '#2ecc71'; // Green for low failure rate (0-25%)
                             } elseif ($failureRate <= 50) {
-                                echo '#f39c12'; // Orange for medium-low failure rate (26-50%)
+                                echo '#3498db'; // Blue for medium-low failure rate (26-50%)
                             } elseif ($failureRate <= 75) {
-                                echo '#3498db'; // Blue for medium-high failure rate (51-75%)
+                                echo '#f39c12'; // Orange for medium-high failure rate (51-75%)
                             } else {
-                                echo '#2ecc71'; // Green for high failure rate (76-100%)
+                                echo '#e74c3c'; // Red for high failure rate (76-100%)
                             }
                         ?>;">
                             <?php echo $failureRate; ?>%
@@ -2402,7 +2402,7 @@ $sampleReviews = [];
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
                     <div>
                         <label style="display: block; margin-bottom: 10px; font-weight: 500;">
-                            <?php echo $lang === 'ja' ? '授業内容の質:' : 'Content Quality:'; ?>
+                            <?php echo $lang === 'ja' ? '授業の質:' : 'Content Quality:'; ?>
                         </label>
                         <select name="content_rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
                             <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
@@ -2580,9 +2580,22 @@ $sampleReviews = [];
     <script>
     </script>
 
-    <footer>
-        <p>&copy; 2025 Rate My Teacher - SU2H1. All rights reserved.</p>
+<!-- 1. First, find and close your content div before the footer -->
+</div> <!-- End of the .container or .content-box div -->
+
+    <!-- 2. Replace the footer with this implementation that sits outside any containers -->
+    <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100vw; position: relative; left: 0; right: 0; margin-left: -50vw; margin-right: -50vw; left: 50%; box-sizing: border-box;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>2025 Rate My Teacher</p>
+            <p style="margin-top: 10px;">
+                <a href="ToS.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                    <?php echo $lang === 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
+                </a>
+            </p>
+        </div>
     </footer>
+    </body>
+    </html>
 
     <script>
         // Function to handle review deletion
@@ -2755,7 +2768,7 @@ $sampleReviews = [];
                                         item.addEventListener('click', () => {
                                             // Make sure to remove all spaces from professor name for URL
                                             const nameForUrl = prof.name.replace(/\s+/g, '');
-                                            window.location.href = `professor.php?name=${encodeURIComponent(nameForUrl)}&lang=<?php echo $lang; ?>`;
+                                            window.location.href = `professor_page_template.php?name=${encodeURIComponent(nameForUrl)}&lang=<?php echo $lang; ?>`;
                                             debug(`Navigating to professor: ${nameForUrl}`);
                                         });
                                         

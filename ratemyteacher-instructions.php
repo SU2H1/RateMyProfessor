@@ -465,7 +465,7 @@ $sortedProfessors = $sortedProfessorsByCount;
                     <button class="dropbtn">Menu</button>
                     <div class="dropdown-content">
                         <?php if ($isLoggedIn): ?>
-                            <a href="#account" id="account-link">My Account</a>
+                            <a href="account-section.php">My Account</a>
                             <a href="logout.php">Logout</a>
                         <?php else: ?>
                             <a href="login.php" id="account-link">Login</a>
@@ -614,12 +614,11 @@ $sortedProfessors = $sortedProfessorsByCount;
                 </div>
             </div>
         </main>
-        
-        <footer>
-            <div class="container">
-                <p>&copy; <?php echo date('Y'); ?> Rate My Teacher <?php echo isset($_GET['lang']) && $_GET['lang'] == 'ja' ? '- 慶應義塾大学SFC' : '- Keio University SFC'; ?></p>
-            </div>
-        </footer>
-    </div>
+    </div><!-- End of .container div -->
+    
+    <!-- Footer outside the container to make it full width -->
+    <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
+        <p>2025 Rate My Teacher</p>
+    </footer>
 </body>
 </html>

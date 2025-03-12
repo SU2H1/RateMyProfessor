@@ -349,7 +349,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     <h2>2. サービス内容</h2>
                     <p>当サイトは、学生が教授とコースに関する評価やレビューを投稿し、共有することを目的としています。当サイトは、教育機関の公式ウェブサイトではなく、教育機関の管理下にもありません。</p>
                     <p><strong>このサービスは慶應義塾大学と提携していません。</strong>教育目的のために作成された独立したプラットフォームです。</p>
-                    <p>このサービスは主に<strong>慶應義塾大学湘南藤沢キャンパス</strong>に関連する個人を対象としています。慶應義塾大学湘南藤沢キャンパスの学生、教職員、卒業生のみがこのサービスを利用することができます。</p>
+                    <p>このサービスは主に慶應義塾大学湘南藤沢キャンパスに関連する個人を対象としています。慶應義塾大学湘南藤沢キャンパスの学生、教職員、卒業生のみがこのサービスを利用することができます。</p>
                 </div>
                 
                 <div class="terms-section">
@@ -382,7 +382,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>5. プライバシーポリシー</h2>
-                    <p>当サイトは、ユーザーのプライバシーを尊重します。個人情報の収集と使用に関する詳細については、プライバシーポリシーをご参照ください。当サイトを利用することにより、ユーザーはプライバシーポリシーに同意したものとみなされます。</p>
+                    <p>当サイトは、ユーザーのプライバシーを尊重します。個人情報の収集と使用に関する詳細については、<a href="privacy_policy.php?lang=ja" style="color: #1e3a8a; text-decoration: underline;">プライバシーポリシー</a>をご参照ください。当サイトを利用することにより、ユーザーはプライバシーポリシーに同意したものとみなされます。</p>
                 </div>
                 
                 <div class="terms-section">
@@ -404,13 +404,13 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>9. 連絡先</h2>
-                    <p>利用規約に関するご質問やご意見がございましたら、contact@ratemyteacher.jp までお問い合わせください。</p>
+                    <p>利用規約に関するご質問やご意見がございましたら、ratemyteachersfc@proton.me までお問い合わせください。</p>
                 </div>
             <?php else: ?>
                 <!-- English Terms and Conditions -->
                 <div class="terms-header">
                     <h1>Terms and Conditions</h1>
-                    <p>Last Updated: March 1, 2025</p>
+                    <p>Last Updated: March 11, 2025</p>
                 </div>
                 
                 <div class="terms-section">
@@ -422,7 +422,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     <h2>2. Service Description</h2>
                     <p>The Site allows students to post and share ratings and reviews of professors and courses. The Site is not an official website of any educational institution and is not under the control of any educational institution.</p>
                     <p><strong>This service is not affiliated with Keio University.</strong> It is an independent platform created for educational purposes.</p>
-                    <p>This service is primarily intended for individuals related to <strong>Keio University Shonan Fujisawa Campus</strong>. Only students, faculty, staff, and alumni of Keio University Shonan Fujisawa Campus are permitted to use this service.</p>
+                    <p>This service is primarily intended for individuals related to Keio University Shonan Fujisawa Campus. Only students, faculty, staff, and alumni of Keio University Shonan Fujisawa Campus are permitted to use this service.</p>
                 </div>
                 
                 <div class="terms-section">
@@ -455,7 +455,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>5. Privacy Policy</h2>
-                    <p>The Site respects user privacy. Please refer to our Privacy Policy for details on how we collect and use personal information. By using the Site, users consent to our Privacy Policy.</p>
+                    <p>The Site respects user privacy. Please refer to our <a href="privacy_policy.php?lang=en" style="color: #1e3a8a; text-decoration: underline;">Privacy Policy</a> for details on how we collect and use personal information. By using the Site, users consent to our Privacy Policy.</p>
                 </div>
                 
                 <div class="terms-section">
@@ -477,13 +477,13 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>9. Contact Information</h2>
-                    <p>If you have any questions or concerns about these terms and conditions, please contact us at contact@ratemyteacher.com.</p>
+                    <p>If you have any questions or concerns about these terms and conditions, please contact us at ratemyteachersfc@proton.me.</p>
                 </div>
             <?php endif; ?>
         </div>
         
         <footer>
-            <p>&copy; 2025 Rate My Teacher. All rights reserved.</p>
+            <p>2025 Rate My Teacher</p>
         </footer>
     </div>
     

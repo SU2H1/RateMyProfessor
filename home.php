@@ -333,6 +333,7 @@ if ($currentLang == 'ja') {
                 // Create mapping of professor names to Japanese versions
                 $professorJa = [];
                 $courseJa = [];
+                $departmentJa = [];
                 
                 foreach ($data['courses'] as $course) {
                     // Map course name
@@ -350,12 +351,36 @@ if ($currentLang == 'ja') {
                             $professorJa[$enName] = $jaName;
                         }
                     }
+                    
+                    // Map department names
+                    if (isset($course['department'])) {
+                        if (isset($course['department']['en']) && isset($course['department']['ja'])) {
+                            $enDept = $course['department']['en'];
+                            $jaDept = $course['department']['ja'];
+                            $departmentJa[$enDept] = $jaDept;
+                        }
+                    }
+                    
+                    // Check if professors have department info
+                    foreach ($course['professors'] as $prof) {
+                        if (isset($prof['department'])) {
+                            if (isset($prof['department']['en']) && isset($prof['department']['ja'])) {
+                                $enDept = $prof['department']['en'];
+                                $jaDept = $prof['department']['ja'];
+                                $departmentJa[$enDept] = $jaDept;
+                            }
+                        }
+                    }
                 }
                 
-                // Update professor names to Japanese
+                // Update professor names and departments to Japanese
                 foreach ($topProfessors as &$professor) {
                     if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
                         $professor['name'] = $professorJa[$professor['name']];
+                    }
+                    
+                    if (isset($professor['department']) && isset($departmentJa[$professor['department']])) {
+                        $professor['department'] = $departmentJa[$professor['department']];
                     }
                 }
                 
@@ -364,6 +389,13 @@ if ($currentLang == 'ja') {
                     $courseName = isset($course['course_name']) ? $course['course_name'] : (isset($course['name']) ? $course['name'] : '');
                     if (!empty($courseName) && isset($courseJa[$courseName])) {
                         $course['course_name'] = $courseJa[$courseName];
+                    }
+                }
+                
+                // Update professor names inside courses to Japanese
+                foreach ($topCourses as &$course) {
+                    if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
+                        $course['professor_name'] = $professorJa[$course['professor_name']];
                     }
                 }
             }
@@ -401,7 +433,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher - SU2H1</title>
+    <title>Rate My Teacher</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -919,7 +951,7 @@ elseif (!isset($_COOKIE['language'])) {
                     $registerLabel = $currentLang == 'ja' ? '登録' : 'Register';
                     $topProfessorsLabel = $currentLang == 'ja' ? '人気の教授' : 'Top Professors';
                     $professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
-                    $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
+                    $topCoursesLabel = $currentLang == 'ja' ? '人気の授業' : 'Top Courses';
                     $coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
@@ -1026,7 +1058,7 @@ elseif (!isset($_COOKIE['language'])) {
             </div>
             
             <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
+                <h2><?php echo $currentLang == 'ja' ? '人気の授業' : 'Top Courses'; ?></h2>
                 <div class="course-list">
 
 
@@ -1130,6 +1162,12 @@ elseif (!isset($_COOKIE['language'])) {
         </div>
         
         <footer>
+        <p>2025 Rate My Teacher</p>
+    <p style="margin-top: 10px;">
+        <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
+            <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
+        </a>
+    </p>
         </footer>
     </div>
     
@@ -1461,7 +1499,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "You need to be logged in to view this content.",
                 loginButton: "Login",
                 registerButton: "Register",
-                footer: "© 2025 Rate My Teacher. All rights reserved.",
+                footer: "2025 Rate My Teacher",
                 viewDetails: "View Details",
                 close: "Close",
                 reviews: "Reviews",
@@ -1480,12 +1518,12 @@ elseif (!isset($_COOKIE['language'])) {
                 myAccount: "マイアカウント",
                 logout: "ログアウト",
                 popularProfessors: "人気の教授",
-                topCourses: "人気のコース",
+                topCourses: "人気の授業",
                 tips: "裏ワザ",
                 studyLocations: "勉強場所",
                 studyLocationsDesc: "𝝮（オメガ）棟には、学生ポータルから予約できる個人学習室があります。",
                 courseRegistration: "履修登録",
-                courseRegistrationDesc: "人気のコースは、登録期間が始まってから最初の数時間以内に登録してください。",
+                courseRegistrationDesc: "人気の授業は、登録期間が始まってから最初の数時間以内に登録してください。",
                 transportation: "交通機関",
                 transportationDesc: "キャンパスシャトルは、ピーク時には15分ごとに運行し、駅への直接アクセスを提供しています。",
                 bestCafeterias: "おすすめの食堂",
@@ -1493,7 +1531,7 @@ elseif (!isset($_COOKIE['language'])) {
                 loginRequired: "このコンテンツを閲覧するにはログインが必要です。",
                 loginButton: "ログイン",
                 registerButton: "登録",
-                footer: "© 2025 レートマイティーチャー - SU2H1. 全著作権所有。",
+                footer: "2025 Rate My Teacher",
                 viewDetails: "詳細を表示",
                 close: "閉じる",
                 reviews: "レビュー",

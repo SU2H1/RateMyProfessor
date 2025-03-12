@@ -3,7 +3,7 @@
 require_once 'config.php';
 
 $username = $email = $password = $confirm_password = "";
-$username_err = $email_err = $password_err = $confirm_password_err = "";
+$username_err = $email_err = $password_err = $confirm_password_err = $terms_err = $keio_disclaimer_err = "";
 $registration_success = false;
 
 // Processing form data when form is submitted
@@ -80,13 +80,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
         
-        // Validate terms of use agreement
+    // Validate terms of use agreement
     if (!isset($_POST["terms"]) || $_POST["terms"] != "agree") {
-        $terms_err = "You must agree to the Terms of Use to register.";
+        $terms_err = "You must agree to the Terms of Service to register.";
+    }
+    
+    // Validate Keio disclaimer acknowledgment 
+    if (!isset($_POST["keio_disclaimer"]) || $_POST["keio_disclaimer"] != "agree") {
+        $keio_disclaimer_err = "You must acknowledge that this service is not associated with Keio University.";
     }
 
     // Check input errors before inserting in database
-    if (empty($username_err) && empty($email_err) && empty($password_err) && empty($confirm_password_err)) {
+    if (empty($username_err) && empty($email_err) && empty($password_err) && empty($confirm_password_err) && empty($terms_err) && empty($keio_disclaimer_err)) {
         
         // Generate verification token
         $verification_token = generateToken();
@@ -117,6 +122,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+
+// Determine current language
+$currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja' : 'en';
 ?>
 
 <!DOCTYPE html>
@@ -170,14 +178,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .btn-primary:disabled {
-            background-color: #cccccc; /* Grey background */
-            color: #666666; /* Darker text for better contrast */
-            cursor: not-allowed; /* Change cursor to indicate it's not clickable */
-            opacity: 0.7; /* Slightly transparent */
-            border: 1px solid #bbbbbb; /* Light border */
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            opacity: 0.7;
+            border: 1px solid #bbbbbb;
         }
 
+        .terms-container {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
+        .terms-agreement {
+            margin-bottom: 15px;
+        }
+
+        .terms-link {
+            color: #1e3a8a;
+            text-decoration: underline;
+        }
+
+        .terms-link:hover {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -213,21 +240,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="password" name="confirm_password" class="form-control">
                     <span class="help-block"><?php echo $confirm_password_err; ?></span>
                 </div>
-                <div class="terms-container">
-                    <p>This service is a student-made project and is not affiliated with Keio University</p>
-                    <ol>
-                        <!-- Terms of use content -->
-                    </ol>
+                <div class="terms-agreement">
+                    <input type="checkbox" name="keio_disclaimer" id="keio_disclaimer" value="agree">
+                    <label for="keio_disclaimer">I hereby understand that this service is not associated with Keio University and is a personal project.</label>
+                    <span class="help-block"><?php echo $keio_disclaimer_err; ?></span>
                 </div>
-                <div class="checkbox-group">
+                <div class="terms-agreement">
                     <input type="checkbox" name="terms" id="terms" value="agree">
-                    <label for="terms">I have read and agreed to the <a href="ToS.php">Terms of Service</a></label>
+                    <label for="terms">I agree to the <a href="ToS.php?lang=<?php echo $currentLang; ?>" class="terms-link" target="_blank"><?php echo $currentLang == 'ja' ? '利用規約' : 'Terms of Service'; ?></a></label>
+                    <span class="help-block"><?php echo $terms_err; ?></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btn-primary" id='submit-btn' value="Submit" disabled>
                     <input type="reset" class="btn-default" value="Reset">
                 </div>
-
 
                 <p>Already have an account? <a href="login.php">Login here</a>.</p>
             </form>
@@ -236,14 +262,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var termsCheckbox = document.getElementById('terms');
+            var keioDisclaimerCheckbox = document.getElementById('keio_disclaimer');
             var submitButton = document.getElementById('submit-btn');
             
-            if(termsCheckbox && submitButton) {
-                termsCheckbox.addEventListener('change', function() {
-                    submitButton.disabled = !this.checked;
-                });
+            function updateSubmitButton() {
+                // Both checkboxes must be checked to enable the submit button
+                submitButton.disabled = !(termsCheckbox.checked && keioDisclaimerCheckbox.checked);
+            }
+            
+            if(termsCheckbox && keioDisclaimerCheckbox && submitButton) {
+                termsCheckbox.addEventListener('change', updateSubmitButton);
+                keioDisclaimerCheckbox.addEventListener('change', updateSubmitButton);
             } else {
-                console.error('Cannot find terms checkbox or submit button');
+                console.error('Cannot find one or more required elements');
             }
         });
     </script>   

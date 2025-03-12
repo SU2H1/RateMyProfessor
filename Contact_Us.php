@@ -8,7 +8,7 @@ header("Content-Type: text/html; charset=UTF-8");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - RateMyTeachersFC.com</title>
+    <title>Contact Us - RateMyTeacherSFC.com</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -75,7 +75,7 @@ header("Content-Type: text/html; charset=UTF-8");
     if ($language == 'jp') {
     ?>
         <h2>お問い合わせ（日本語版）</h2>
-        <p>RateMyTeachersFC.comをご利用いただきありがとうございます。ご質問、ご意見、またはサポートが必要な場合は、以下のフォームにご記入いただくか、直接メールでお問い合わせください。</p>
+        <p>RateMyTeacherSFC.comをご利用いただきありがとうございます。ご質問、ご意見、またはサポートが必要な場合は、以下のフォームにご記入いただくか、直接メールでお問い合わせください。</p>
         
         <div class="contact-form">
             <form action="#" method="post">
@@ -122,7 +122,7 @@ header("Content-Type: text/html; charset=UTF-8");
     } else {
     ?>
         <h2>Contact Us (English Version)</h2>
-        <p>Thank you for using RateMyTeachersFC.com. If you have any questions, comments, or need support, please fill out the form below or contact us directly via email.</p>
+        <p>Thank you for using RateMyTeacherSFC.com. If you have any questions, comments, or need support, please fill out the form below or contact us directly via email.</p>
         
         <div class="contact-form">
             <form action="#" method="post">
