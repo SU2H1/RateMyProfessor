@@ -502,7 +502,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
             
             <h3><?php echo $t['sub_official']; ?></h3>
             <ul>
-                <li><a href="https://www.sfc.lib.keio.ac.jp/eng/" target="_blank">SFC Media Center</a></li>
+                <li><a href="https://www.lib.keio.ac.jp/sfc/" target="_blank">SFC Media Center</a></li>
                 <li><a href="https://archive.org/" target="_blank">Internet Archive</a></li>
                 <li><a href="https://www.lib.city.fujisawa.kanagawa.jp/index" target="_blank">Fujisawa City Library</a> <?php echo $t['library_note']; ?></li>
             </ul>
