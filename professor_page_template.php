@@ -9,6 +9,9 @@ require_once 'config.php';
 require_once 'calculate_ratings.php';
 
 // Start session to check if user is logged in
+require_once 'session_config.php'; //NEW
+
+// Start session to check if user is logged in
 session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 
