@@ -1888,7 +1888,7 @@ $sampleReviews = [];
                 <button class="dropbtn" style="background-color: transparent; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center;">Menu <span style="margin-left: 5px; font-size: 12px;">▼</span></button>
                 <div class="dropdown-content" style="position: absolute; background-color: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; display: none;">
                     <?php if ($isLoggedIn): ?>
-                        <a href="my_account.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">My Account</a>
+                        <a href="account-section.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">My Account</a>
                         <a href="logout.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Logout</a>
                     <?php else: ?>
                         <a href="login.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Login</a>
