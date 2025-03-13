@@ -280,8 +280,8 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
             <ul>
                 <li><a href="https://www.keio.ac.jp/" target="_blank">Keio Website Portal</a></li>
                 <li><a href="https://www.students.keio.ac.jp/en/sfc/class/registration/" target="_blank">Syllabus</a></li>
-                <li><a href="https://wellness.sfc.keio.ac.jp/v3/index.php?page=top&lang=ja&semester=20230" target="_blank">Course Registration</a></li>
-                <li><a href="https://sola.sfc.keio.ac.jp/faculty/students/sign_in" target="_blank">PE Registration</a></li>
+                <li><a href="https://sola.sfc.keio.ac.jp/faculty/students/sign_in"_blank">Course Registration</a></li>
+                <li><a href="https://wellness.sfc.keio.ac.jp/" target="_blank">PE Registration</a></li>
             </ul>
         </section>
 
