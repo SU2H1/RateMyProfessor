@@ -1160,6 +1160,9 @@ elseif (!isset($_COOKIE['language'])) {
                 <a href="privacy_policy.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
                     <?php echo $currentLang == 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'; ?>
                 </a>
+                <a href="about_us.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
+                    <?php echo $currentLang == 'ja' ? '私たちについて' : 'About Us'; ?>
+                </a>
             </p>
         </footer>
     </div>
