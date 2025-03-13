@@ -64,7 +64,7 @@ $overallRating = 0;
 foreach ($data['courses'] as $course) {
     foreach ($course['professors'] as $prof) {
         // Match by English name without spaces
-        $profNameNoSpaces = str_replace(' ', '', $prof['name']['en']);
+        $profNameNoSpaces = $prof['name']['en'];
         if (strcasecmp($profNameNoSpaces, $professorParam) === 0) {
             $professor = $prof;
             $professorCourses[] = $course;
