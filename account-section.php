@@ -873,8 +873,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="confirm-header">
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>Delete Review</h3>
+                        <button class="close-dialog">&times;</button>
                     </div>
-                    <p>Are you sure you want to delete this review? This action cannot be undone.</p>
+                    <div class="confirm-body">
+                        <p>Are you sure you want to delete this review?</p>
+                        <p class="warning-text">This action cannot be undone.</p>
+                    </div>
                     <div class="confirm-buttons">
                         <button class="cancel-btn">Cancel</button>
                         <button class="confirm-btn">Delete</button>
@@ -883,7 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             document.body.appendChild(confirmDialog);
             
-            // Style the dialog
+            // Add the CSS for the dialog
             document.head.insertAdjacentHTML('beforeend', `
                 <style>
                     .confirm-dialog {
@@ -892,60 +896,110 @@ document.addEventListener('DOMContentLoaded', function() {
                         left: 0;
                         width: 100%;
                         height: 100%;
-                        background-color: rgba(0,0,0,0.5);
+                        background-color: rgba(0, 0, 0, 0.5);
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         z-index: 1000;
-                        animation: fadeIn 0.2s ease-out;
+                        opacity: 0;
+                        transition: opacity 0.2s ease;
                     }
                     
+                    .confirm-dialog.active {
+                        opacity: 1;
+                    }
+
                     .confirm-dialog-content {
                         background-color: white;
                         border-radius: 8px;
-                        padding: 25px;
-                        max-width: 400px;
                         width: 90%;
-                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                        animation: scaleIn 0.2s ease-out;
+                        max-width: 400px;
+                        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+                        transform: translateY(20px);
+                        transition: transform 0.3s ease;
+                        overflow: hidden;
+                    }
+                    
+                    .confirm-dialog.active .confirm-dialog-content {
+                        transform: translateY(0);
                     }
                     
                     .confirm-header {
                         display: flex;
                         align-items: center;
-                        margin-bottom: 15px;
+                        padding: 16px 20px;
+                        background-color: #f8f9fa;
+                        border-bottom: 1px solid #e9ecef;
+                        position: relative;
                     }
                     
                     .confirm-header i {
                         color: #dc3545;
-                        font-size: 24px;
-                        margin-right: 10px;
+                        font-size: 20px;
+                        margin-right: 12px;
                     }
                     
                     .confirm-header h3 {
-                        color: #333;
+                        color: #343a40;
                         margin: 0;
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
+                    
+                    .close-dialog {
+                        position: absolute;
+                        right: 15px;
+                        top: 15px;
+                        background: none;
+                        border: none;
+                        font-size: 22px;
+                        color: #6c757d;
+                        cursor: pointer;
+                        padding: 0;
+                        line-height: 1;
+                    }
+                    
+                    .close-dialog:hover {
+                        color: #343a40;
+                    }
+                    
+                    .confirm-body {
+                        padding: 20px;
+                    }
+                    
+                    .confirm-body p {
+                        margin: 0 0 10px;
+                        font-size: 16px;
+                        color: #343a40;
+                    }
+                    
+                    .warning-text {
+                        color: #dc3545;
+                        font-weight: 500;
                     }
                     
                     .confirm-buttons {
                         display: flex;
                         justify-content: flex-end;
-                        margin-top: 20px;
+                        padding: 15px 20px;
+                        background-color: #f8f9fa;
+                        border-top: 1px solid #e9ecef;
                         gap: 10px;
                     }
                     
                     .cancel-btn, .confirm-btn {
-                        padding: 10px 15px;
+                        padding: 10px 16px;
                         border: none;
                         border-radius: 4px;
                         cursor: pointer;
                         font-weight: 500;
+                        transition: all 0.2s;
                     }
                     
                     .cancel-btn {
                         background-color: #f8f9fa;
                         border: 1px solid #ddd;
-                        color: #333;
+                        color: #495057;
                     }
                     
                     .confirm-btn {
@@ -966,160 +1020,202 @@ document.addEventListener('DOMContentLoaded', function() {
                         to { opacity: 1; }
                     }
                     
-                    @keyframes scaleIn {
-                        from { transform: scale(0.9); }
-                        to { transform: scale(1); }
+                    @keyframes slideUp {
+                        from { transform: translateY(20px); }
+                        to { transform: translateY(0); }
                     }
                 </style>
             `);
             
+            // Animate the dialog appearing
+            setTimeout(() => {
+                confirmDialog.classList.add('active');
+            }, 10);
+            
             // Add event listeners to dialog buttons
             const cancelBtn = confirmDialog.querySelector('.cancel-btn');
             const confirmBtn = confirmDialog.querySelector('.confirm-btn');
+            const closeBtn = confirmDialog.querySelector('.close-dialog');
             
-            cancelBtn.addEventListener('click', function() {
-                document.body.removeChild(confirmDialog);
-            });
+            const closeDialog = () => {
+                confirmDialog.classList.remove('active');
+                setTimeout(() => {
+                    if (document.body.contains(confirmDialog)) {
+                        document.body.removeChild(confirmDialog);
+                    }
+                }, 300);
+            };
+            
+            cancelBtn.addEventListener('click', closeDialog);
+            closeBtn.addEventListener('click', closeDialog);
             
             confirmBtn.addEventListener('click', function() {
-                // Send AJAX request to delete the review
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'delete_review.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        // Remove the confirm dialog
-                        document.body.removeChild(confirmDialog);
-                        
-                        // Create a success toast
-                        const toast = document.createElement('div');
-                        toast.className = 'toast success-toast';
-                        toast.innerHTML = `
-                            <div class="toast-content">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Review deleted successfully!</span>
-                            </div>
-                        `;
-                        document.body.appendChild(toast);
-                        
-                        // Style the toast
-                        document.head.insertAdjacentHTML('beforeend', `
-                            <style>
-                                .toast {
-                                    position: fixed;
-                                    bottom: 20px;
-                                    right: 20px;
-                                    padding: 12px 20px;
-                                    border-radius: 4px;
-                                    background-color: white;
-                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                                    z-index: 1000;
-                                    animation: slideIn 0.3s ease-out forwards, fadeOut 0.5s ease-out 2.5s forwards;
-                                }
-                                
-                                .success-toast {
-                                    border-left: 4px solid #28a745;
-                                }
-                                
-                                .toast-content {
-                                    display: flex;
-                                    align-items: center;
-                                }
-                                
-                                .toast-content i {
-                                    color: #28a745;
-                                    margin-right: 10px;
-                                    font-size: 18px;
-                                }
-                                
-                                @keyframes slideIn {
-                                    from { transform: translateX(100%); }
-                                    to { transform: translateX(0); }
-                                }
-                                
-                                @keyframes fadeOut {
-                                    from { opacity: 1; }
-                                    to { opacity: 0; transform: translateY(-10px); }
-                                }
-                            </style>
-                        `);
-                        
-                        // Remove toast after 3 seconds
-                        setTimeout(() => {
-                            if (document.body.contains(toast)) {
-                                document.body.removeChild(toast);
-                            }
-                        }, 3000);
-                        
-                        // Remove the review card from the DOM with animation
-                        const reviewCard = btn.closest('.review-card');
-                        reviewCard.style.animation = 'fadeOut 0.3s ease-out forwards';
-                        
-                        setTimeout(() => {
-                            if (reviewCard.parentNode) {
-                            reviewCard.parentNode.removeChild(reviewCard);
-                            }
-                            
-                            // Update review count
-                            const reviewCountElement = document.querySelector('.sidebar-nav a[data-section="my-reviews"]');
-                            let reviewCount = parseInt(reviewCountElement.textContent.match(/\d+/)[0]);
-                            reviewCount--;
-                            reviewCountElement.textContent = `My Reviews (${reviewCount})`;
-                            
-                            // Show empty state if no more reviews
-                            if (reviewCount === 0) {
-                                const reviewsList = document.querySelector('.reviews-list');
-                                reviewsList.innerHTML = `
-                                    <div class="empty-state">
-                                        <i class="fas fa-comment-slash"></i>
-                                        <p>You haven't submitted any reviews yet.</p>
-                                        <a href="home.php" class="btn-primary">Browse Courses</a>
-                                    </div>
-                                `;
-                            }
-                        }, 300);
-                    } else {
-                        // Show error toast
-                        document.body.removeChild(confirmDialog);
-                        
-                        const toast = document.createElement('div');
-                        toast.className = 'toast error-toast';
-                        toast.innerHTML = `
-                            <div class="toast-content">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>Error deleting review. Please try again.</span>
-                            </div>
-                        `;
-                        document.body.appendChild(toast);
-                        
-                        // Style the error toast
-                        document.head.insertAdjacentHTML('beforeend', `
-                            <style>
-                                .error-toast {
-                                    border-left: 4px solid #dc3545;
-                                }
-                                
-                                .error-toast i {
-                                    color: #dc3545;
-                                }
-                            </style>
-                        `);
-                        
-                        // Remove toast after 3 seconds
-                        setTimeout(() => {
-                            if (document.body.contains(toast)) {
-                                document.body.removeChild(toast);
-                            }
-                        }, 3000);
+                // Show loading state on button
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                confirmBtn.disabled = true;
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('review_id', reviewId);
+                
+                // Send fetch request
+                fetch('delete_review.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server responded with status: ' + response.status);
                     }
-                };
-                xhr.send('review_id=' + reviewId);
+                    return response.text();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    
+                    // Close the dialog
+                    closeDialog();
+                    
+                    // Create a success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'toast success-toast';
+                    toast.innerHTML = `
+                        <div class="toast-content">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Review deleted successfully!</span>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    // Style the toast
+                    document.head.insertAdjacentHTML('beforeend', `
+                        <style>
+                            .toast {
+                                position: fixed;
+                                bottom: 20px;
+                                right: 20px;
+                                padding: 14px 20px;
+                                border-radius: 4px;
+                                background-color: white;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                                z-index: 1000;
+                                display: flex;
+                                align-items: center;
+                                animation: slideInRight 0.3s ease-out forwards, fadeOut 0.5s ease-out 2.5s forwards;
+                                min-width: 250px;
+                            }
+                            
+                            .success-toast {
+                                border-left: 4px solid #28a745;
+                            }
+                            
+                            .toast-content {
+                                display: flex;
+                                align-items: center;
+                            }
+                            
+                            .toast-content i {
+                                color: #28a745;
+                                margin-right: 12px;
+                                font-size: 20px;
+                            }
+                            
+                            .toast-content span {
+                                font-weight: 500;
+                            }
+                            
+                            @keyframes slideInRight {
+                                from { transform: translateX(100%); }
+                                to { transform: translateX(0); }
+                            }
+                            
+                            @keyframes fadeOut {
+                                from { opacity: 1; }
+                                to { opacity: 0; transform: translateY(-10px); }
+                            }
+                        </style>
+                    `);
+                    
+                    // Remove toast after 3 seconds
+                    setTimeout(() => {
+                        if (document.body.contains(toast)) {
+                            document.body.removeChild(toast);
+                        }
+                    }, 3000);
+                    
+                    // Remove the review card with animation
+                    reviewCard.style.animation = 'fadeOut 0.3s ease-out forwards';
+                    
+                    setTimeout(() => {
+                        if (reviewCard.parentNode) {
+                            reviewCard.parentNode.removeChild(reviewCard);
+                        }
+                        
+                        // Update review count
+                        const reviewCountElement = document.querySelector('.sidebar-nav a[data-section="my-reviews"]');
+                        let reviewCount = parseInt(reviewCountElement.textContent.match(/\d+/)[0]);
+                        reviewCount--;
+                        reviewCountElement.textContent = `My Reviews (${reviewCount})`;
+                        
+                        // Show empty state if no more reviews
+                        if (reviewCount === 0) {
+                            const reviewsList = document.querySelector('.reviews-list');
+                            reviewsList.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-comment-slash"></i>
+                                    <p>You haven't submitted any reviews yet.</p>
+                                    <a href="home.php" class="btn-primary">Browse Courses</a>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    
+                    // Re-enable button
+                    confirmBtn.innerHTML = 'Delete';
+                    confirmBtn.disabled = false;
+                    
+                    // Close the dialog
+                    closeDialog();
+                    
+                    // Show error toast
+                    const toast = document.createElement('div');
+                    toast.className = 'toast error-toast';
+                    toast.innerHTML = `
+                        <div class="toast-content">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Error deleting review. Please try again.</span>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    // Style the error toast
+                    document.head.insertAdjacentHTML('beforeend', `
+                        <style>
+                            .error-toast {
+                                border-left: 4px solid #dc3545;
+                            }
+                            
+                            .error-toast i {
+                                color: #dc3545;
+                            }
+                        </style>
+                    `);
+                    
+                    // Remove toast after 3 seconds
+                    setTimeout(() => {
+                        if (document.body.contains(toast)) {
+                            document.body.removeChild(toast);
+                        }
+                    }, 3000);
+                });
             });
             
             // Close dialog when clicking outside
             confirmDialog.addEventListener('click', function(e) {
                 if (e.target === confirmDialog) {
-                    document.body.removeChild(confirmDialog);
+                    closeDialog();
                 }
             });
         });
