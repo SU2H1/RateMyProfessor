@@ -151,7 +151,7 @@ if (!empty($searchQuery)) {
             SELECT c.id, c.name, c.course_code,
                    COALESCE(c.avg_content_quality, 0) as avg_content_quality,
                    COALESCE(c.avg_difficulty, 0) as avg_difficulty,
-                   (COALESCE(c.avg_content_quality, 0) + (5 - COALESCE(c.avg_difficulty, 0))) / 2 as avg_rating,
+                   (COALESCE(c.avg_content_quality, 0) + (COALESCE(c.avg_difficulty, 0))) / 2 as avg_rating,
                    COALESCE(c.review_count, 0) as review_count,
                    p.name as professor_name
             FROM courses c
