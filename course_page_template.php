@@ -724,6 +724,7 @@ if ($dbCourse && $db) {
                                 if (in_array('second_half', $availableColumns)) $selectColumns .= ", second_half";
                                 if (in_array('user_id', $availableColumns)) $selectColumns .= ", user_id";
                                 if (in_array('created_at', $availableColumns)) $selectColumns .= ", created_at";
+                                if (in_array('is_anonymous', $availableColumns)) $selectColumns .= ", is_anonymous";
                                 
                                 // Modify SQL to specifically look for reviews for this exact course with professor
                                 // We need to get professor_id to make this work
@@ -791,13 +792,34 @@ if ($dbCourse && $db) {
                                         }
                                     }
                                     
-                                    // Add to reviews array with default username and user_id for deletion
+                                    // Check if review is anonymous
+                                    $isAnonymous = isset($row['is_anonymous']) && $row['is_anonymous'] == 1;
+
+                                    // Get actual username if not anonymous
+                                    $username = 'Student'; // Default for anonymous reviews
+                                    if (!$isAnonymous && isset($row['user_id']) && $row['user_id'] > 0) {
+                                        try {
+                                            $userStmt = $db->prepare("SELECT username FROM users WHERE id = :user_id LIMIT 1");
+                                            $userStmt->bindValue(':user_id', $row['user_id'], SQLITE3_INTEGER);
+                                            $userResult = $userStmt->execute();
+                                            $userData = $userResult->fetchArray(SQLITE3_ASSOC);
+                                            if ($userData && isset($userData['username'])) {
+                                                $username = $userData['username'];
+                                            }
+                                        } catch (Exception $e) {
+                                            error_log("Error getting username: " . $e->getMessage());
+                                            // Keep default username if there's an error
+                                        }
+                                    }
+
+                                    // Add to reviews array with username and user_id for deletion
                                     $reviewData = [
                                         'id' => $row['id'],
                                         'rating' => $row['rating'] ?? 3, // Default to 3 if missing
                                         'created_at' => $formattedDate,
-                                        'username' => 'Student', // Simple default username
-                                        'user_id' => isset($row['user_id']) ? $row['user_id'] : 0  // Include user_id for permission checking
+                                        'username' => $username,
+                                        'user_id' => isset($row['user_id']) ? $row['user_id'] : 0,  // Include user_id for permission checking
+                                        'is_anonymous' => $isAnonymous // Include anonymous flag
                                     ];
                                     
                                     // Add optional fields if they exist (cast numeric values to appropriate types)
@@ -2558,6 +2580,19 @@ $sampleReviews = [];
                     <textarea name="comment" id="comment" rows="5" 
                         style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"
                         placeholder="<?php echo $lang === 'ja' ? 'この講義についての感想や意見を書いてください...' : 'Share your thoughts about this course...'; ?>"></textarea>
+                </div>
+
+                <!-- Anonymous Review Option -->
+                <div style="margin-bottom: 30px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" name="is_anonymous" value="1" style="margin-right: 10px;">
+                        <span style="font-weight: 500;">
+                            <?php echo $lang === 'ja' ? '匿名で投稿する' : 'Post anonymously'; ?>
+                        </span>
+                    </label>
+                    <div style="margin-top: 5px; font-size: 14px; color: #666;">
+                        <?php echo $lang === 'ja' ? 'チェックすると、投稿者名が「Student」として表示されます。' : 'If checked, your review will be displayed as "Student" instead of your username.'; ?>
+                    </div>
                 </div>
                 
                 <!-- Submit Button -->

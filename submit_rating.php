@@ -75,8 +75,14 @@ error_log("Second half assessments: " . implode(", ", (array)$secondHalf));
 // Get attendance value
 $attendanceCheck = isset($_POST['attendance_check']) ? $_POST['attendance_check'] : '';
 
+// Get anonymous preference
+$isAnonymous = isset($_POST['is_anonymous']) ? (bool)$_POST['is_anonymous'] : false;
+
 // Calculate the overall rating from content and difficulty
 $rating = round(($contentRating + (5 - $difficultyRating)) / 2);
+
+// Log anonymous status for debugging
+error_log("Review is anonymous: " . ($isAnonymous ? 'Yes' : 'No'));
 
 // Validate content rating
 if ($contentRating < 1 || $contentRating > 5) {
@@ -154,11 +160,32 @@ try {
             first_half TEXT,
             second_half TEXT,
             comment TEXT,
+            is_anonymous INTEGER DEFAULT 0,
             created_at DATETIME,
             FOREIGN KEY (course_id) REFERENCES courses(id),
             FOREIGN KEY (professor_id) REFERENCES professors(id)
         )
     ");
+
+    // Check if is_anonymous column exists, add it if not (for backward compatibility)
+    $columnsResult = $db->query("PRAGMA table_info(ratings)");
+    $hasAnonymousColumn = false;
+    while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
+        if ($col['name'] === 'is_anonymous') {
+            $hasAnonymousColumn = true;
+            break;
+        }
+    }
+
+    if (!$hasAnonymousColumn) {
+        try {
+            $db->exec("ALTER TABLE ratings ADD COLUMN is_anonymous INTEGER DEFAULT 0");
+            error_log("Added is_anonymous column to ratings table");
+        } catch (Exception $e) {
+            error_log("Error adding is_anonymous column: " . $e->getMessage());
+            // Continue anyway - we'll work with what we have
+        }
+    }
     
     $db->exec("BEGIN TRANSACTION");
     
@@ -447,8 +474,9 @@ $fields = [
     'attendance_check' => ['value' => $attendanceCheck, 'type' => SQLITE3_TEXT],
     'first_half' => ['value' => $firstHalfJson, 'type' => SQLITE3_TEXT],
     'second_half' => ['value' => $secondHalfJson, 'type' => SQLITE3_TEXT],
-    'comment' => ['value' => $comment, 'type' => SQLITE3_TEXT]
-];
+    'comment' => ['value' => $comment, 'type' => SQLITE3_TEXT],
+    'is_anonymous' => ['value' => $isAnonymous ? 1 : 0, 'type' => SQLITE3_INTEGER]
+    ];
 
 // Special handling for created_at
 if (in_array('created_at', $ratingColumns)) {
