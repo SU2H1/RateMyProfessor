@@ -2,6 +2,8 @@
 // Display instructions for accessing Rate My Teacher
 
 // Start session to check if user is logged in
+// Initialize language variable
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'en';
 require_once 'session_config.php'; //NEW
 session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
