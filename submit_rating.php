@@ -4,10 +4,6 @@
  * This file handles rating submissions for courses and professors
  */
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 // Include database configuration
 require_once 'config.php';
 require_once 'session_config.php';
@@ -27,12 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Debug: Print all POST data to diagnose issues
-echo "Debugging POST data:<pre>";
-print_r($_POST);
-echo "</pre>";
-
-// Dump important variables to error log for permanent record
+// Silently log data for debugging purposes
 error_log("---------- START NEW RATING SUBMISSION ----------");
 error_log("POST data: " . json_encode($_POST));
 if (isset($_POST['course_name'])) {
@@ -72,18 +63,9 @@ if (!$professorName && isset($_POST['redirect_url'])) {
         parse_str($urlParts['query'], $queryParams);
         if (isset($queryParams['professor'])) {
             $professorName = $queryParams['professor'];
-            echo "Extracted professor name from URL: " . htmlspecialchars($professorName) . "<br>";
         }
     }
 }
-
-// Debug: Print parsed variables
-echo "Parsed variables:<pre>";
-echo "userId: $userId\n";
-echo "content_rating: $contentRating\n";
-echo "difficulty_rating: $difficultyRating\n";
-echo "courseId: $courseId\n";
-echo "</pre>";
 
 // For logging/debugging
 error_log("Review submission - Content Rating: $contentRating, Difficulty: $difficultyRating, Grade: $grade, Textbook: $textbook");
@@ -95,7 +77,6 @@ $attendanceCheck = isset($_POST['attendance_check']) ? $_POST['attendance_check'
 
 // Calculate the overall rating from content and difficulty
 $rating = round(($contentRating + (5 - $difficultyRating)) / 2);
-echo "Calculated overall rating: $rating (from content: $contentRating, inverted difficulty: " . (5 - $difficultyRating) . ")<br>";
 
 // Validate content rating
 if ($contentRating < 1 || $contentRating > 5) {
@@ -123,50 +104,22 @@ if (!in_array($grade, $validGrades)) {
 if (!empty($textbook)) {
     $validTextbookOptions = ['required', 'recommended', 'not_needed'];
     if (!in_array($textbook, $validTextbookOptions)) {
-        echo "Invalid textbook option: $textbook<br>";
         // Set a default value instead of exiting
         $textbook = 'not_needed';
     }
 }
 
-// Comment is now optional, no validation needed
-
-// Enable error logging
-error_log("Rating submission attempt. User ID: $userId, Course ID: $courseId, Rating: $rating");
-
 // Create database connection
 try {
-    echo "Attempting to connect to database...<br>";
-    
     // Check if database directory exists
     if (!file_exists('database')) {
-        echo "ERROR: Database directory does not exist.<br>";
         mkdir('database', 0755, true);
-        echo "Created database directory.<br>";
     }
     
     // Try to connect to database
     $db = new SQLite3('database/ratemyteacher.db');
-    echo "Successfully connected to database.<br>";
     
     // Create tables if they don't exist
-    // Debug the actual database schema
-    echo "Checking database schema...<br>";
-    $tablesResult = $db->query("SELECT name FROM sqlite_master WHERE type='table'");
-    echo "Tables in database:<br>";
-    while ($tableName = $tablesResult->fetchArray(SQLITE3_ASSOC)) {
-        echo "- " . $tableName['name'] . "<br>";
-        
-        // Get columns for each table
-        $columnsResult = $db->query("PRAGMA table_info('" . $tableName['name'] . "')");
-        echo "&nbsp;&nbsp;Columns:<br>";
-        while ($column = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
-            echo "&nbsp;&nbsp;- " . $column['name'] . " (" . $column['type'] . ")<br>";
-        }
-        echo "<br>";
-    }
-    
-    // Create courses table with additional fields
     $db->exec("
         CREATE TABLE IF NOT EXISTS courses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -212,24 +165,18 @@ try {
     // Get or create course record
     $courseDbId = null;
     if ($courseId) {
-        // Debug course ID before querying
-        echo "Looking for course with ID: " . htmlspecialchars($courseId) . "<br>";
-        
         // Get column names for courses table to see what we can query by
         $columns = [];
         $columnsResult = $db->query("PRAGMA table_info('courses')");
-        echo "Checking columns in courses table:<br>";
         while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
             $columns[] = $col['name'];
-            echo "- " . $col['name'] . "<br>";
         }
         
         // Check if the course exists - try multiple methods
-        echo "Looking for course with ID: $courseId or name: $courseName<br>";
+        error_log("Looking for course with ID: $courseId or name: $courseName");
         
         // First try by exact course name if provided
         if ($courseName) {
-            echo "Looking up course by name: $courseName<br>";
             error_log("Looking up course by exact name match: '$courseName'");
             
             $stmt = $db->prepare("
@@ -249,14 +196,10 @@ try {
             }
         }
         
-        // Log the current search attempt for debugging
-        error_log("Looking for course. ID=$courseId, Name=$courseName");
-        
         // If not found by name and we have an ID, try that
         if (!$course && $courseId) {
             // Try by course_id column if it exists
             if (in_array('course_id', $columns)) {
-                echo "Looking up course by course_id column: $courseId<br>";
                 $stmt = $db->prepare("
                     SELECT id, name FROM courses 
                     WHERE course_id = :course_id 
@@ -265,7 +208,6 @@ try {
                 $stmt->bindValue(':course_id', $courseId, SQLITE3_TEXT);
             } else {
                 // Fallback to looking up by ID directly
-                echo "Looking up course by id column: $courseId<br>";
                 $stmt = $db->prepare("
                     SELECT id, name FROM courses 
                     WHERE id = :id 
@@ -280,13 +222,6 @@ try {
             if ($course) {
                 error_log("Found course by ID in database: ID={$course['id']}, Name={$course['name']}");
             }
-        }
-        
-        // DISABLED partial name matching to avoid incorrect course associations
-        // If no exact match, we'll create a new course rather than risking an incorrect association
-        if (!$course && $courseName) {
-            echo "No exact match found for: $courseName. Will create a new course record.<br>";
-            // NO partial name matching - we'll create a new course record instead
         }
     
     if ($course) {
@@ -330,10 +265,6 @@ try {
                 error_log("Using course name from JSON data: '$courseName'");
             }
             
-            // Create the course with available columns
-            echo "Creating course in database with name: " . htmlspecialchars($courseName) . "<br>";
-            error_log("CRITICAL: Creating new course from course info with name: '$courseName'");
-            
             // Get column names to see what we can insert
             $columns = [];
             $columnsResult = $db->query("PRAGMA table_info('courses')");
@@ -344,7 +275,6 @@ try {
             if (in_array('course_code', $columns)) {
                 if (in_array('professor_id', $columns)) {
                     // If we have course_code and professor_id columns
-                    echo "Inserting with name, course_code, and professor_id<br>";
                     $stmt = $db->prepare("
                         INSERT INTO courses (name, course_code, professor_id) 
                         VALUES (:name, :course_code, :professor_id)
@@ -354,7 +284,6 @@ try {
                     $stmt->bindValue(':professor_id', null, SQLITE3_NULL);
                 } else {
                     // If we have course_code but no professor_id
-                    echo "Inserting with name and course_code<br>";
                     $stmt = $db->prepare("
                         INSERT INTO courses (name, course_code) 
                         VALUES (:name, :course_code)
@@ -364,7 +293,6 @@ try {
                 }
             } else {
                 // Simple insert with just name
-                echo "Inserting with just name<br>";
                 $stmt = $db->prepare("
                     INSERT INTO courses (name) 
                     VALUES (:name)
@@ -375,7 +303,6 @@ try {
             
             if ($result) {
                 $courseDbId = $db->lastInsertRowID();
-                echo "New course created with ID: $courseDbId<br>";
             } else {
                 header('Content-Type: application/json');
                 echo json_encode(['error' => 'Failed to create course record']);
@@ -383,8 +310,6 @@ try {
             }
         } else {
             // Create a new course record with the information we have
-            echo "Course not found in database, creating a new course record<br>";
-            
             // Parse debug info for course name
             $debugInfo = isset($_POST['debug_info']) ? json_decode($_POST['debug_info'], true) : [];
             
@@ -400,8 +325,6 @@ try {
                 error_log("No course name found, using default: " . $courseName);
             }
             
-            echo "Course name determined: " . htmlspecialchars($courseName) . "<br>";
-            
             // Get column names to see what we can insert
             $columns = [];
             $columnsResult = $db->query("PRAGMA table_info('courses')");
@@ -413,7 +336,6 @@ try {
             if (in_array('course_code', $columns)) {
                 if (in_array('professor_id', $columns)) {
                     // If we have course_code and professor_id columns
-                    echo "Inserting course with name, course_code, and professor_id<br>";
                     error_log("CRITICAL: Creating new course with name: '$courseName' and course_id: $courseId");
                     $insertStmt = $db->prepare("
                         INSERT INTO courses (name, course_code, professor_id) 
@@ -424,7 +346,6 @@ try {
                     $insertStmt->bindValue(':professor_id', null, SQLITE3_NULL);
                 } else {
                     // If we have course_code but no professor_id
-                    echo "Inserting course with name and course_code<br>";
                     error_log("CRITICAL: Creating new course with name: '$courseName' and course_id: $courseId");
                     $insertStmt = $db->prepare("
                         INSERT INTO courses (name, course_code) 
@@ -435,7 +356,6 @@ try {
                 }
             } else {
                 // Simple insert with just name
-                echo "Inserting course with just name<br>";
                 error_log("CRITICAL: Creating new course with name: '$courseName' and course_id: $courseId");
                 $insertStmt = $db->prepare("
                     INSERT INTO courses (name) 
@@ -446,11 +366,8 @@ try {
             $insertResult = $insertStmt->execute();
             
             if ($insertResult) {
-                echo "Successfully created course record<br>";
                 $courseDbId = $db->lastInsertRowID();
-                echo "New course created with ID: $courseDbId<br>";
             } else {
-                echo "Failed to create course record<br>";
                 header('Content-Type: application/json');
                 echo json_encode(['error' => 'Failed to create course record']);
                 exit;
@@ -478,7 +395,6 @@ if ($professorName) {
     } else {
         // Check if we have professor name to work with
         if ($professorName) {
-            echo "Professor not found in database, creating new professor record...<br>";
             // Create new professor with simple defaults
             $department = "Unknown Department";
             
@@ -493,14 +409,11 @@ if ($professorName) {
             
             if ($result) {
                 $professorDbId = $db->lastInsertRowID();
-                echo "Created new professor record with ID: $professorDbId<br>";
             } else {
-                echo "Failed to create professor record, using default ID<br>";
                 // Keep the default ID (1) that we set earlier
             }
         } else {
             // No professor name available, keep using the default ID
-            echo "No professor name provided, using default professor ID: $professorDbId<br>";
         }
     }
 }
@@ -512,10 +425,8 @@ $secondHalfJson = json_encode($secondHalf);
 // Get the columns from the ratings table
 $ratingColumns = [];
 $columnsResult = $db->query("PRAGMA table_info('ratings')");
-echo "Checking columns in ratings table:<br>";
 while ($col = $columnsResult->fetchArray(SQLITE3_ASSOC)) {
     $ratingColumns[] = $col['name'];
-    echo "- " . $col['name'] . "<br>";
 }
 
 // Build the INSERT statement dynamically based on available columns
@@ -556,22 +467,22 @@ foreach ($fields as $column => $data) {
 
 // Construct the SQL
 $sql = "INSERT INTO ratings (" . implode(', ', $insertColumns) . ") VALUES (" . implode(', ', $insertValues) . ")";
-echo "Executing SQL: " . htmlspecialchars($sql) . "<br>";
 
 // Prepare and bind
 $stmt = $db->prepare($sql);
 foreach ($bindParams as $param => $data) {
     $stmt->bindValue(':' . $param, $data['value'], $data['type']);
-    echo "Binding parameter :$param<br>";
 }
 
 $result = $stmt->execute();
+
+// Check if the user has provided a redirect URL
+$redirectUrl = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : '';
 
 if ($result) {
     $db->exec("COMMIT");
     $newRatingId = $db->lastInsertRowID();
     error_log("Rating committed successfully! New rating ID: $newRatingId for course ID: $courseDbId");
-    echo "Rating committed successfully! New rating ID: $newRatingId <br>";
     
     // Include the rating calculation functions
     require_once 'calculate_ratings.php';
@@ -597,18 +508,14 @@ if ($result) {
                 $db->exec("ALTER TABLE professors ADD COLUMN review_count INTEGER DEFAULT 0");
                 $hasRatingColumns = true;
             } catch (Exception $e) {
-                echo "Note: Could not add rating columns to professors table. " . $e->getMessage() . "<br>";
+                error_log("Could not add rating columns to professors table: " . $e->getMessage());
             }
         }
         
         // Update the ratings if columns exist
         if ($hasRatingColumns) {
             // Update professor ratings
-            if (updateStoredProfessorRatings($professorDbId, $db)) {
-                echo "Professor ratings updated successfully<br>";
-            } else {
-                echo "Failed to update professor ratings<br>";
-            }
+            updateStoredProfessorRatings($professorDbId, $db);
         }
     }
     
@@ -633,77 +540,48 @@ if ($result) {
                 $db->exec("ALTER TABLE courses ADD COLUMN review_count INTEGER DEFAULT 0");
                 $hasCourseRatingColumns = true;
             } catch (Exception $e) {
-                echo "Note: Could not add rating columns to courses table. " . $e->getMessage() . "<br>";
+                error_log("Could not add rating columns to courses table: " . $e->getMessage());
             }
         }
         
         // Update the ratings if columns exist
         if ($hasCourseRatingColumns) {
             // Update course ratings
-            if (updateStoredCourseRatings($courseDbId, $db)) {
-                echo "Course ratings updated successfully<br>";
-            } else {
-                echo "Failed to update course ratings<br>";
-            }
+            updateStoredCourseRatings($courseDbId, $db);
         }
     }
-    // Double-check that the rating is actually in the database
-    $verifyStmt = $db->prepare("SELECT * FROM ratings WHERE id = :id");
-    $verifyStmt->bindValue(':id', $newRatingId, SQLITE3_INTEGER);
-    $verifyResult = $verifyStmt->execute();
-    $ratingData = $verifyResult->fetchArray(SQLITE3_ASSOC);
     
-    if ($ratingData) {
-        echo "Verified rating in database: <pre>";
-        print_r($ratingData);
-        echo "</pre>";
-    } else {
-        echo "WARNING: Could not verify rating in database after insertion!<br>";
-    }
-    
-    // Show success message and then redirect
-    echo '<div style="background-color: #d4edda; color: #155724; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center;">
-        <strong>Success!</strong> Your review has been submitted successfully (ID: ' . $newRatingId . '). 
-        Redirecting back to the course page in 5 seconds...
-    </div>';
-    
-    // Check if we have a redirect URL
-    $redirectUrl = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : '';
-    
+    // Immediate redirect on success with new_review parameter
     if (!empty($redirectUrl)) {
-        // Add a special query parameter to force a refresh and indicate new review
+        // Add a query parameter to indicate new review
         $redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . 'new_review=1&review_id=' . $newRatingId;
         
-        // Set a meta refresh to go back to the course page after showing success message
-        // Use 10 seconds to make sure the browser fully reloads and doesn't use cache
-        echo '<meta http-equiv="refresh" content="10;url=' . htmlspecialchars($redirectUrl) . '">';
-        echo '<p>If not automatically redirected, <a href="' . htmlspecialchars($redirectUrl) . '">click here</a>.</p>';
+        // Immediately redirect to the course page
+        header('Location: ' . $redirectUrl);
+        exit;
     } else {
         // Fall back to JSON response if no redirect URL
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Rating submitted successfully']);
+        exit;
     }
 } else {
     $db->exec("ROLLBACK");
     error_log("Rating submission failed");
-    echo "Rating submission failed <br>";
     
-    // Show error message and then redirect
-    echo '<div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center;">
-        <strong>Error!</strong> There was a problem submitting your review. 
-        Redirecting back to the course page in 3 seconds...
-    </div>';
-    
-    // Check if we have a redirect URL for error case
-    $redirectUrl = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : '';
-    
+    // Immediate redirect on error
     if (!empty($redirectUrl)) {
-        // Set a meta refresh to go back to the course page after showing error message
-        echo '<meta http-equiv="refresh" content="3;url=' . htmlspecialchars($redirectUrl) . '?error=submission_failed">';
+        // Add error parameter
+        $redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . 'error=submission_failed';
+        
+        // Immediately redirect back to the course page
+        header('Location: ' . $redirectUrl);
+        exit;
     } else {
         // Fall back to JSON response if no redirect URL
         header('Content-Type: application/json');
         echo json_encode(['error' => 'Failed to submit rating']);
+        exit;
     }
 }
 } catch (Exception $e) {
@@ -712,29 +590,18 @@ if ($result) {
     }
     error_log("Database error: " . $e->getMessage());
     
-    // Show detailed error for debugging
-    echo "<div style='color: red; border: 1px solid red; padding: 20px; margin: 20px 0; border-radius: 5px;'>";
-    echo "<h3>Database Error</h3>";
-    echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "<h4>Stack Trace:</h4>";
-    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
-    echo "</div>";
-    
-    // Show user-friendly error message and then redirect
-    echo '<div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center;">
-        <strong>Error!</strong> There was a database error while submitting your review. 
-        Redirecting back to the course page in 5 seconds...
-    </div>';
-    
-    // Check if we have a redirect URL for error case
-    $redirectUrl = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : '';
-    
+    // Immediate redirect on error
     if (!empty($redirectUrl)) {
-        // Set a meta refresh to go back to the course page after showing error message
-        echo '<meta http-equiv="refresh" content="5;url=' . htmlspecialchars($redirectUrl) . '?error=database_error">';
+        // Add error parameter
+        $redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . 'error=database_error';
+        
+        // Immediately redirect back to the course page
+        header('Location: ' . $redirectUrl);
+        exit;
     } else {
         // Also output as JSON for API clients
         header('Content-Type: application/json');
         echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+        exit;
     }
 }
