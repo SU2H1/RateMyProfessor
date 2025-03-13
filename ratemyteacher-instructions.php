@@ -7,6 +7,9 @@ session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 $username = $isLoggedIn ? htmlspecialchars($_SESSION["username"]) : '';
 
+// Initialize language variable
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'en';
+
 // Check if we have a section specified in the URL
 $section = isset($_GET['section']) ? $_GET['section'] : null;
 
@@ -620,14 +623,14 @@ $sortedProfessors = $sortedProfessorsByCount;
     <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
         <p>2025 Rate My Teacher</p>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 15px; gap: 25px;">
-            <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-                <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
+            <a href="ToS.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                <?php echo $lang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
             </a>
-            <a href="privacy_policy.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-                <?php echo $currentLang == 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'; ?>
+            <a href="privacy_policy.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                <?php echo $lang == 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'; ?>
             </a>
-            <a href="about_us.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-                <?php echo $currentLang == 'ja' ? '私たちについて' : 'About Us'; ?>
+            <a href="about_us.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                <?php echo $lang == 'ja' ? '私たちについて' : 'About Us'; ?>
             </a>
         </div>
     </footer>
