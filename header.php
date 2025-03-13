@@ -204,17 +204,10 @@ if (!isset($page_title)) {
             </button>
             
             <nav class="main-nav" id="main-nav">
-            <nav class="main-nav" id="main-nav">
                 <ul>
-                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                        <li><a href="account-section.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'account-section.php' ? 'active' : ''; ?>">My Account</a></li>
-                    <?php else: ?>
-                        <li><a href="home.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'home.php' ? 'active' : ''; ?>">Home</a></li>
-                    <?php endif; ?>
-                    <li><a href="search.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'active' : ''; ?>">Search</a></li>
+                    <li><a href="home.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'home.php' ? 'active' : ''; ?>">Home</a></li>
                     <li><a href="tipsandtricks.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'tipsandtricks.php' ? 'active' : ''; ?>">Tips</a></li>
                 </ul>
-            </nav>
             </nav>
             
             <div class="user-menu">

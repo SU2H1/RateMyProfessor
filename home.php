@@ -350,6 +350,12 @@ if ($currentLang == 'ja') {
                             $jaName = $prof['name']['ja'];
                             $professorJa[$enName] = $jaName;
                         }
+                        if (isset($prof['department']['en']) && isset($prof['department']['ja'])) {
+                            $enDept = $prof['department']['en'];
+                            $jaDept = $prof['department']['ja'];
+                            $departmentJa[$enDept] = $jaDept;
+                        }
+
                     }
 
                     
@@ -357,17 +363,30 @@ if ($currentLang == 'ja') {
                 
                 // Update professor names to Japanese
                 foreach ($topProfessors as &$professor) {
+                    $professor['english_name'] = $professor['name'] ?? '';
+                    $professor['english_department'] = $professor['department'] ?? '';
+    
                     if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
                         $professor['name'] = $professorJa[$professor['name']];
+                    }
+                    if (isset($professor['department']) && isset($departmentJa[$professor['department']])) {
+                        $professor['department'] = $departmentJa[$professor['department']];
                     }
                 }
                 
                 // Update course names to Japanese
                 foreach ($topCourses as &$course) {
+                    $course['english_course_name'] = $course['course_name'] ?? $course['name'] ?? '';
+                    $course['english_professor_name'] = $course['professor_name'] ?? '';
+                    
                     $courseName = isset($course['course_name']) ? $course['course_name'] : (isset($course['name']) ? $course['name'] : '');
                     if (!empty($courseName) && isset($courseJa[$courseName])) {
                         $course['course_name'] = $courseJa[$courseName];
                     }
+                    if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
+                        $course['professor_name'] = $professorJa[$course['professor_name']];
+                    }
+    
                 }
             }
         }
