@@ -869,14 +869,14 @@ if ($reviewCount > 0) {
     <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
         <p>2025 Rate My Teacher</p>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 15px; gap: 25px;">
-            <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-                <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
+            <a href="ToS.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                <?php echo $lang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
             </a>
-            <a href="privacy_policy.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-                <?php echo $currentLang == 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'; ?>
+            <a href="privacy_policy.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                <?php echo $lang == 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'; ?>
             </a>
-            <a href="about_us.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
-                <?php echo $currentLang == 'ja' ? '私たちについて' : 'About Us'; ?>
+            <a href="about_us.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
+                <?php echo $lang == 'ja' ? '私たちについて' : 'About Us'; ?>
             </a>
         </div>
     </footer>
