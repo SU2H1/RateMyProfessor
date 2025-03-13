@@ -1151,7 +1151,16 @@ elseif (!isset($_COOKIE['language'])) {
             </div>
         </div>
         
-        <footer>
+        <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
+            <p>2025 Rate My Teacher</p>
+            <p style="margin-top: 10px;">
+                <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline; margin-right: 20px;">
+                    <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
+                </a>
+                <a href="privacy_policy.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
+                    <?php echo $currentLang == 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'; ?>
+                </a>
+            </p>
         </footer>
     </div>
     
