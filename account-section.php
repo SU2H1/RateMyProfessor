@@ -863,7 +863,8 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteReviewBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const reviewId = this.getAttribute('data-review-id');
-            
+            const reviewCard = this.closest('.review-card');
+
             // Create a custom confirmation dialog
             const confirmDialog = document.createElement('div');
             confirmDialog.className = 'confirm-dialog';
@@ -1055,7 +1056,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         reviewCard.style.animation = 'fadeOut 0.3s ease-out forwards';
                         
                         setTimeout(() => {
-                            reviewCard.remove();
+                            if (reviewCard.parentNode) {
+                            reviewCard.parentNode.removeChild(reviewCard);
+                            }
                             
                             // Update review count
                             const reviewCountElement = document.querySelector('.sidebar-nav a[data-section="my-reviews"]');

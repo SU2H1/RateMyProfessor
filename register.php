@@ -102,18 +102,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare("INSERT INTO users (username, email, password, verification_token, token_expiry) VALUES (:username, :email, :password, :token, :token_expiry)");
          
         if ($stmt) {
-
+            // Bind variables to the prepared statement as parameters
+            $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+            $stmt->bindValue(':email', $email, SQLITE3_TEXT);
+            $stmt->bindValue(':password', password_hash($password, PASSWORD_DEFAULT), SQLITE3_TEXT);
+            $stmt->bindValue(':token', $verification_token, SQLITE3_TEXT);
+            $stmt->bindValue(':token_expiry', $token_expiry, SQLITE3_TEXT);
             // Attempt to execute the prepared statement
             if ($stmt->execute()) {
                 // Send verification email
                 if (sendConfirmationEmail($email, $verification_token)) {
                     $registration_success = true;
-                    // Bind variables to the prepared statement as parameters
-                    $stmt->bindValue(':username', $username, SQLITE3_TEXT);
-                    $stmt->bindValue(':email', $email, SQLITE3_TEXT);
-                    $stmt->bindValue(':password', password_hash($password, PASSWORD_DEFAULT), SQLITE3_TEXT);
-                    $stmt->bindValue(':token', $verification_token, SQLITE3_TEXT);
-                    $stmt->bindValue(':token_expiry', $token_expiry, SQLITE3_TEXT);
 
 
                 } else {
