@@ -547,7 +547,7 @@ $sortedProfessors = $sortedProfessorsByCount;
                                 }
                             }
                             ?>
-                            <a href="professor.php?name=<?php echo urlencode($prof['en']); ?>&lang=<?php echo $isJapanese ? 'ja' : 'en'; ?>">
+                            <a href="professor_page_template.php?name=<?php echo urlencode($prof['en']); ?>&lang=<?php echo $isJapanese ? 'ja' : 'en'; ?>">
                                 <?php echo htmlspecialchars($displayName); ?>
                                 <?php if (isset($prof['count'])): ?>
                                 <span class="course-count">(<?php echo $prof['count']; ?> courses)</span>
