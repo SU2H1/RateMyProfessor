@@ -34,6 +34,25 @@ require_once 'session_config.php'; //NEW
 session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 
+function normalizeText($text) {
+    if (empty($text)) return $text;
+    
+    // Convert to UTF-8 if it's not already
+    $text = mb_convert_encoding($text, 'UTF-8', 'AUTO');
+    
+    // Normalize Unicode characters (e.g., combining marks)
+    if (function_exists('normalizer_normalize')) {
+        $text = normalizer_normalize($text, Normalizer::FORM_KC);
+    }
+    
+    // Convert full-width characters to half-width where applicable
+    if (function_exists('mb_convert_kana')) {
+        $text = mb_convert_kana($text, 'a', 'UTF-8');
+    }
+    
+    return $text;
+}
+
 // Debug information - uncomment to see on page
 echo "<!-- Debug Information\n";
 echo "REQUEST: " . print_r($_GET, true) . "\n";
@@ -174,7 +193,53 @@ if (!$course && $courseParam) {
         $stmt->bindValue(':like_name', '%' . $courseParam . '%', SQLITE3_TEXT);
         $result = $stmt->execute();
         $dbCourseByName = $result->fetchArray(SQLITE3_ASSOC);
+// Find this code section in course_page_template.php, around line 245-270
+// Before this block:
+    $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE name = :name OR name LIKE :like_name LIMIT 1");
+    $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
+    $stmt->bindValue(':like_name', '%' . $courseName . '%', SQLITE3_TEXT);
+    
+    // ADD THE JAPANESE TO ENGLISH MAPPING CODE JUST BEFORE THAT:
+    
+    // Create a mapping of Japanese to English names for both courses and professors
+    $jaToEnCourseMap = [];
+    $jaToEnProfMap = [];
+    
+    foreach ($data['courses'] as $c) {
+        if (isset($c['translations']['ja']['name']) && isset($c['translations']['en']['name'])) {
+            $jaToEnCourseMap[$c['translations']['ja']['name']] = $c['translations']['en']['name'];
+        }
         
+        foreach ($c['professors'] as $prof) {
+            if (isset($prof['name']['ja']) && isset($prof['name']['en'])) {
+                $jaToEnProfMap[$prof['name']['ja']] = $prof['name']['en'];
+            }
+        }
+    }
+    
+    // If we have Japanese course or professor names, also look for their English equivalents
+    $altCourseName = isset($jaToEnCourseMap[$courseParam]) ? $jaToEnCourseMap[$courseParam] : null;
+    $altProfessorName = isset($jaToEnProfMap[$professorParam]) ? $jaToEnProfMap[$professorParam] : null;
+    
+    // Debug the language mapping
+    error_log("Original course param: $courseParam, Alternative English name: " . ($altCourseName ?? 'none'));
+    if ($professorParam) {
+        error_log("Original professor param: $professorParam, Alternative English name: " . ($altProfessorName ?? 'none'));
+    }
+    
+    // THEN REPLACE THE ORIGINAL DATABASE QUERY WITH THIS ENHANCED VERSION:
+    $stmt = $db->prepare("
+        SELECT id, name, course_code FROM courses 
+        WHERE name = :name 
+        OR name LIKE :like_name
+        OR (:alt_name IS NOT NULL AND (name = :alt_name OR name LIKE :alt_like_name))
+        LIMIT 1
+    ");
+    $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
+    $stmt->bindValue(':like_name', '%' . $courseName . '%', SQLITE3_TEXT);
+    $stmt->bindValue(':alt_name', $altCourseName, SQLITE3_TEXT);
+    $stmt->bindValue(':alt_like_name', $altCourseName ? '%' . $altCourseName . '%' : null, SQLITE3_TEXT);
+    
         if ($dbCourseByName) {
             error_log("Found course in database by name: $courseParam, ID: " . $dbCourseByName['id']);
             $dbCourse = $dbCourseByName;
@@ -208,11 +273,11 @@ if (!$course && $courseParam) {
             
             // Check course name in both languages - exact match with the param
             if (isset($c['translations']['ja']['name']) && 
-                $c['translations']['ja']['name'] === $courseParam) {
+                strcasecmp($c['translations']['ja']['name'], normalizeText($courseParam)) === 0) {
                 $matchesCourseName = true;
                 error_log("Found matching course name (JA)");
             } else if (isset($c['translations']['en']['name']) && 
-                $c['translations']['en']['name'] === $courseParam) {
+                strcasecmp($c['translations']['en']['name'], $courseParam) === 0) {
                 $matchesCourseName = true;
                 error_log("Found matching course name (EN)");
             }
@@ -220,10 +285,17 @@ if (!$course && $courseParam) {
             // Check professor name if specified - exact match with professor's English name without spaces
             if ($professorParam) {
                 foreach ($c['professors'] as $prof) {
-                    // Clean up professor's English name to match URL format
-                    $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
-                    error_log("Comparing professor: '$profNameUrl' with '$professorParam'");
-                    if ($profNameUrl === $professorParam) {
+                    // Check English name (without spaces)
+                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                    
+                    // Check Japanese name 
+                    $profNameUrlJa = isset($prof['name']['ja']) ? $prof['name']['ja'] : '';
+                    
+                    error_log("Comparing professor: EN='$profNameUrlEn', JA='$profNameUrlJa' with '$professorParam'");
+                    
+                    // Case-insensitive comparison with both English and Japanese names
+                    if (strcasecmp($profNameUrlEn, normalizeText($professorParam)) === 0 || 
+                        strcasecmp($profNameUrlJa, normalizeText($professorParam))=== 0) {
                         $matchesProfessor = true;
                         error_log("Found matching professor");
                         break;

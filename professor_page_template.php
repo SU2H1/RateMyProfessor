@@ -65,10 +65,13 @@ foreach ($data['courses'] as $course) {
     foreach ($course['professors'] as $prof) {
         // Match by English name without spaces
         $profNameNoSpaces = $prof['name']['en'];
-        if (strcasecmp($profNameNoSpaces, $professorParam) === 0) {
+        $profNameJa = $prof['name']['ja']; // Get Japanese name
+        if (strcasecmp($profNameNoSpaces, $professorParam) === 0 || 
+            strcasecmp($profNameJa, $professorParam) === 0) {
             $professor = $prof;
             $professorCourses[] = $course;
         }
+
     }
 }
 
@@ -129,6 +132,31 @@ if ($professorId) {
     $avgDifficulty = $ratings['difficulty'];
     $overallRating = $ratings['overall'];
     $reviewCount = $ratings['review_count'];
+
+    $jaToEnMap = [];
+    foreach ($data['courses'] as $course) {
+        foreach ($course['professors'] as $prof) {
+            if (isset($prof['name']['ja']) && isset($prof['name']['en'])) {
+                $jaToEnMap[$prof['name']['ja']] = str_replace(' ', '', $prof['name']['en']);
+            }
+        }
+    }
+
+    $altProfessorName = isset($jaToEnMap[$professorParam]) ? $jaToEnMap[$professorParam] : null;
+
+    // Build the SQL query to search by either name
+    $stmt = $db->prepare("
+        SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count 
+        FROM professors 
+        WHERE REPLACE(name, ' ', '') = :name 
+           OR REPLACE(name, ' ', '') LIKE :name_like
+           OR (:alt_name IS NOT NULL AND (REPLACE(name, ' ', '') = :alt_name OR REPLACE(name, ' ', '') LIKE :alt_name_like))
+    ");
+    
+    $stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
+    $stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
+    $stmt->bindValue(':alt_name', $altProfessorName, SQLITE3_TEXT);
+    $stmt->bindValue(':alt_name_like', $altProfessorName ? '%' . $altProfessorName . '%' : null, SQLITE3_TEXT);
     
     // Debug output to see what's going on with ratings
     error_log("Professor ID: $professorId, Content Quality: $avgContentQuality, Difficulty: $avgDifficulty, Overall: $overallRating, Reviews: $reviewCount");

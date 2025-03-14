@@ -1242,7 +1242,7 @@ elseif (!isset($_COOKIE['language'])) {
                     const profItem = document.createElement('div');
                     profItem.className = 'search-item professor-search-item';
                     profItem.setAttribute('data-id', prof.id);
-                    
+
                     const ratingHtml = generateStarRating(prof.avg_rating);
                     profItem.innerHTML = `
                         <div class="search-item-info">
@@ -1258,7 +1258,10 @@ elseif (!isset($_COOKIE['language'])) {
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
                         // Redirect to professor page
+                        const nameForUrl = prof.english_name ? prof.english_name.replace(/\s+/g, '') : prof.name.replace(/\s+/g, '');
+
                         window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
+                        debug(`Navigating to professor: ${nameForUrl}`);
                     });
                     
                     profList.appendChild(profItem);
@@ -1296,13 +1299,18 @@ elseif (!isset($_COOKIE['language'])) {
                     
                     // Add click event to view course page
                     courseItem.addEventListener('click', () => {
-                        // Get current language from cookie
-                        const currentLang = document.cookie.split('; ')
-                            .find(row => row.startsWith('language='))
-                            ?.split('=')[1] || 'en';
-                        
-                        // Redirect to course page
-                        window.location.href = `course.php?course=${encodeURIComponent(course.name)}&professor=${encodeURIComponent(course.professor_name || '')}&year=${encodeURIComponent(course.year || '2024')}&lang=${currentLang}`;
+                        const nameForUrl = course.english_course_name || course.name;
+
+                        let url = `course_page_template.php?course=${encodeURIComponent(nameForUrl)}`;
+                        if (course.english_professor_name || course.professor_name) {
+                            // Remove spaces from professor name for URL
+                            const profNameForUrl = (course.english_professor_name || course.professor_name).replace(/\s+/g, '');
+                            url += `&professor=${encodeURIComponent(profNameForUrl)}`;
+                        }
+                        url += `&lang=${currentLang}`;
+                        window.location.href = url;
+                        debug(`Navigating to course: ${nameForUrl}`);
+
                     });
                     
                     courseList.appendChild(courseItem);

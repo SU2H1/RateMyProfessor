@@ -223,6 +223,8 @@ if (!empty($searchQuery)) {
             
             // Update professor names and departments to Japanese
             foreach ($results['professors'] as &$professor) {
+                $professor['english_name'] = $professor['name'];
+
                 if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
                     $professor['name'] = $professorJa[$professor['name']];
                 }
@@ -234,6 +236,7 @@ if (!empty($searchQuery)) {
             
             // Update course names and professor names to Japanese
             foreach ($results['courses'] as &$course) {
+                $course['english_course_name'] = $course['name'];
                 if (isset($course['name']) && isset($courseJa[$course['name']])) {
                     $course['name'] = $courseJa[$course['name']];
                 }
