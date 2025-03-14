@@ -1344,13 +1344,17 @@ elseif (!isset($_COOKIE['language'])) {
                 console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
                 
                 // Add click event handler
-                item.addEventListener('click', () => {
+                item.addEventListener('click', (event) => {
                     const profId = item.getAttribute('data-id');
                     console.log("Professor clicked, ID:", profId);
                     
                     // Check if login is required
                     if (profId === 'login-required') {
-                        showLoginPrompt();
+                        event.preventDefault();
+                        event.stopPropagation(); // Stop event propagation
+                        setTimeout(() => {
+                            showLoginPrompt();
+                        }, 10);
                         return;
                     }
                     
@@ -1386,13 +1390,17 @@ elseif (!isset($_COOKIE['language'])) {
                 console.log(`Course item ${i+1} id: ${item.getAttribute('data-id')}`);
                 
                 // Add click event handler
-                item.addEventListener('click', () => {
+                item.addEventListener('click', (event) => {
                     const courseId = item.getAttribute('data-id');
                     console.log("Course clicked, ID:", courseId);
                     
                     // Check if login is required
                     if (courseId === 'login-required') {
-                        showLoginPrompt();
+                        event.preventDefault();
+                        event.stopPropagation(); // Stop event propagation
+                        setTimeout(() => {
+                            showLoginPrompt();
+                        }, 10);
                         return;
                     }
                     
@@ -1699,13 +1707,6 @@ elseif (!isset($_COOKIE['language'])) {
             
             loginModal.appendChild(modalContent);
             document.body.appendChild(loginModal);
-            
-            // Close modal when clicking outside
-            loginModal.addEventListener('click', function(event) {
-                if (event.target === loginModal) {
-                    document.body.removeChild(loginModal);
-                }
-            });
         }
         
         function updateLanguageVariables() {
