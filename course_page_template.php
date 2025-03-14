@@ -195,6 +195,8 @@ if (!$course && $courseParam) {
         $dbCourseByName = $result->fetchArray(SQLITE3_ASSOC);
 // Find this code section in course_page_template.php, around line 245-270
 // Before this block:
+    $courseName = '';
+
     $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE name = :name OR name LIKE :like_name LIMIT 1");
     $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
     $stmt->bindValue(':like_name', '%' . $courseName . '%', SQLITE3_TEXT);
@@ -235,11 +237,13 @@ if (!$course && $courseParam) {
         OR (:alt_name IS NOT NULL AND (name = :alt_name OR name LIKE :alt_like_name))
         LIMIT 1
     ");
+
+    
     $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
     $stmt->bindValue(':like_name', '%' . $courseName . '%', SQLITE3_TEXT);
     $stmt->bindValue(':alt_name', $altCourseName, SQLITE3_TEXT);
     $stmt->bindValue(':alt_like_name', $altCourseName ? '%' . $altCourseName . '%' : null, SQLITE3_TEXT);
-    
+
         if ($dbCourseByName) {
             error_log("Found course in database by name: $courseParam, ID: " . $dbCourseByName['id']);
             $dbCourse = $dbCourseByName;
