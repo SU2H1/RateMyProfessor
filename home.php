@@ -1301,7 +1301,7 @@ elseif (!isset($_COOKIE['language'])) {
                     courseItem.addEventListener('click', () => {
                         const nameForUrl = course.english_course_name || course.name;
 
-                        let url = `course_page_template.php?course=${encodeURIComponent(nameForUrl)}`;
+                        let url = `course.php?course=${encodeURIComponent(nameForUrl)}`;
                         if (course.english_professor_name || course.professor_name) {
                             // Remove spaces from professor name for URL
                             const profNameForUrl = (course.english_professor_name || course.professor_name).replace(/\s+/g, '');
