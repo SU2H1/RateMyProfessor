@@ -78,27 +78,6 @@ if ($courseParam) {
 $professorParam = isset($_GET['professor']) ? $_GET['professor'] : null;
 $year = isset($_GET['year']) ? $_GET['year'] : null;
 
-// ADD IMPLEMENTATION #3 HERE - Redirect code
-if ($courseParam && $professorParam) {
-    // If language is missing, redirect to the same URL with default language
-    if (!isset($_GET['lang'])) {
-        $defaultLang = 'en'; // Change to your preferred default language
-        
-        // Build redirect URL with the same parameters plus language
-        $redirectUrl = "course_page_template.php?course=" . urlencode($courseParam);
-        $redirectUrl .= "&professor=" . urlencode($professorParam);
-        $redirectUrl .= "&lang=" . $defaultLang;
-        
-        if ($year) {
-            $redirectUrl .= "&year=" . urlencode($year);
-        }
-        
-        error_log("Adding default language to URL: " . $redirectUrl);
-        header("Location: " . $redirectUrl);
-        exit;
-    }
-}
-
 // Debug original and processed course parameter
 error_log("Original course parameter: " . (isset($_GET['course']) ? $_GET['course'] : 'null'));
 error_log("Processed course parameter: " . ($courseParam ?? 'null'));
@@ -146,7 +125,7 @@ if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
 
 // Find the course in our JSON data
 $course = null;
-$matchedProfessor = null;
+
 // Initialize dbCourse variable
 $dbCourse = null;
 
@@ -165,53 +144,13 @@ if ($courseId && is_numeric($courseId)) {
         if ($dbCourse) {
             error_log("Found course in database by ID: $courseId, Name: " . ($dbCourse['name'] ?? 'Unknown'));
             
+            // If we found the course in DB, see if we can find it in JSON data for additional info
             foreach ($data['courses'] as $c) {
-                $matchesCourseName = false;
-                
-                // Check course name in both languages
-                if (isset($c['translations']['ja']['name']) && 
-                    strcasecmp($c['translations']['ja']['name'], $courseParam) === 0) {
-                    $matchesCourseName = true;
-                    error_log("Found matching course name (JA)");
-                } else if (isset($c['translations']['en']['name']) && 
-                    strcasecmp($c['translations']['en']['name'], $courseParam) === 0) {
-                    $matchesCourseName = true;
-                    error_log("Found matching course name (EN)");
-                }
-                
-                if ($matchesCourseName) {
-                    // Found a matching course
+                if (isset($c['course_id']) && $c['course_id'] === $dbCourse['course_code']) {
                     $course = $c;
-                    
-                    // If professor is specified, try to find a specific professor
-                    if ($professorParam) {
-                        foreach ($c['professors'] as $prof) {
-                            $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
-                            $profNameUrlJa = isset($prof['name']['ja']) ? $prof['name']['ja'] : '';
-                            
-                            error_log("Comparing professor: EN='$profNameUrlEn', JA='$profNameUrlJa' with '$professorParam'");
-                            
-                            if (strcasecmp($profNameUrlEn, $professorParam) === 0 || 
-                                strcasecmp($profNameUrlJa, $professorParam) === 0) {
-                                $matchedProfessor = $prof;
-                                error_log("Found matching professor for this course");
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // Even if we didn't find a specific professor, we found the course
+                    error_log("Found matching course in JSON data by course_code: " . $dbCourse['course_code']);
                     break;
                 }
-            }
-            
-            // If we found the course but no specific professor, use the first professor
-            if ($course && !$matchedProfessor && !empty($course['professors'])) {
-                $matchedProfessor = $course['professors'][0];
-                error_log("Using first professor for this course: " . $matchedProfessor['name']['en']);
-                
-                // Update the professor parameter for database queries
-                $professorParam = str_replace(' ', '', $matchedProfessor['name']['en']);
             }
         }
     } catch (Exception $e) {
@@ -1105,28 +1044,6 @@ $failureRate = 0;
 if ($dbCourse && $db) {
     try {
         $courseDbId = $dbCourse['id'];
-        
-        // Get professor ID from the database
-        $professorId = null;
-        if ($professorParam) {
-            error_log("Looking for professor ID for: $professorParam");
-            $profStmt = $db->prepare("
-                SELECT id FROM professors 
-                WHERE REPLACE(name, ' ', '') = :name 
-                LIMIT 1
-            ");
-            $profStmt->bindValue(':name', $professorParam, SQLITE3_TEXT);
-            $profResult = $profStmt->execute();
-            $profRow = $profResult->fetchArray(SQLITE3_ASSOC);
-            
-            if ($profRow) {
-                $professorId = $profRow['id'];
-                error_log("Found professor ID: $professorId for $professorParam");
-            } else {
-                error_log("Professor not found in database: $professorParam");
-            }
-        }
-        
         
         // If we have reviews, use them to calculate grade distribution
         // This ensures we display the data immediately after review submission

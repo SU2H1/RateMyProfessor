@@ -62,17 +62,13 @@ try {
     $comment_field = $has_comments_field ? 'r.comments' : ($has_comment_field ? 'r.comment' : 'NULL');
     
     $review_sql = "SELECT r.*, 
-        c.$course_name_field AS course_name, 
-        c.$course_code_field AS course_code,
-        p.name AS professor_name,
-        $comment_field AS review_text
-        FROM ratings r 
-        JOIN courses c ON r.course_id = c.id 
-        LEFT JOIN professors p ON r.professor_id = p.id
-        WHERE r.user_id = :user_id 
-        ORDER BY r.created_at DESC";
-
-
+                  c.$course_name_field AS course_name, 
+                  c.$course_code_field AS course_code,
+                  $comment_field AS review_text
+                  FROM ratings r 
+                  JOIN courses c ON r.course_id = c.id 
+                  WHERE r.user_id = :user_id 
+                  ORDER BY r.created_at DESC";
     
     $review_stmt = $conn->prepare($review_sql);
     $review_stmt->bindValue(':user_id', $user_id, SQLITE3_INTEGER);
@@ -372,8 +368,7 @@ include_once "header.php";
                             <?php endif; ?>
                             
                             <div class="review-actions">
-                                <a href="course_page_template.php?course=<?php echo urlencode($review["course_name"]); ?>&professor=<?php echo urlencode(str_replace(' ', '', $review["professor_name"] ?? '')); ?>&lang=en" class="btn-secondary">View Course</a>
-
+                                <a href="course_page_template.php?course=<?php echo urlencode($review["course_name"]); ?>" class="btn-secondary">View Course</a>
                                 <button class="delete-review" data-review-id="<?php echo $review["id"]; ?>" title="Delete Review">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
