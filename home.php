@@ -1304,7 +1304,8 @@ elseif (!isset($_COOKIE['language'])) {
                         let url = `course.php?course=${encodeURIComponent(nameForUrl)}`;
                         if (course.english_professor_name || course.professor_name) {
                             // Remove spaces from professor name for URL
-                            const profNameForUrl = (course.english_professor_name || course.professor_name).replace(/\s+/g, '');
+                            const profNameForUrl = (course.english_professor_name || course.professor_name);
+
                             url += `&professor=${encodeURIComponent(profNameForUrl)}`;
                         }
                         url += `&lang=${currentLang}`;
