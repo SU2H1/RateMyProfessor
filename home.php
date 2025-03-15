@@ -1014,8 +1014,22 @@ elseif (!isset($_COOKIE['language'])) {
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
                 <div class="course-list">
                     <?php foreach ($topCourses as $course): ?>
+<<<<<<< Updated upstream
                     <a href="course.php?course=<?php echo urlencode($course['course_name'] ?? $course['name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+=======
+                        <?php 
+                        // Prepare professor name - remove spaces and ensure it's never empty
+                        $professorName = !empty($course['professor_name']) ? 
+                            str_replace(' ', '', $course['professor_name']) : 
+                            (!empty($course['english_professor_name']) ? 
+                                str_replace(' ', '', $course['english_professor_name']) : 
+                                'unknown');
+                        ?>
+                        <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($professorName); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
+
+>>>>>>> Stashed changes
                         <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+                            
                             <div>
                                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
                                 <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
@@ -1116,6 +1130,180 @@ elseif (!isset($_COOKIE['language'])) {
     
     <script src="hard_search.js?v=1"></script>
     <script>
+<<<<<<< Updated upstream
+=======
+        // Search functionality
+        const searchButton = document.querySelector('.search-bar button');
+        const searchInput = document.querySelector('.search-bar input');
+
+        // Function to generate rating stars
+        function generateStarRating(rating) {
+            if (!rating || rating === 'N/A') return '<span class="no-rating">No ratings yet</span>';
+            
+            const fullStar = '★';
+            const emptyStar = '☆';
+            const numFullStars = Math.floor(parseFloat(rating));
+            const hasHalfStar = parseFloat(rating) % 1 >= 0.5;
+            
+            let stars = fullStar.repeat(numFullStars);
+            if (hasHalfStar) stars += '½';
+            stars += emptyStar.repeat(5 - numFullStars - (hasHalfStar ? 1 : 0));
+            
+            return `<span class="star-rating">${stars} <span>${rating}</span></span>`;
+        }
+
+        // Function to display search results
+        function displaySearchResults(data, searchTerm) {
+            const searchResultsDiv = document.getElementById('searchResults');
+            searchResultsDiv.innerHTML = '';
+    
+    
+        // Get current language from cookie
+        const currentLang = document.cookie.split('; ')
+            .find(row => row.startsWith('language='))
+            ?.split('=')[1] || 'en';
+        
+        // Language-specific labels
+        const labels = {
+            professors: currentLang === 'ja' ? '教授' : 'Professors',
+            courses: currentLang === 'ja' ? 'コース' : 'Courses',
+            department: currentLang === 'ja' ? '学部' : 'Department',
+            departmentNotSpecified: currentLang === 'ja' ? '学部未指定' : 'Department not specified',
+            professor: currentLang === 'ja' ? '教授' : 'Professor',
+            code: currentLang === 'ja' ? 'コード' : 'Code',
+            noRatingsYet: currentLang === 'ja' ? 'まだ評価がありません' : 'No ratings yet',
+            review: currentLang === 'ja' ? 'レビュー' : 'review',
+            reviews: currentLang === 'ja' ? 'レビュー' : 'reviews',
+            viewAllResults: currentLang === 'ja' ? 'すべての結果を見る' : 'View all results',
+            close: currentLang === 'ja' ? '閉じる' : 'Close',
+            noResults: currentLang === 'ja' ? `"${searchTerm}"の検索結果はありません` : `No results found for "${searchTerm}"`
+        };
+
+            // Create container for results
+            const resultsContainer = document.createElement('div');
+            resultsContainer.className = 'search-results-container';
+            
+            // Check if we have any results
+            const hasProfessors = data.professors && data.professors.length > 0;
+            const hasCourses = data.courses && data.courses.length > 0;
+            
+            if (!hasProfessors && !hasCourses) {
+                searchResultsDiv.innerHTML = `<div class="no-results">No results found for "${searchTerm}"</div>`;
+                searchResultsDiv.style.display = 'block'; // Ensure dropdown is visible
+                return;
+            }
+            
+            // Add professors section if we have professors
+            if (hasProfessors) {
+                const profSection = document.createElement('div');
+                profSection.className = 'search-section';
+                profSection.innerHTML = `<h3>Professors (${data.professors.length})</h3>`;
+                
+                const profList = document.createElement('div');
+                profList.className = 'search-list professor-search-list';
+                
+                data.professors.forEach(prof => {
+                    const profItem = document.createElement('div');
+                    profItem.className = 'search-item professor-search-item';
+                    profItem.setAttribute('data-id', prof.id);
+
+                    const ratingHtml = generateStarRating(prof.avg_rating);
+                    profItem.innerHTML = `
+                        <div class="search-item-info">
+                            <h4>${prof.name}</h4>
+                            <p>${prof.department || 'Department not specified'}</p>
+                        </div>
+                        <div class="search-item-rating">
+                            ${ratingHtml}
+                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} review${prof.review_count !== 1 ? 's' : ''}</div>` : ''}
+                        </div>
+                    `;
+                    
+                    // Add click event to view professor page
+                    profItem.addEventListener('click', () => {
+                        // Redirect to professor page
+                        const nameForUrl = prof.english_name ? prof.english_name.replace(/\s+/g, '') : prof.name.replace(/\s+/g, '');
+
+                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
+                        debug(`Navigating to professor: ${nameForUrl}`);
+                    });
+                    
+                    profList.appendChild(profItem);
+                });
+                
+                profSection.appendChild(profList);
+                resultsContainer.appendChild(profSection);
+            }
+            
+            // Add courses section if we have courses
+            if (hasCourses) {
+                const courseSection = document.createElement('div');
+                courseSection.className = 'search-section';
+                courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
+                
+                const courseList = document.createElement('div');
+                courseList.className = 'search-list course-search-list';
+                
+                data.courses.forEach(course => {
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'search-item course-search-item';
+                    courseItem.setAttribute('data-id', course.id);
+                    
+                    const ratingHtml = generateStarRating(course.avg_rating);
+                    courseItem.innerHTML = `
+                        <div class="search-item-info">
+                            <h4>${course.name}</h4>
+                            <p>${course.professor_name ? `Professor: ${course.professor_name}` : ''} ${course.course_code ? `· Code: ${course.course_code}` : ''}</p>
+                        </div>
+                        <div class="search-item-rating">
+                            ${ratingHtml}
+                            ${course.review_count ? `<div class="rating-count">${course.review_count} review${course.review_count !== 1 ? 's' : ''}</div>` : ''}
+                        </div>
+                    `;
+                    
+                    // Add click event to view course page
+                    courseItem.addEventListener('click', () => {
+                        const nameForUrl = course.english_course_name || course.name;
+
+                        let url = `course_page_template.php?course=${encodeURIComponent(nameForUrl).replace(/%20/g, '+')}`;
+                        if (course.english_professor_name || course.professor_name) {
+                            // Remove spaces from professor name for URL
+                            const profNameForUrl = (course.english_professor_name || course.professor_name).replace(/\s+/g, '');
+                            url += `&professor=${encodeURIComponent(profNameForUrl)}`;
+                        }
+                        url += `&lang=${currentLang}`;
+                        window.location.href = url;
+                        debug(`Navigating to course: ${nameForUrl}`);
+
+                    });
+                    
+                    courseList.appendChild(courseItem);
+                });
+                
+                courseSection.appendChild(courseList);
+                resultsContainer.appendChild(courseSection);
+            }
+            
+            // Add "View all results" link
+            const viewAllLink = document.createElement('div');
+            viewAllLink.className = 'view-all-results';
+            viewAllLink.innerHTML = `<a href="search.php?q=${encodeURIComponent(searchTerm)}&lang=${document.cookie.split('; ').find(row => row.startsWith('language='))?.split('=')[1] || 'en'}">View all results</a>`;
+            resultsContainer.appendChild(viewAllLink);
+            
+            // Add a close button
+            //const closeButton = document.createElement('button');
+            //closeButton.className = 'close-search-results';
+            //closeButton.textContent = document.cookie.includes('language=ja') ? '閉じる' : 'Close';
+            //closeButton.addEventListener('click', () => {
+            //    searchResultsDiv.style.display = 'none';
+            //});
+            //resultsContainer.appendChild(closeButton);
+            
+            searchResultsDiv.appendChild(resultsContainer);
+            searchResultsDiv.style.display = 'block';
+        }
+
+>>>>>>> Stashed changes
         // Initialize the search bar by running a test search after page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded");
