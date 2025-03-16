@@ -9979,3 +9979,593 @@ Search started at 2025-03-09 15:49:55
 Search started at 2025-03-12 11:54:10
 Direct access without parameters
 
+Search started at 2025-03-16 15:19:59
+Direct access with query: russia
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ru' for more lenient matching
+Search query: 'russia', Normalized: 'russia'
+Searching through 1150 courses
+Match found in professor name: EN=kazuharu arakawa, JA=荒川　和晴
+Match found in professor name: EN=haruo suzuki, JA=鈴木　治夫
+Match found in professor name: EN=kazuharu arakawa, JA=荒川　和晴
+Match found in professor name: EN=haruo suzuki, JA=鈴木　治夫
+Match found in professor name: EN=kazuharu arakawa, JA=荒川　和晴
+Match found in professor name: EN=kazuharu arakawa, JA=荒川　和晴
+Match found in professor name: EN=stefan brueckner w, JA=ブリュックナー，　ステファン　Ｗ
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in EN course name: russian basic 1
+Match found in EN course name: russian basic 2
+Match found in professor name: EN=stefan brueckner w, JA=ブリュックナー，　ステファン　Ｗ
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in EN course name: russian intensive 1
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in EN course name: russian basic 1
+Match found in EN course name: russian basic 2
+Match found in professor name: EN=stefan brueckner w, JA=ブリュックナー，　ステファン　Ｗ
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in EN course name: russian intensive 2
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=subaru yamakage, JA=山影　統
+Match found in professor name: EN=subaru yamakage, JA=山影　統
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in EN course name: russian basic 1 a
+Match found in EN course name: russian basic 2 a
+Match found in professor name: EN=stefan brueckner w, JA=ブリュックナー，　ステファン　Ｗ
+Match found in professor name: EN=subaru yamakage, JA=山影　統
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in EN course name: russian intensive 1 a
+Match found in professor name: EN=stefan brueckner w, JA=ブリュックナー，　ステファン　Ｗ
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in EN course name: russian basic 1 a
+Match found in EN course name: russian basic 2 a
+Match found in professor name: EN=stefan brueckner w, JA=ブリュックナー，　ステファン　Ｗ
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in EN course name: russian intensive 2
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in professor name: EN=mitsuteru tashiro, JA=田代　光輝
+Match found in professor name: EN=tagiru nakamura, JA=中村　太戯留
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester]
+Match found in professor name: EN=hikaru hie, JA=樋栄　ひかる
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=itaru oishi, JA=大石　格
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=hikaru hie, JA=樋栄　ひかる
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester](giga/gg/gi)
+Match found in professor name: EN=itaru oishi, JA=大石　格
+Match found in professor name: EN=wataru kurihara, JA=栗原　渉
+Match found in professor name: EN=michito tsuruoka, JA=鶴岡　路人
+Match found in professor name: EN=hideo tarumi, JA=垂　秀夫
+Match found in professor name: EN=michito tsuruoka, JA=鶴岡　路人
+Match found in professor name: EN=michito tsuruoka, JA=鶴岡　路人
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=wataru kurihara, JA=栗原　渉
+Match found in professor name: EN=kentaro furuya, JA=古谷　健太郎
+Match found in professor name: EN=wataru shimizu, JA=清水　亘
+Match found in professor name: EN=satoru tezuka, JA=手塚　悟
+Match found in professor name: EN=satoru tezuka, JA=手塚　悟
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in professor name: EN=satoru yamazaki, JA=山崎　哲
+Match found in professor name: EN=satoru yamazaki, JA=山崎　哲
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=mamoru fujita, JA=藤田　護
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in professor name: EN=satoru yamazaki, JA=山崎　哲
+Match found in professor name: EN=satoru yamazaki, JA=山崎　哲
+Match found in professor name: EN=petrus santoso a, JA=サントーソ，　ペトルス
+Match found in professor name: EN=toru kojima, JA=小嶋　徹
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=haruo suzuki, JA=鈴木　治夫
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=haruo suzuki, JA=鈴木　治夫
+Match found in professor name: EN=haruo suzuki, JA=鈴木　治夫
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=haruo suzuki, JA=鈴木　治夫
+Match found in professor name: EN=masaru inatsu, JA=稲津　將
+Match found in professor name: EN=haruhito watanabe, JA=渡部　陽仁
+Match found in professor name: EN=tagiru nakamura, JA=中村　太戯留
+Match found in professor name: EN=haruhito watanabe, JA=渡部　陽仁
+Match found in professor name: EN=kazuharu arakawa, JA=荒川　和晴
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found with short query in EN course name: jurisprudence
+Match found in professor name: EN=kazuharu arakawa, JA=荒川　和晴
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=itaru yamamoto, JA=山本　至
+Match found in professor name: EN=masaru shibahara, JA=柴原　多
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=arata maruyama, JA=丸山　新
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=toru takebayashi, JA=武林　亨
+Match found in professor name: EN=kaoru yamamoto, JA=山本　薫
+Match found in professor name: EN=wataru kurihara, JA=栗原　渉
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=haruka kuryu, JA=栗生　はるか
+Match found with short query in EN course name: urban rural re-design [1st half of semester](giga/gi)
+Match found with short query in EN course name: building construction methods
+Match found with short query in EN course name: constructive cognition
+Match found in professor name: EN=masaru tomita, JA=冨田　勝
+Match found with short query in EN course name: structural biology (ttck)
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=hajime narukawa, JA=鳴川　肇
+Match found in professor name: EN=nori tarui, JA=樽井　礼
+Match found in professor name: EN=kentaro furuya, JA=古谷　健太郎
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=tomoyuki furutani, JA=古谷　知之
+Match found in professor name: EN=satoru tezuka, JA=手塚　悟
+Match found in professor name: EN=haruka ozaki, JA=尾崎　遼
+Match found in professor name: EN=toru onuma, JA=大沼　徹
+Match found with short query in EN course name: introduction to trusted internet (寄附講座)
+Match found with short query in EN course name: practical exercises of regional industry-government-academia collaboration <constructing "living" from agriculture>
+Found 34 matching professors
+Found 21 matching courses
+Displayed search results page
+
+Search started at 2025-03-16 15:36:13
+Direct access with query: object
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'ob' for more lenient matching
+Search query: 'object', Normalized: 'object'
+Searching through 1150 courses
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in professor name: EN=nobuaki ozaki, JA=小崎　信明
+Match found in professor name: EN=nobuaki ozaki, JA=小崎　信明
+Match found in professor name: EN=nobuaki ozaki, JA=小崎　信明
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found with short query in EN course name: theory of global environment technology (giga/gg/gi)/theory of global environment technology
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found with short query in EN course name: theory of global environment technology
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=tsukasa obayashi, JA=大林　尚
+Match found with short query in EN course name: theory of global environment technology (giga/gg/gi)/theory of global environment technology
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=ryoho kobayashi, JA=小林　良穂
+Match found with short query in EN course name: theory of global environment technology
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=tsukasa obayashi, JA=大林　尚
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=yukiko bito, JA=尾藤　由起子
+Match found in professor name: EN=emiko ban, JA=伴　英美子
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=motonobu fujita, JA=藤田　元信
+Match found in professor name: EN=nobuaki kono, JA=河野　暢明
+Match found with short query in EN course name: mobile network (giga/gi)
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=nobuaki kono, JA=河野　暢明
+Match found with short query in EN course name: mobile network
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=hiroyuki nobutomo, JA=信朝　裕行
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=hiroyuki nobutomo, JA=信朝　裕行
+Match found in professor name: EN=kunihiro baba, JA=馬場　国博
+Match found in professor name: EN=rudyanto bambang, JA=バンバン，　ルディアント
+Match found in professor name: EN=kunihiro baba, JA=馬場　国博
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found in professor name: EN=kunihiro baba, JA=馬場　国博
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found in EN course name: fundamentals of object-oriented programming
+Match found in professor name: EN=kiyonobu kojima, JA=小島　清信
+Match found in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: global governance
+Match found with short query in EN course name: design observation [1st half of semester]
+Match found with short query in EN course name: introduction to brain and behavior
+Match found in professor name: EN=ryoho kobayashi, JA=小林　良穂
+Match found with short query in EN course name: design observation [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: introduction to bioinformatics (ttck)
+Match found with short query in EN course name: global environmental politics
+Match found in professor name: EN=lisette robles, JA=ロビレス，　リセット
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=nobuaki kono, JA=河野　暢明
+Match found with short query in EN course name: programming on mobile devices
+Match found with short query in EN course name: energy and global environment
+Match found in professor name: EN=takanobu omata, JA=小俣　貴宣
+Match found in professor name: EN=nobuaki kono, JA=河野　暢明
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Match found in professor name: EN=hiroto kobayashi, JA=小林　博人
+Found 14 matching professors
+Found 29 matching courses
+Displayed search results page
+
+Search started at 2025-03-16 15:46:39
+Direct access with query: DATA SCIENCE FOR SPORTS
+Loading JSON from: /Users/pawitlimpasuthum/Documents/GitHub/RateMyProfessor/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'da' for more lenient matching
+Search query: 'data science for sports', Normalized: 'datascienceforsports'
+Searching through 1150 courses
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=ken'ichi kuradate, JA=倉舘　健一
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found with short query in EN course name: french study abroad a
+Match found with short query in EN course name: korean study abroad a (中級)
+Match found with short query in EN course name: korean study abroad a (初級)
+Match found with short query in EN course name: malay-indonesian study abroad a
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found with short query in EN course name: german study abroad a
+Match found with short query in EN course name: french study abroad a
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found with short query in EN course name: chinese study abroad a
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found with short query in EN course name: korean study abroad a (初級)
+Match found with short query in EN course name: malay-indonesian study abroad a
+Match found with short query in EN course name: spanish study abroad a
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=ken'ichi kuradate, JA=倉舘　健一
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=nerida rand, JA=ランド，　ネリダ
+Match found with short query in EN course name: french study abroad a
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found with short query in EN course name: korean study abroad a (初級)
+Match found with short query in EN course name: spanish study abroad a (スペイン・サラマンカ市)
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=ken'ichi kuradate, JA=倉舘　健一
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found with short query in EN course name: french study abroad a
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found with short query in EN course name: korean study abroad a (中級)
+Match found with short query in EN course name: korean study abroad a (初級)
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in EN course name: data science for sports [ds2]
+Match found with short query in EN course name: data science for international society [ds2]
+Match found with short query in EN course name: data science for economics and finance [ds2]/introduction to time-series analysis
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found with short query in EN course name: data science for information and society [ds2]
+Match found with short query in EN course name: data science for business [ds2][2nd half of semester]
+Match found in EN course name: data science for sports [ds2]
+Match found with short query in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found with short query in EN course name: fundamentals of information technology 1 (06)
+Match found with short query in EN course name: fundamentals of information technology 1 (19)
+Match found with short query in EN course name: fundamentals of information technology 1 (25)
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found with short query in EN course name: fundamentals of information technology 1 (04)
+Match found with short query in EN course name: fundamentals of information technology 1 (26)
+Match found with short query in EN course name: fundamentals of information technology 1 (13)
+Match found with short query in EN course name: fundamentals of information technology 1 (14)
+Match found with short query in EN course name: fundamentals of information technology 1 (24)
+Match found with short query in EN course name: fundamentals of information technology 1 (22)
+Match found with short query in EN course name: fundamentals of information technology 1 (10)
+Match found with short query in EN course name: fundamentals of information technology 1 (15)
+Match found with short query in EN course name: fundamentals of information technology 1 (18)
+Match found with short query in EN course name: fundamentals of information technology 1 (05)
+Match found with short query in EN course name: fundamentals of information technology 2 (hybrid)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 1 (13)
+Match found with short query in EN course name: fundamentals of information technology 1 (22)
+Match found with short query in EN course name: fundamentals of information technology 1 (23)
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found with short query in EN course name: fundamentals of information technology 1 (04)
+Match found with short query in EN course name: fundamentals of information technology 1 (15)
+Match found with short query in EN course name: fundamentals of information technology 1 (24)
+Match found with short query in EN course name: fundamentals of information technology 1 (25)
+Match found in professor name: EN=tetsushi ohdaira, JA=大平　哲史
+Match found with short query in EN course name: fundamentals of information technology 1 (19)
+Match found with short query in EN course name: fundamentals of information technology 1 (26)
+Match found with short query in EN course name: fundamentals of information technology 1 (14)
+Match found with short query in EN course name: fundamentals of information technology 1 (18)
+Match found in professor name: EN=tetsushi ohdaira, JA=大平　哲史
+Match found with short query in EN course name: fundamentals of information technology 1 (06)
+Match found with short query in EN course name: fundamentals of information technology 1 (10)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found in professor name: EN=yasuda koki, JA=安田　幸生
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: urbanism and architecture in history
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=naoki wada, JA=和田　直樹
+Match found in professor name: EN=takaaki hoda, JA=保田　隆明
+Match found in professor name: EN=mitsuaki ashida, JA=芦田　光暁
+Match found in professor name: EN=naoko iida, JA=飯田　尚子
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=naoki wada, JA=和田　直樹
+Match found in professor name: EN=daisuke yokoyama, JA=横山　大輔
+Match found in professor name: EN=takako yamada, JA=山田　貴子
+Match found with short query in EN course name: foundations of novel fabrication (giga/gg/gi)
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=ryosuke harada, JA=原田　亮介
+Match found with short query in EN course name: urbanism and architecture in history
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=shuzo sakurada, JA=櫻田　周三
+Match found in professor name: EN=shuzo sakurada, JA=櫻田　周三
+Match found in professor name: EN=naoko iida, JA=飯田　尚子
+Match found with short query in EN course name: fundamentals of logic
+Match found in professor name: EN=akiyoshi okada, JA=岡田　暁宜
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=akiyoshi okada, JA=岡田　暁宜
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=takaaki hoda, JA=保田　隆明
+Match found in professor name: EN=mika kunieda, JA=國枝　美佳
+Match found in professor name: EN=shuzo sakurada, JA=櫻田　周三
+Match found with short query in EN course name: introduction to database
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=mika kunieda, JA=國枝　美佳
+Match found in professor name: EN=motohiro ikeda, JA=池田　元博
+Match found in professor name: EN=ryosuke harada, JA=原田　亮介
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found in professor name: EN=akihiro tada, JA=多田　明弘
+Match found in professor name: EN=daisuke yokoyama, JA=横山　大輔
+Match found in professor name: EN=naoki wada, JA=和田　直樹
+Match found in professor name: EN=akihiro tada, JA=多田　明弘
+Match found in professor name: EN=mika kunieda, JA=國枝　美佳
+Match found in professor name: EN=mika kunieda, JA=國枝　美佳
+Match found in professor name: EN=mika kunieda, JA=國枝　美佳
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found in professor name: EN=tatsuma wada, JA=和田　龍磨
+Match found in professor name: EN=naoki wada, JA=和田　直樹
+Match found in professor name: EN=kenta chida, JA=千田　健太
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found with short query in EN course name: digital signal processing fundamentals (giga/gi)
+Match found with short query in EN course name: big data system
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=shine undarga dagva, JA=ダグワ　シン　ウンダルガ
+Match found with short query in EN course name: big data processing (giga/gi)
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found with short query in EN course name: digital signal processing fundamentals
+Match found in professor name: EN=akiyoshi okada, JA=岡田　暁宜
+Match found in professor name: EN=tadashi okoshi, JA=大越　匡
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=kazuya okada, JA=岡田　和也
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=takaaki hoda, JA=保田　隆明
+Match found in professor name: EN=kazuya okada, JA=岡田　和也
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found with short query in EN course name: data-driven art
+Match found in professor name: EN=daito manabe, JA=真鍋　大度
+Match found in professor name: EN=takaaki hoda, JA=保田　隆明
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=david hoenigman, JA=ヘニグマン，　デイビッド
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=dagmar kunst, JA=クンスト，　ダグマー
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=ken'ichi kuradate, JA=倉舘　健一
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=nerida rand, JA=ランド，　ネリダ
+Match found in professor name: EN=nerida rand, JA=ランド，　ネリダ
+Match found in professor name: EN=nerida rand, JA=ランド，　ネリダ
+Match found in professor name: EN=david hoenigman, JA=ヘニグマン，　デイビッド
+Match found in professor name: EN=david hoenigman, JA=ヘニグマン，　デイビッド
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found with short query in EN course name: spanish study abroad a (スペイン・サンセバスティアン市)
+Match found with short query in EN course name: spanish study abroad a (スペイン・サラマンカ市)
+Match found in professor name: EN=mattias daniel yamada-klotz, JA=山田・クロッツ，　マティアス　ダニエル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=ahmad almansour, JA=アルマンスール，　アフマド
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=aqil cheddadi, JA=シェッダーディ，　アキル
+Match found in professor name: EN=daisuke miyamoto, JA=宮本　大輔
+Match found in professor name: EN=nerida rand, JA=ランド，　ネリダ
+Match found in professor name: EN=nerida rand, JA=ランド，　ネリダ
+Match found in professor name: EN=david hoenigman, JA=ヘニグマン，　デイビッド
+Match found in professor name: EN=david hoenigman, JA=ヘニグマン，　デイビッド
+Match found with short query in EN course name: data science for environmental governance [ds2]
+Match found with short query in EN course name: data science for genome dynamics [ds2]
+Match found with short query in EN course name: fundamentals of life science laboratory [ds2](ttck)
+Match found with short query in EN course name: data science for bioinformatics [ds2](giga/gg/gi)
+Match found with short query in EN course name: data science for health care [ds2](giga/gg/gi)
+Match found with short query in EN course name: data science for genome dynamics [ds2](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of life science laboratory [ds2](ttck)
+Match found with short query in EN course name: data science for bioinformatics [ds2]
+Match found with short query in EN course name: fundamentals of information technology 1 (11)
+Match found with short query in EN course name: fundamentals of information technology 1 (09)
+Match found with short query in EN course name: fundamentals of information technology 1 (20)
+Match found with short query in EN course name: fundamentals of information technology 1 (03)
+Match found with short query in EN course name: fundamentals of information technology 1 (01)
+Match found with short query in EN course name: fundamentals of information technology 1 (16)
+Match found with short query in EN course name: fundamentals of information technology 1 (07)
+Match found with short query in EN course name: fundamentals of information technology 1 (08)
+Match found with short query in EN course name: fundamentals of information technology 1 (17)
+Match found with short query in EN course name: fundamentals of information technology 1 (12)
+Match found with short query in EN course name: fundamentals of information technology 1 (21)
+Match found with short query in EN course name: fundamentals of information technology 1 (02)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2 (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of system programming
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of object-oriented programming
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of information technology 1 (28)(giga/gg/gi)
+Match found with short query in EN course name: fundamentals of information technology 1 (再履修者用)
+Match found with short query in EN course name: fundamentals of information technology 1 (27)
+Match found with short query in EN course name: fundamentals of information technology 1 (29)(giga/gg/gi)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of information technology 2 (hybrid)
+Match found with short query in EN course name: fundamentals of information technology 2
+Match found with short query in EN course name: fundamentals of system programming (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of physics and chemistry
+Match found in professor name: EN=takaaki hoda, JA=保田　隆明
+Match found with short query in EN course name: foundations of novel fabrication
+Match found in professor name: EN=yoko hamada, JA=濱田　庸子
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found with short query in EN course name: fundamentals of geography
+Match found in professor name: EN=zoonie yamada, JA=山田　ズーニー
+Match found in professor name: EN=zoonie yamada, JA=山田　ズーニー
+Match found in professor name: EN=daijiro mizuno, JA=水野　大二郎
+Match found with short query in EN course name: introduction to data acquisition
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found with short query in EN course name: fundamentals of analog and digital circuit
+Match found in professor name: EN=hiroki kuroda, JA=黒田　裕樹
+Match found in professor name: EN=takeru kawada, JA=川田　健
+Match found in professor name: EN=daichi takayama, JA=高山　大地
+Match found in professor name: EN=akira maeda, JA=前田　章
+Match found in professor name: EN=yasushi yoshida, JA=吉田　靖
+Match found with short query in EN course name: corporate social responsibility and activation of the economy
+Match found in professor name: EN=masaki ueda, JA=上田　正基
+Match found in professor name: EN=shinji kusuda, JA=楠田　真士
+Match found in professor name: EN=takaaki hoda, JA=保田　隆明
+Match found in professor name: EN=takahiro kunieda, JA=國枝　孝弘
+Match found in professor name: EN=kei uchida, JA=内田　圭
+Match found with short query in EN course name: design studio(landscape and architecture)
+Match found with short query in EN course name: fundamental analytical chemistry (ttck)[1st half of semester]
+Match found in professor name: EN=shinji fukuda, JA=福田　真嗣
+Match found in professor name: EN=masahiko wada, JA=和田　理彦
+Match found in professor name: EN=keiji takeda, JA=武田　圭史
+Match found in professor name: EN=yoko hamada, JA=濱田　庸子
+Match found in professor name: EN=takeshi masuda, JA=増田　豪
+Match found in professor name: EN=takeshi masuda, JA=増田　豪
+Match found with short query in EN course name: human computer interaction /design strategy (spatial information systems and architecture)
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: emergence of data driven society and strategy
+Match found with short query in EN course name: emergence of data driven society and strategy (advanced)
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found with short query in EN course name: emergence of data driven society and strategy (giga)
+Match found with short query in EN course name: data business creation a [1st half of semester]
+Match found with short query in EN course name: data business creation b [2nd half of semester]
+Match found in professor name: EN=kazuya okada, JA=岡田　和也
+Match found with short query in EN course name: stress management in daily life (giga)
+Match found with short query in EN course name: data security
+Match found with short query in EN course name: urbanism ideas and architecture of fumihiko maki (寄附講座)
+Match found in professor name: EN=yasushi ikeda, JA=池田　靖史
+Found 45 matching professors
+Found 142 matching courses
+Displayed search results page
+

@@ -2,6 +2,7 @@
 /**
  * Course Detail Page
  * This file redirects to the course_page_template.php file
+ * with consistent handling of professor names and course codes
  */
 
 // Debugging - log all parameters
@@ -11,40 +12,44 @@ error_log("Course.php accessed with parameters: " . print_r($_GET, true));
 $course_id = isset($_GET['id']) ? $_GET['id'] : null;
 $course_name = isset($_GET['course']) ? $_GET['course'] : '';
 $professor_name = isset($_GET['professor']) ? $_GET['professor'] : '';
+$course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 $language = isset($_GET['lang']) ? $_GET['lang'] : 'en';
 $year = isset($_GET['year']) ? $_GET['year'] : null;
 
-// Load JSON data file to get English professor name if Japanese is provided
+// Load JSON data file to get professor name mappings
+$jsonFilePath = __DIR__ . '/sfc_courses.json';
 $professorNameForUrl = $professor_name; // Default to whatever was provided
+$professorJaToEn = []; // Mapping of Japanese to English names
 
-// Only process if we have a professor name and it might be Japanese
-if (!empty($professor_name)) {
-    $jsonFilePath = __DIR__ . '/sfc_courses.json';
-    if (file_exists($jsonFilePath)) {
-        $jsonData = file_get_contents($jsonFilePath);
-        if ($jsonData !== false) {
-            $data = json_decode($jsonData, true);
-            if ($data !== null) {
-                // Look for a matching Japanese professor name and get the English version
-                foreach ($data['courses'] as $course) {
-                    foreach ($course['professors'] as $prof) {
-                        if (isset($prof['name']['ja']) && $prof['name']['ja'] === $professor_name) {
-                            // Found a match! Use the English name instead
-                            $professorNameForUrl = $prof['name']['en'];
-                            error_log("Found English professor name for '{$professor_name}': {$professorNameForUrl}");
-                            break 2; // Break out of both loops
-                        }
+// Process JSON data to build name mappings
+if (!empty($professor_name) && file_exists($jsonFilePath)) {
+    $jsonData = file_get_contents($jsonFilePath);
+    if ($jsonData !== false) {
+        $data = json_decode($jsonData, true);
+        if ($data !== null) {
+            // Build Japanese to English name mapping
+            foreach ($data['courses'] as $course) {
+                foreach ($course['professors'] as $prof) {
+                    if (isset($prof['name']['ja']) && isset($prof['name']['en'])) {
+                        $professorJaToEn[$prof['name']['ja']] = $prof['name']['en'];
                     }
                 }
             }
+            
+            // Check if we have a Japanese name that needs to be mapped to English
+            if (isset($professorJaToEn[$professor_name])) {
+                $professorNameForUrl = $professorJaToEn[$professor_name];
+                error_log("Found English professor name for '{$professor_name}': {$professorNameForUrl}");
+            } else {
+                // If not found in the mapping, preserve the original name
+                error_log("No mapping found for professor name: {$professor_name}");
+            }
         }
     }
-    
-    // If we have an English name, remove spaces as per the expected URL format
-    if ($professorNameForUrl !== $professor_name) {
-        $professorNameForUrl = str_replace(' ', '', $professorNameForUrl);
-    }
 }
+
+// IMPORTANT: For consistent URL handling, do NOT remove spaces from professor name
+// This ensures + signs appear in URLs regardless of language
 
 // Build the URL for the redirect
 $redirect_url = 'course_page_template.php?';
@@ -53,16 +58,28 @@ $redirect_url = 'course_page_template.php?';
 if (!empty($course_id)) {
     $redirect_url .= 'id=' . urlencode($course_id) . '&';
 }
+
 if (!empty($course_name)) {
     $redirect_url .= 'course=' . urlencode($course_name) . '&';
 }
+
 if (!empty($professorNameForUrl)) {
     $redirect_url .= 'professor=' . urlencode($professorNameForUrl) . '&';
 }
+
+if (!empty($course_code)) {
+    $redirect_url .= 'course_code=' . urlencode($course_code) . '&';
+}
+
 if (!empty($year)) {
     $redirect_url .= 'year=' . urlencode($year) . '&';
 }
+
+// Add language parameter last
 $redirect_url .= 'lang=' . urlencode($language);
+
+// Log the final redirect URL
+error_log("Redirecting to: " . $redirect_url);
 
 // Redirect to the template
 header("Location: $redirect_url");

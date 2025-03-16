@@ -2,12 +2,9 @@
 // Include database configuration
 require_once 'config.php';
 
-// Get search query from GET parameter and ensure proper UTF-8 encoding
+// Get search query and language from GET parameters
 $searchQuery = isset($_GET['q']) ? trim($_GET['q']) : '';
-$searchQuery = mb_convert_encoding($searchQuery, 'UTF-8', 'AUTO');
-
-// Get language from the request or cookie
-$currentLang = isset($_GET['lang']) ? $_GET['lang'] : (isset($_COOKIE['language']) ? $_COOKIE['language'] : 'en');
+$language = isset($_GET['lang']) ? trim($_GET['lang']) : 'en';
 
 // Initialize results array
 $results = [
@@ -18,123 +15,36 @@ $results = [
 // Only proceed if we have a search query
 if (!empty($searchQuery)) {
     try {
-        // Log the search query for debugging
-        error_log("Search query: " . $searchQuery . " (Language: " . $currentLang . ")");
-        
-        // Create a reversed mapping (Japanese to English) for searching
-        $professorEnMap = [];
-        $courseEnMap = [];
-        $departmentEnMap = [];
-        
-        // Load translations from JSON file
+        // Load JSON data for translations
         $jsonFilePath = __DIR__ . '/sfc_courses.json';
+        $jsonData = null;
+        
         if (file_exists($jsonFilePath)) {
-            $jsonData = file_get_contents($jsonFilePath);
-            if ($jsonData !== false) {
-                $data = json_decode($jsonData, true);
-                if ($data !== null) {
-                    // Create mappings for both directions (en->ja and ja->en)
-                    foreach ($data['courses'] as $course) {
-                        // Map course names
-                        if (isset($course['translations']['ja']['name']) && isset($course['translations']['en']['name'])) {
-                            $enName = $course['translations']['en']['name'];
-                            $jaName = $course['translations']['ja']['name'];
-                            $courseEnMap[$jaName] = $enName; // Japanese to English mapping
-                        }
-                        
-                        // Map professor names
-                        foreach ($course['professors'] as $prof) {
-                            if (isset($prof['name']['en']) && isset($prof['name']['ja'])) {
-                                $enName = $prof['name']['en'];
-                                $jaName = $prof['name']['ja'];
-                                $professorEnMap[$jaName] = $enName; // Japanese to English mapping
-                            }
-                        }
-                        
-                        // Map department names
-                        if (isset($course['department']['translations'])) {
-                            if (isset($course['department']['translations']['en']) && isset($course['department']['translations']['ja'])) {
-                                $enDept = $course['department']['translations']['en'];
-                                $jaDept = $course['department']['translations']['ja'];
-                                $departmentEnMap[$jaDept] = $enDept; // Japanese to English mapping
-                            }
-                        }
-                    }
-                }
-            }
+            $jsonData = json_decode(file_get_contents($jsonFilePath), true);
         }
         
-        // Check if the search query might be in Japanese
-        $hasJapaneseChars = preg_match('/[\x{3000}-\x{303F}]|[\x{3040}-\x{309F}]|[\x{30A0}-\x{30FF}]|[\x{FF00}-\x{FFEF}]|[\x{4E00}-\x{9FAF}]/u', $searchQuery);
+        // Combine database results with translations from JSON
         
-        // If Japanese characters are detected, try to find English equivalents for searching
-        $searchTerms = [$searchQuery];
-        if ($hasJapaneseChars) {
-            error_log("Japanese characters detected in search query");
-            
-            // Look for potential matches in our mappings
-            foreach ($professorEnMap as $jaName => $enName) {
-                if (mb_stripos($jaName, $searchQuery) !== false) {
-                    $searchTerms[] = $enName;
-                    error_log("Found matching professor name: $jaName -> $enName");
-                }
-            }
-            
-            foreach ($courseEnMap as $jaName => $enName) {
-                if (mb_stripos($jaName, $searchQuery) !== false) {
-                    $searchTerms[] = $enName;
-                    error_log("Found matching course name: $jaName -> $enName");
-                }
-            }
-            
-            foreach ($departmentEnMap as $jaName => $enName) {
-                if (mb_stripos($jaName, $searchQuery) !== false) {
-                    $searchTerms[] = $enName;
-                    error_log("Found matching department name: $jaName -> $enName");
-                }
-            }
-        }
-        
-        // Build search conditions for multiple terms
-        $professorConditions = [];
-        $courseConditions = [];
-        $searchParams = [];
-        
-        foreach ($searchTerms as $index => $term) {
-            $paramName = ":search{$index}";
-            $exactParamName = ":exact{$index}";
-            
-            $professorConditions[] = "name LIKE {$paramName} OR department LIKE {$paramName}";
-            $courseConditions[] = "c.name LIKE {$paramName} OR c.course_code LIKE {$paramName} OR p.name LIKE {$paramName}";
-            
-            $searchParams[$paramName] = "%{$term}%";
-            $searchParams[$exactParamName] = $term;
-        }
-        
-        // Search for professors with multiple search terms
-        $professorQuery = "
+        // Search for professors from the database
+        $stmt = $conn->prepare("
             SELECT id, name, department, 
                    COALESCE(overall_rating, (avg_content_quality + avg_difficulty) / 2) as avg_rating,
                    COALESCE(review_count, 0) as review_count
             FROM professors
-            WHERE " . implode(" OR ", $professorConditions) . "
+            WHERE name LIKE :search OR department LIKE :search
             ORDER BY 
                 /* Prioritize exact matches to the top */
-                CASE WHEN LOWER(name) = LOWER(:exact0) THEN 0 ELSE 1 END,
-                CASE WHEN LOWER(department) = LOWER(:exact0) THEN 0 ELSE 1 END,
+                CASE WHEN LOWER(name) = LOWER(:exact) THEN 0 ELSE 1 END,
+                CASE WHEN LOWER(department) = LOWER(:exact) THEN 0 ELSE 1 END,
                 avg_rating DESC, review_count DESC
             LIMIT 10
-        ";
-        
-        $stmt = $conn->prepare($professorQuery);
-        
-        // Bind all search parameters
-        foreach ($searchParams as $param => $value) {
-            $stmt->bindValue($param, $value, SQLITE3_TEXT);
-        }
-        
+        ");
+        $stmt->bindValue(':search', '%' . $searchQuery . '%', SQLITE3_TEXT);
+        $stmt->bindValue(':exact', $searchQuery, SQLITE3_TEXT);
         $result = $stmt->execute();
         
+        // Collect all database professors
+        $dbProfessors = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             // Format the rating if it exists
             if (isset($row['avg_rating']) && $row['avg_rating'] !== null) {
@@ -143,37 +53,38 @@ if (!empty($searchQuery)) {
                 $row['avg_rating'] = null;
             }
             
-            $results['professors'][] = $row;
+            // Add English as default
+            $row['name_en'] = $row['name'];
+            $row['department_en'] = $row['department'];
+            
+            // We'll try to add Japanese names later
+            $dbProfessors[$row['id']] = $row;
         }
         
-        // Search for courses with multiple search terms
-        $courseQuery = "
+        // Search for courses from the database
+        $stmt = $conn->prepare("
             SELECT c.id, c.name, c.course_code,
                    COALESCE(c.avg_content_quality, 0) as avg_content_quality,
                    COALESCE(c.avg_difficulty, 0) as avg_difficulty,
-                   (COALESCE(c.avg_content_quality, 0) + (COALESCE(c.avg_difficulty, 0))) / 2 as avg_rating,
+                   (COALESCE(c.avg_content_quality, 0) + (5 - COALESCE(c.avg_difficulty, 0))) / 2 as avg_rating,
                    COALESCE(c.review_count, 0) as review_count,
-                   p.name as professor_name
+                   p.name as professor_name, p.id as professor_id
             FROM courses c
             LEFT JOIN professors p ON c.professor_id = p.id
-            WHERE " . implode(" OR ", $courseConditions) . "
+            WHERE c.name LIKE :search OR c.course_code LIKE :search OR p.name LIKE :search
             ORDER BY 
                 /* Prioritize exact matches to the top */
-                CASE WHEN LOWER(c.name) = LOWER(:exact0) THEN 0 ELSE 1 END,
-                CASE WHEN LOWER(c.course_code) = LOWER(:exact0) THEN 0 ELSE 1 END,
+                CASE WHEN LOWER(c.name) = LOWER(:exact) THEN 0 ELSE 1 END,
+                CASE WHEN LOWER(c.course_code) = LOWER(:exact) THEN 0 ELSE 1 END,
                 avg_rating DESC, review_count DESC
             LIMIT 10
-        ";
-        
-        $stmt = $conn->prepare($courseQuery);
-        
-        // Bind all search parameters
-        foreach ($searchParams as $param => $value) {
-            $stmt->bindValue($param, $value, SQLITE3_TEXT);
-        }
-        
+        ");
+        $stmt->bindValue(':search', '%' . $searchQuery . '%', SQLITE3_TEXT);
+        $stmt->bindValue(':exact', $searchQuery, SQLITE3_TEXT);
         $result = $stmt->execute();
         
+        // Collect all database courses
+        $dbCourses = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             // Format the rating if it exists
             if (isset($row['avg_rating']) && $row['avg_rating'] !== null) {
@@ -182,76 +93,175 @@ if (!empty($searchQuery)) {
                 $row['avg_rating'] = null;
             }
             
-            $results['courses'][] = $row;
+            // Add English as default
+            $row['name_en'] = $row['name'];
+            $row['professor_name_en'] = $row['professor_name'];
+            
+            // We'll try to add Japanese names later
+            $dbCourses[$row['id']] = $row;
         }
         
-        // If language is Japanese, translate results
-        if ($currentLang == 'ja') {
-            $professorJa = [];
-            $courseJa = [];
-            $departmentJa = [];
+        // If we have JSON data, add Japanese names and additional search
+        if ($jsonData && isset($jsonData['courses'])) {
+            $japaneseProfessorsMap = []; // Map English names to Japanese names
+            $japaneseCoursesMap = [];    // Map English course names to Japanese names
             
-            // Prepare translations from the JSON data
-            if (isset($data) && $data !== null) {
-                foreach ($data['courses'] as $course) {
-                    // Map course name
-                    if (isset($course['translations']['ja']['name']) && isset($course['translations']['en']['name'])) {
-                        $enName = $course['translations']['en']['name'];
-                        $jaName = $course['translations']['ja']['name'];
-                        $courseJa[$enName] = $jaName;
+            // Extract translations from JSON
+            foreach ($jsonData['courses'] as $course) {
+                // Course translations
+                if (isset($course['translations'])) {
+                    $enCourseName = $course['translations']['en']['name'] ?? '';
+                    $jaCourseName = $course['translations']['ja']['name'] ?? '';
+                    if ($enCourseName && $jaCourseName) {
+                        $japaneseCoursesMap[$enCourseName] = $jaCourseName;
                     }
-                    
-                    // Map professor names
+                }
+                
+                // Professor translations
+                if (isset($course['professors'])) {
                     foreach ($course['professors'] as $prof) {
-                        if (isset($prof['name']['en']) && isset($prof['name']['ja'])) {
-                            $enName = $prof['name']['en'];
-                            $jaName = $prof['name']['ja'];
-                            $professorJa[$enName] = $jaName;
+                        $enName = $prof['name']['en'] ?? '';
+                        $jaName = $prof['name']['ja'] ?? '';
+                        $enDept = $prof['department']['en'] ?? '';
+                        $jaDept = $prof['department']['ja'] ?? '';
+                        
+                        if ($enName && $jaName) {
+                            $japaneseProfessorsMap[$enName] = [
+                                'name' => $jaName,
+                                'department' => $jaDept
+                            ];
+                        }
+                    }
+                }
+            }
+            
+            // Now add Japanese translations to the database results
+            foreach ($dbProfessors as &$prof) {
+                $englishName = $prof['name'];
+                if (isset($japaneseProfessorsMap[$englishName])) {
+                    $prof['name_ja'] = $japaneseProfessorsMap[$englishName]['name'];
+                    $prof['department_ja'] = $japaneseProfessorsMap[$englishName]['department'];
+                } else {
+                    // Default Japanese name if not found in map
+                    $prof['name_ja'] = $prof['name'];
+                    $prof['department_ja'] = $prof['department'];
+                }
+            }
+            
+            foreach ($dbCourses as &$course) {
+                $englishName = $course['name'];
+                if (isset($japaneseCoursesMap[$englishName])) {
+                    $course['name_ja'] = $japaneseCoursesMap[$englishName];
+                } else {
+                    // Default Japanese name if not found in map
+                    $course['name_ja'] = $course['name'];
+                }
+                
+                // Add professor Japanese name if available
+                $englishProfName = $course['professor_name'];
+                if (isset($japaneseProfessorsMap[$englishProfName])) {
+                    $course['professor_name_ja'] = $japaneseProfessorsMap[$englishProfName]['name'];
+                } else {
+                    $course['professor_name_ja'] = $course['professor_name'];
+                }
+            }
+            
+            // Search directly in JSON data for Japanese matches if language is Japanese
+            if ($language === 'ja') {
+                // Search for professors in JSON using Japanese names
+                foreach ($jsonData['courses'] as $course) {
+                    if (isset($course['professors'])) {
+                        foreach ($course['professors'] as $prof) {
+                            $jaName = $prof['name']['ja'] ?? '';
+                            $jaDept = $prof['department']['ja'] ?? '';
+                            
+                            // Check if name or department matches search query
+                            if (
+                                (strpos(strtolower($jaName), strtolower($searchQuery)) !== false) ||
+                                (strpos(strtolower($jaDept), strtolower($searchQuery)) !== false)
+                            ) {
+                                // Generate a unique ID based on professor name
+                                $uniqueId = md5($prof['name']['en']);
+                                
+                                // Check if we already have this professor from the database
+                                $alreadyAdded = false;
+                                foreach ($dbProfessors as $dbProf) {
+                                    if ($dbProf['name'] === $prof['name']['en']) {
+                                        $alreadyAdded = true;
+                                        break;
+                                    }
+                                }
+                                
+                                // If not already added, add to results
+                                if (!$alreadyAdded) {
+                                    $results['professors'][] = [
+                                        'id' => $uniqueId,
+                                        'name' => $prof['name']['en'],
+                                        'name_en' => $prof['name']['en'],
+                                        'name_ja' => $jaName,
+                                        'department' => $prof['department']['en'],
+                                        'department_en' => $prof['department']['en'],
+                                        'department_ja' => $jaDept,
+                                        'avg_rating' => null,
+                                        'review_count' => 0
+                                    ];
+                                }
+                            }
                         }
                     }
                     
-                    // Map department names
-                    if (isset($course['department']['translations'])) {
-                        if (isset($course['department']['translations']['en']) && isset($course['department']['translations']['ja'])) {
-                            $enDept = $course['department']['translations']['en'];
-                            $jaDept = $course['department']['translations']['ja'];
-                            $departmentJa[$enDept] = $jaDept;
+                    // Search for courses in JSON using Japanese names
+                    if (isset($course['translations'])) {
+                        $jaCourseName = $course['translations']['ja']['name'] ?? '';
+                        
+                        // Check if course name matches search query
+                        if (strpos(strtolower($jaCourseName), strtolower($searchQuery)) !== false) {
+                            $uniqueId = md5($course['translations']['en']['name']);
+                            
+                            // Check if we already have this course from the database
+                            $alreadyAdded = false;
+                            foreach ($dbCourses as $dbCourse) {
+                                if ($dbCourse['name'] === $course['translations']['en']['name']) {
+                                    $alreadyAdded = true;
+                                    break;
+                                }
+                            }
+                            
+                            // If not already added, add to results
+                            if (!$alreadyAdded) {
+                                $results['courses'][] = [
+                                    'id' => $uniqueId,
+                                    'name' => $course['translations']['en']['name'],
+                                    'name_en' => $course['translations']['en']['name'],
+                                    'name_ja' => $jaCourseName,
+                                    'course_code' => $course['course_id'] ?? '',
+                                    'avg_rating' => null,
+                                    'review_count' => 0,
+                                    'professor_name' => isset($course['professors'][0]) ? $course['professors'][0]['name']['en'] : '',
+                                    'professor_name_en' => isset($course['professors'][0]) ? $course['professors'][0]['name']['en'] : '',
+                                    'professor_name_ja' => isset($course['professors'][0]) ? $course['professors'][0]['name']['ja'] : ''
+                                ];
+                            }
                         }
                     }
-                }
-            }
-            
-            // Update professor names and departments to Japanese
-            foreach ($results['professors'] as &$professor) {
-                $professor['english_name'] = $professor['name'];
-
-                if (isset($professor['name']) && isset($professorJa[$professor['name']])) {
-                    $professor['name'] = $professorJa[$professor['name']];
-                }
-                
-                if (isset($professor['department']) && isset($departmentJa[$professor['department']])) {
-                    $professor['department'] = $departmentJa[$professor['department']];
-                }
-            }
-            
-            // Update course names and professor names to Japanese
-            foreach ($results['courses'] as &$course) {
-                $course['english_course_name'] = $course['name'];
-                if (isset($course['name']) && isset($courseJa[$course['name']])) {
-                    $course['name'] = $courseJa[$course['name']];
-                }
-                
-                if (isset($course['professor_name']) && isset($professorJa[$course['professor_name']])) {
-                    $course['professor_name'] = $professorJa[$course['professor_name']];
                 }
             }
         }
+        
+        // Add database results to final results array
+        foreach ($dbProfessors as $prof) {
+            $results['professors'][] = $prof;
+        }
+        
+        foreach ($dbCourses as $course) {
+            $results['courses'][] = $course;
+        }
+        
     } catch (Exception $e) {
-        error_log("Search error: " . $e->getMessage());
         $results['error'] = "Error performing search: " . $e->getMessage();
     }
 }
 
-// Return results as JSON with UTF-8 encoding
-header('Content-Type: application/json; charset=utf-8');
+// Return results as JSON
+header('Content-Type: application/json');
 echo json_encode($results);

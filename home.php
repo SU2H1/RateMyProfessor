@@ -1203,7 +1203,7 @@ elseif (!isset($_COOKIE['language'])) {
             const hasCourses = data.courses && data.courses.length > 0;
             
             if (!hasProfessors && !hasCourses) {
-                searchResultsDiv.innerHTML = `<div class="no-results">No results found for "${searchTerm}"</div>`;
+                searchResultsDiv.innerHTML = `<div class="no-results">${labels.noResults}</div>`;
                 searchResultsDiv.style.display = 'block'; // Ensure dropdown is visible
                 return;
             }
@@ -1212,7 +1212,7 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasProfessors) {
                 const profSection = document.createElement('div');
                 profSection.className = 'search-section';
-                profSection.innerHTML = `<h3>Professors (${data.professors.length})</h3>`;
+                profSection.innerHTML = `<h3>${labels.professors} (${data.professors.length})</h3>`;
                 
                 const profList = document.createElement('div');
                 profList.className = 'search-list professor-search-list';
@@ -1222,25 +1222,33 @@ elseif (!isset($_COOKIE['language'])) {
                     profItem.className = 'search-item professor-search-item';
                     profItem.setAttribute('data-id', prof.id);
 
+                    // Use the appropriate language name based on current language
+                    const displayName = currentLang === 'ja' && prof.name_ja ? prof.name_ja : prof.name;
+                    const displayDepartment = currentLang === 'ja' && prof.department_ja ? prof.department_ja : prof.department;
+                    
+                    // Store both English and Japanese names as data attributes
+                    profItem.setAttribute('data-name-en', prof.name_en || prof.name);
+                    profItem.setAttribute('data-name-ja', prof.name_ja || prof.name);
+
                     const ratingHtml = generateStarRating(prof.avg_rating);
                     profItem.innerHTML = `
                         <div class="search-item-info">
-                            <h4>${prof.name}</h4>
-                            <p>${prof.department || 'Department not specified'}</p>
+                            <h4>${displayName}</h4>
+                            <p>${displayDepartment || labels.departmentNotSpecified}</p>
                         </div>
                         <div class="search-item-rating">
                             ${ratingHtml}
-                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} review${prof.review_count !== 1 ? 's' : ''}</div>` : ''}
+                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} ${prof.review_count !== 1 ? labels.reviews : labels.review}</div>` : ''}
                         </div>
                     `;
                     
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
-                        // Redirect to professor page
-                        const nameForUrl = prof.english_name ? prof.english_name.replace(/\s+/g, '') : prof.name.replace(/\s+/g, '');
-
-                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
-                        debug(`Navigating to professor: ${nameForUrl}`);
+                        // Use English name for URL if available
+                        const nameForUrl = (prof.name_en || prof.name).replace(/\s+/g, '');
+                        
+                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(nameForUrl)}&lang=${currentLang}`;
+                        console.log(`Navigating to professor: ${nameForUrl}`);
                     });
                     
                     profList.appendChild(profItem);
@@ -1254,7 +1262,7 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasCourses) {
                 const courseSection = document.createElement('div');
                 courseSection.className = 'search-section';
-                courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
+                courseSection.innerHTML = `<h3>${labels.courses} (${data.courses.length})</h3>`;
                 
                 const courseList = document.createElement('div');
                 courseList.className = 'search-list course-search-list';
@@ -1264,33 +1272,39 @@ elseif (!isset($_COOKIE['language'])) {
                     courseItem.className = 'search-item course-search-item';
                     courseItem.setAttribute('data-id', course.id);
                     
+                    // Use appropriate language for display
+                    const displayName = currentLang === 'ja' && course.name_ja ? course.name_ja : course.name;
+                    const displayProfessor = currentLang === 'ja' && course.professor_name_ja ? course.professor_name_ja : course.professor_name;
+                    
+                    // Store both language versions as data attributes
+                    courseItem.setAttribute('data-name-en', course.name_en || course.name);
+                    courseItem.setAttribute('data-name-ja', course.name_ja || course.name);
+                    
                     const ratingHtml = generateStarRating(course.avg_rating);
                     courseItem.innerHTML = `
                         <div class="search-item-info">
-                            <h4>${course.name}</h4>
-                            <p>${course.professor_name ? `Professor: ${course.professor_name}` : ''} ${course.course_code ? `· Code: ${course.course_code}` : ''}</p>
+                            <h4>${displayName}</h4>
+                            <p>${displayProfessor ? `${labels.professor}: ${displayProfessor}` : ''} ${course.course_code ? `· ${labels.code}: ${course.course_code}` : ''}</p>
                         </div>
                         <div class="search-item-rating">
                             ${ratingHtml}
-                            ${course.review_count ? `<div class="rating-count">${course.review_count} review${course.review_count !== 1 ? 's' : ''}</div>` : ''}
+                            ${course.review_count ? `<div class="rating-count">${course.review_count} ${course.review_count !== 1 ? labels.reviews : labels.review}</div>` : ''}
                         </div>
                     `;
                     
                     // Add click event to view course page
                     courseItem.addEventListener('click', () => {
-                        const nameForUrl = course.english_course_name || course.name;
+                        // Use English name for URL if available
+                        const nameForUrl = course.name_en || course.english_course_name || course.name;
+                        const profNameForUrl = course.professor_name_en || course.english_professor_name || course.professor_name;
 
                         let url = `course.php?course=${encodeURIComponent(nameForUrl)}`;
-                        if (course.english_professor_name || course.professor_name) {
-                            // Remove spaces from professor name for URL
-                            const profNameForUrl = (course.english_professor_name || course.professor_name);
-
+                        if (profNameForUrl) {
                             url += `&professor=${encodeURIComponent(profNameForUrl)}`;
                         }
                         url += `&lang=${currentLang}`;
                         window.location.href = url;
-                        debug(`Navigating to course: ${nameForUrl}`);
-
+                        console.log(`Navigating to course: ${nameForUrl}`);
                     });
                     
                     courseList.appendChild(courseItem);
