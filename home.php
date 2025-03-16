@@ -146,6 +146,7 @@ function getTopProfessors($limit = 5) {
 }
 
 // Function to get top rated courses
+// Function to get top rated courses
 function getTopCourses($limit = 5) {
     global $conn;
     $courses = [];
@@ -239,12 +240,31 @@ function getTopCourses($limit = 5) {
                 $courses[] = $row;
             }
         }
-        
-        // We're removing the code that fetches courses without ratings
-        // and the code that adds placeholder data
-        
     } catch (Exception $e) {
         error_log("Error fetching top courses: " . $e->getMessage());
+    }
+    
+    // Add placeholder data if we have few or no courses with reviews
+    // This ensures the Japanese translation code has data to work with
+    if (count($courses) < $limit) {
+        $placeholders = [
+            ['course_name' => 'Global Environmental Policy', 'professor_name' => 'Prof. Watanabe Kenji', 'avg_rating' => '4.8'],
+            ['course_name' => 'International Political Economy', 'professor_name' => 'Dr. Smith Karen', 'avg_rating' => '4.7'],
+            ['course_name' => 'Corporate Strategy', 'professor_name' => 'Dr. Yamamoto Aki', 'avg_rating' => '4.5'],
+            ['course_name' => 'Macroeconomic Theory', 'professor_name' => 'Prof. Nakamura Yuki', 'avg_rating' => '4.4'],
+            ['course_name' => 'Public Policy Analysis', 'professor_name' => 'Dr. Tanaka Hiroshi', 'avg_rating' => '4.3']
+        ];
+        
+        // These are our course translations - we'll add metadata to help identify placeholders
+        foreach ($placeholders as &$placeholder) {
+            $placeholder['is_placeholder'] = true; // Flag to identify placeholder data
+        }
+        
+        // Add placeholder data until we reach the limit
+        $missingCount = $limit - count($courses);
+        for ($i = 0; $i < $missingCount && $i < count($placeholders); $i++) {
+            $courses[] = $placeholders[$i];
+        }
     }
     
     return $courses;
@@ -1004,30 +1024,40 @@ elseif (!isset($_COOKIE['language'])) {
                 <div class="course-list">
 
 
-                    <?php foreach ($topCourses as $course): ?>
-                    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
-                        <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
-                            <div>
-                                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
-                                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
-                            </div>
-                            <div class="rating">
-                                <?php 
-                                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
-                                    $fullStars = floor($course['avg_rating']);
-                                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
-                                    echo str_repeat('★', $fullStars);
-                                    echo $hasHalfStar ? '½' : '';
-                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
-                                    echo ' <span>' . $course['avg_rating'] . '</span>';
-                                } else {
-                                    echo '☆☆☆☆☆ <span>No ratings</span>';
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    </a>
-                    <?php endforeach; ?>
+                // Find this section in home.php where it displays course items
+// Around line 650-670 in the course-list div
+
+<?php foreach ($topCourses as $course): ?>
+    <?php 
+    // Skip placeholder courses or courses without reviews
+    if (isset($course['is_placeholder']) || 
+        (!isset($course['avg_rating']) || $course['avg_rating'] === 'N/A' || $course['avg_rating'] <= 0)) {
+        continue;
+    }
+    ?>
+    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
+        <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+            <div>
+                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
+                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+            </div>
+            <div class="rating">
+                <?php 
+                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
+                    $fullStars = floor($course['avg_rating']);
+                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
+                    echo str_repeat('★', $fullStars);
+                    echo $hasHalfStar ? '½' : '';
+                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                    echo ' <span>' . $course['avg_rating'] . '</span>';
+                } else {
+                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                }
+                ?>
+            </div>
+        </div>
+    </a>
+<?php endforeach; ?>
 
 
                     
