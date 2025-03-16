@@ -43,9 +43,6 @@ if (!empty($professor_name)) {
     // If we have an English name, remove spaces as per the expected URL format
     if ($professorNameForUrl !== $professor_name) {
         $professorNameForUrl = str_replace(' ', '', $professorNameForUrl);
-    } else {
-        // If no translation was found, still ensure spaces are removed for consistency
-        $professorNameForUrl = str_replace(' ', '', $professorNameForUrl);
     }
 }
 
@@ -66,9 +63,6 @@ if (!empty($year)) {
     $redirect_url .= 'year=' . urlencode($year) . '&';
 }
 $redirect_url .= 'lang=' . urlencode($language);
-
-// Log the final redirect URL for debugging
-error_log("Redirecting to: " . $redirect_url);
 
 // Redirect to the template
 header("Location: $redirect_url");
