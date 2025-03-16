@@ -243,14 +243,12 @@ try {
         if ($courseName) {
             error_log("Looking up course by exact name match: '$courseName'");
             
-// Check if the professor exists - match both with and without spaces
-        $stmt = $db->prepare("
-            SELECT id FROM professors 
-            WHERE name = :name OR REPLACE(name, ' ', '') = :name_no_spaces
-            LIMIT 1
-        ");
-        $stmt->bindValue(':name', $professorName, SQLITE3_TEXT);
-        $stmt->bindValue(':name_no_spaces', str_replace(' ', '', $professorName), SQLITE3_TEXT);
+            $stmt = $db->prepare("
+                SELECT id, name FROM courses 
+                WHERE name = :name 
+                LIMIT 1
+            ");
+            $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
             $result = $stmt->execute();
             $course = $result->fetchArray(SQLITE3_ASSOC);
             

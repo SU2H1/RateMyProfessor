@@ -809,12 +809,10 @@ if ($dbCourse && $db) {
                                 // Try to get the professor ID based on the professor parameter
                                 if ($professorParam) {
                                     $profStmt = $db->prepare("
-                                    SELECT id FROM professors 
-                                    WHERE REPLACE(name, ' ', '') = :name_no_spaces
-                                    OR name = :name
-                                    LIMIT 1
+                                        SELECT id FROM professors 
+                                        WHERE REPLACE(name, ' ', '') = :name 
+                                        LIMIT 1
                                     ");
-                                    $profStmt->bindValue(':name_no_spaces', $professorParam, SQLITE3_TEXT);
                                     $profStmt->bindValue(':name', $professorParam, SQLITE3_TEXT);
                                     $profResult = $profStmt->execute();
                                     $profRow = $profResult->fetchArray(SQLITE3_ASSOC);
@@ -828,11 +826,10 @@ if ($dbCourse && $db) {
                                 // We're going to use professor filtering when available
                                 // This will ensure reviews are properly filtered by both course and professor
                                 $sql = "SELECT $selectColumns FROM ratings WHERE course_id = :course_id";
-
-                                // Add professor filtering if we have a professor ID, but make it optional
+                                
+                                // Add professor filtering if we have a professor ID
                                 if ($professorId) {
-                                    // Use an OR condition to show reviews even if professor_id is NULL or default (1)
-                                    $sql .= " AND (professor_id = :professor_id OR professor_id IS NULL OR professor_id = 1)";
+                                    $sql .= " AND professor_id = :professor_id";
                                     error_log("Including professor filter in query with ID: $professorId");
                                 }
                                 
