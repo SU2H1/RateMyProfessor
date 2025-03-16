@@ -941,7 +941,7 @@ elseif (!isset($_COOKIE['language'])) {
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher' : 'Rate My Teacher'; ?></a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher Public Testing' : 'Rate My Teacher 試運転中'; ?></a></h1>
                 </div>
             </div>
             
