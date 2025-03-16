@@ -1131,7 +1131,7 @@ elseif (!isset($_COOKIE['language'])) {
         </div>
         
         <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
-            <p>2025 Rate My Teacher Public Testing</p>
+            <p>2025 Rate My Teacher</p>
             <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 15px; gap: 25px;">
                 <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
                     <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
