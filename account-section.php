@@ -368,9 +368,7 @@ include_once "header.php";
                             <?php endif; ?>
                             
                             <div class="review-actions">
-                                <a href="course_page_template.php?course=<?php echo urlencode($review["course_name"]); ?>" class="btn-secondary">View Course</a>
-                                <button class="delete-review" data-review-id="<?php echo $review["id"]; ?>" title="Delete Review">
-                                    <i class="fas fa-trash-alt"></i>
+                            <a href="course.php?course=<?php echo urlencode($review["course_name"]); ?>&professor=<?php echo isset($review["professor_name"]) ? urlencode($review["professor_name"]) : ''; ?>" class="btn-secondary">View Course</a>                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
                         </div>
