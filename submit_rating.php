@@ -202,19 +202,16 @@ try {
         // Check if the course exists - try multiple methods
         error_log("Looking for course with ID: $courseId or name: $courseName");
         
-        // IMPROVED COURSE MATCHING LOGIC
+        // First try by exact course name if provided
         if ($courseName) {
-            // Normalize the course name for better matching
-            $normalizedCourseName = trim($courseName);
-            error_log("Normalized course name: '$normalizedCourseName'");
+            error_log("Looking up course by exact name match: '$courseName'");
             
-            // Try exact match first
             $stmt = $db->prepare("
                 SELECT id, name FROM courses 
                 WHERE name = :name 
                 LIMIT 1
             ");
-            $stmt->bindValue(':name', $normalizedCourseName, SQLITE3_TEXT);
+            $stmt->bindValue(':name', $courseName, SQLITE3_TEXT);
             $result = $stmt->execute();
             $course = $result->fetchArray(SQLITE3_ASSOC);
             
@@ -222,45 +219,12 @@ try {
             if ($course) {
                 error_log("Found exact course name match in database: ID={$course['id']}, Name={$course['name']}");
             } else {
-                error_log("No exact course name match found in database, trying case-insensitive match");
-                
-                // Try case-insensitive match
-                $stmt = $db->prepare("
-                    SELECT id, name FROM courses 
-                    WHERE LOWER(name) = LOWER(:name) 
-                    LIMIT 1
-                ");
-                $stmt->bindValue(':name', $normalizedCourseName, SQLITE3_TEXT);
-                $result = $stmt->execute();
-                $course = $result->fetchArray(SQLITE3_ASSOC);
-                
-                if ($course) {
-                    error_log("Found case-insensitive match in database: ID={$course['id']}, Name={$course['name']}");
-                } else {
-                    error_log("No case-insensitive match found, trying partial match");
-                    
-                    // Try partial match
-                    $stmt = $db->prepare("
-                        SELECT id, name FROM courses 
-                        WHERE LOWER(name) LIKE LOWER(:name_pattern)
-                        OR LOWER(:name_pattern) LIKE LOWER(name)
-                        LIMIT 1
-                    ");
-                    $stmt->bindValue(':name_pattern', '%' . $normalizedCourseName . '%', SQLITE3_TEXT);
-                    $result = $stmt->execute();
-                    $course = $result->fetchArray(SQLITE3_ASSOC);
-                    
-                    if ($course) {
-                        error_log("Found partial match in database: ID={$course['id']}, Name={$course['name']}");
-                    } else {
-                        error_log("No matches found for course name");
-                    }
-                }
+                error_log("No exact course name match found in database");
             }
         }
         
         // If not found by name and we have an ID, try that
-        if (!isset($course) && $courseId) {
+        if (!$course && $courseId) {
             // Try by course_id column if it exists
             if (in_array('course_id', $columns)) {
                 $stmt = $db->prepare("
@@ -287,7 +251,7 @@ try {
             }
         }
     
-    if (isset($course) && $course) {
+    if ($course) {
         $courseDbId = $course['id'];
         error_log("Using existing course record with ID: $courseDbId and name: '{$course['name']}'");
     } else {
@@ -443,83 +407,40 @@ try {
 // Initialize with a default professor ID to avoid NOT NULL constraint
 $professorDbId = 1; // Default to ID 1 (we'll update this if we find a match)
 if ($professorName) {
-    // IMPROVED PROFESSOR MATCHING LOGIC
-    // Normalize the professor name
-    $normalizedProfessorName = trim($professorName);
-    error_log("Normalized professor name: '$normalizedProfessorName'");
-    
-    // Try exact match first
+    // Check if the professor exists
     $stmt = $db->prepare("
         SELECT id FROM professors 
         WHERE name = :name 
         LIMIT 1
     ");
-    $stmt->bindValue(':name', $normalizedProfessorName, SQLITE3_TEXT);
+    $stmt->bindValue(':name', $professorName, SQLITE3_TEXT);
     $result = $stmt->execute();
     $professor = $result->fetchArray(SQLITE3_ASSOC);
     
     if ($professor) {
-        error_log("Found exact professor name match: ID={$professor['id']}");
         $professorDbId = $professor['id'];
     } else {
-        // Try case-insensitive match
-        error_log("No exact match found, trying case-insensitive match");
-        $stmt = $db->prepare("
-            SELECT id FROM professors 
-            WHERE LOWER(name) = LOWER(:name) 
-            LIMIT 1
-        ");
-        $stmt->bindValue(':name', $normalizedProfessorName, SQLITE3_TEXT);
-        $result = $stmt->execute();
-        $professor = $result->fetchArray(SQLITE3_ASSOC);
-        
-        if ($professor) {
-            error_log("Found case-insensitive professor match: ID={$professor['id']}");
-            $professorDbId = $professor['id'];
-        } else {
-            // Try without spaces
-            error_log("No case-insensitive match found, trying match without spaces");
-            $noSpaceName = str_replace(' ', '', $normalizedProfessorName);
-            $stmt = $db->prepare("
-                SELECT id FROM professors 
-                WHERE REPLACE(LOWER(name), ' ', '') = LOWER(:name_no_space) 
-                LIMIT 1
-            ");
-            $stmt->bindValue(':name_no_space', $noSpaceName, SQLITE3_TEXT);
-            $result = $stmt->execute();
-            $professor = $result->fetchArray(SQLITE3_ASSOC);
+        // Check if we have professor name to work with
+        if ($professorName) {
+            // Create new professor with simple defaults
+            $department = "Unknown Department";
             
-            if ($professor) {
-                error_log("Found professor match without spaces: ID={$professor['id']}");
-                $professorDbId = $professor['id'];
+            // Create the professor
+            $stmt = $db->prepare("
+                INSERT INTO professors (name, department) 
+                VALUES (:name, :department)
+            ");
+            $stmt->bindValue(':name', $professorName, SQLITE3_TEXT);
+            $stmt->bindValue(':department', $department, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            
+            if ($result) {
+                $professorDbId = $db->lastInsertRowID();
             } else {
-                // Check if we have professor name to work with
-                if ($normalizedProfessorName) {
-                    error_log("No match found, creating new professor record: '$normalizedProfessorName'");
-                    // Create new professor with simple defaults
-                    $department = "Unknown Department";
-                    
-                    // Create the professor
-                    $stmt = $db->prepare("
-                        INSERT INTO professors (name, department) 
-                        VALUES (:name, :department)
-                    ");
-                    $stmt->bindValue(':name', $normalizedProfessorName, SQLITE3_TEXT);
-                    $stmt->bindValue(':department', $department, SQLITE3_TEXT);
-                    $result = $stmt->execute();
-                    
-                    if ($result) {
-                        $professorDbId = $db->lastInsertRowID();
-                        error_log("Created new professor with ID: $professorDbId");
-                    } else {
-                        // Keep the default ID (1) that we set earlier
-                        error_log("Failed to create professor, using default ID: $professorDbId");
-                    }
-                } else {
-                    // No professor name available, keep using the default ID
-                    error_log("No professor name available, using default ID: $professorDbId");
-                }
+                // Keep the default ID (1) that we set earlier
             }
+        } else {
+            // No professor name available, keep using the default ID
         }
     }
 }
