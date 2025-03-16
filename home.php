@@ -240,57 +240,11 @@ function getTopCourses($limit = 5) {
             }
         }
         
-        // If we don't have enough courses with ratings, get courses without ratings
-        if (count($courses) < $limit) {
-            $remaining = $limit - count($courses);
-            
-            // Create a string of IDs to exclude
-            $excludeIds = array_map(function($course) {
-                return $course['id'];
-            }, $courses);
-            
-            $excludeClause = count($excludeIds) > 0 ? "WHERE c.id NOT IN (" . implode(",", $excludeIds) . ")" : "";
-            
-            $stmt = $conn->prepare("
-                SELECT c.id, c.name as course_name, c.course_code, p.name as professor_name
-                FROM courses c
-                LEFT JOIN professors p ON c.professor_id = p.id
-                $excludeClause
-                LIMIT :limit
-            ");
-            $stmt->bindValue(':limit', $remaining, SQLITE3_INTEGER);
-            $result = $stmt->execute();
-            
-            while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-                // Ensure we have a professor name
-                if (!isset($row['professor_name']) || empty($row['professor_name'])) {
-                    $row['professor_name'] = "Unknown Professor";
-                }
-                
-                // Add default rating
-                $row['avg_rating'] = "N/A";
-                $courses[] = $row;
-            }
-        }
+        // We're removing the code that fetches courses without ratings
+        // and the code that adds placeholder data
+        
     } catch (Exception $e) {
         error_log("Error fetching top courses: " . $e->getMessage());
-    }
-    
-    // If we still don't have enough courses, add placeholder data
-    if (count($courses) < $limit) {
-        $placeholders = [
-            ['course_name' => 'Global Environmental Policy', 'professor_name' => 'Prof. Watanabe Kenji', 'avg_rating' => '4.8'],
-            ['course_name' => 'International Political Economy', 'professor_name' => 'Dr. Smith Karen', 'avg_rating' => '4.7'],
-            ['course_name' => 'Corporate Strategy', 'professor_name' => 'Dr. Yamamoto Aki', 'avg_rating' => '4.5'],
-            ['course_name' => 'Macroeconomic Theory', 'professor_name' => 'Prof. Nakamura Yuki', 'avg_rating' => '4.4'],
-            ['course_name' => 'Public Policy Analysis', 'professor_name' => 'Dr. Tanaka Hiroshi', 'avg_rating' => '4.3']
-        ];
-        
-        // Add placeholder data until we reach the limit
-        $missingCount = $limit - count($courses);
-        for ($i = 0; $i < $missingCount && $i < count($placeholders); $i++) {
-            $courses[] = $placeholders[$i];
-        }
     }
     
     return $courses;
@@ -940,9 +894,9 @@ elseif (!isset($_COOKIE['language'])) {
                     $loginLabel = $currentLang == 'ja' ? 'ログイン' : 'Login';
                     $registerLabel = $currentLang == 'ja' ? '登録' : 'Register';
                     $topProfessorsLabel = $currentLang == 'ja' ? '人気の教授' : 'Top Professors';
-                    $professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
+                    //$professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
                     $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
-                    $coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
+                    //$coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
                     ?>
@@ -956,9 +910,7 @@ elseif (!isset($_COOKIE['language'])) {
                             <a href="register.php"><?php echo $registerLabel; ?></a>
                         <?php endif; ?>
                         <a href="#popular-professors"><?php echo $topProfessorsLabel; ?></a>
-                        <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $currentLang; ?>"><?php echo $professorsLabel; ?></a>
                         <a href="#top-courses"><?php echo $topCoursesLabel; ?></a>
-                        <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $currentLang; ?>"><?php echo $coursesLabel; ?></a>
                         <a href="tipsandtricks.php"><?php echo $tipsLabel; ?></a>
                         <?php if ($isLoggedIn): ?>
                             <a href="delete_account.php" class="delete-account"><?php echo $deleteAccountLabel; ?></a>
