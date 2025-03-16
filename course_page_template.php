@@ -1001,7 +1001,7 @@ if (isset($course['semester'])) {
     }
 }
 
-// Set up category scores for display
+// Set up category scores for display 1
 $categoryScores = [
     'content' => [
         'score' => 0, 
