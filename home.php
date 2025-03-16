@@ -185,7 +185,6 @@ function getTopCourses($limit = 5) {
                     FROM courses c
                     LEFT JOIN professors p ON c.professor_id = p.id
                     WHERE COALESCE(c.review_count, 0) > 0
-                    AND c.name NOT LIKE 'POLICY MANAGEMENT STUDIES%' -- Exclude POLICY MANAGEMENT STUDIES courses
                     ORDER BY avg_rating DESC, review_count DESC
                     LIMIT :limit
                 ");
@@ -199,7 +198,6 @@ function getTopCourses($limit = 5) {
                     FROM courses c
                     LEFT JOIN professors p ON c.professor_id = p.id
                     WHERE EXISTS (SELECT 1 FROM ratings r WHERE r.course_id = c.id)
-                    AND c.name NOT LIKE 'POLICY MANAGEMENT STUDIES%' -- Exclude POLICY MANAGEMENT STUDIES courses
                     ORDER BY avg_rating DESC, review_count DESC
                     LIMIT :limit
                 ");
@@ -944,7 +942,6 @@ elseif (!isset($_COOKIE['language'])) {
             <div class="header-center">
                 <div class="logo">
                     <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher' : 'Rate My Teacher'; ?></a></h1>
-                    <p style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? '試行運転中' : 'Public Testing'; ?></p>
                 </div>
             </div>
             
