@@ -217,9 +217,8 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
         
         <?php if ($registration_success): ?>
             <div class="success-message">
-                <p>Registration successful! Please check your email to verify your account.</p>
-                <p>A verification link has been sent to your keio.jp email address.</p>
-                <p><a href="login.php">Click here to login</a> after verifying your email.</p>
+                <p>Registration successful!</p>
+                <p><a href="login.php">Click here to login</a> </p>
             </div>
         <?php else: ?>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
