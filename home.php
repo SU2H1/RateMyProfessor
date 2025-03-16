@@ -1024,8 +1024,6 @@ elseif (!isset($_COOKIE['language'])) {
                 <div class="course-list">
 
 
-                // Find this section in home.php where it displays course items
-// Around line 650-670 in the course-list div
 
 <?php foreach ($topCourses as $course): ?>
     <?php 
