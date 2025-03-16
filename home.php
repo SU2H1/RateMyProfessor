@@ -397,7 +397,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher - Public Testing!!!</title>
+    <title>Rate My Teacher - Public Testing</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -941,7 +941,7 @@ elseif (!isset($_COOKIE['language'])) {
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher Public Testing' : 'Rate My Teacher 試運転中'; ?></a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher' : 'Rate My Teacher'; ?></a></h1>
                 </div>
             </div>
             
