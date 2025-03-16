@@ -2079,8 +2079,7 @@ $sampleReviews = [];
             <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当教員' : 'Professors'; ?></h2>
             <div class="professors">
                 <?php foreach ($course['professors'] as $professor): ?>
-                    <div class="professor-card" onclick="window.location.href='professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>'">
-                    <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
+                    <div class="professor-card" onclick="window.location.href='professor_page_template.php?name=<?php echo urlencode($professor['name']['en']); ?>&lang=<?php echo $lang; ?>'">                    <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
                     <div class="professor-department"><?php echo htmlspecialchars($professor['department'][$lang]); ?></div>
                     <?php
                     // Try to get professor rating from database
