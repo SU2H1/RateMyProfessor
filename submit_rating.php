@@ -63,8 +63,45 @@ if (!$professorName && isset($_POST['redirect_url'])) {
         parse_str($urlParts['query'], $queryParams);
         if (isset($queryParams['professor'])) {
             $professorName = $queryParams['professor'];
+            error_log("Extracted professor name from redirect URL: '$professorName'");
         }
     }
+}
+
+// Ensure professor name is in English format for URLs
+$professorNameForUrl = $professorName; // Default to whatever was provided
+if (!empty($professorName)) {
+    // Check if this might be a Japanese name that needs conversion
+    $jsonFilePath = __DIR__ . '/sfc_courses.json';
+    if (file_exists($jsonFilePath)) {
+        $jsonData = file_get_contents($jsonFilePath);
+        if ($jsonData !== false) {
+            $data = json_decode($jsonData, true);
+            if ($data !== null) {
+                // Look for a matching Japanese professor name and get the English version
+                foreach ($data['courses'] as $course) {
+                    foreach ($course['professors'] as $prof) {
+                        if (isset($prof['name']['ja']) && $prof['name']['ja'] === $professorName) {
+                            // Found a match! Use the English name instead
+                            $professorNameForUrl = $prof['name']['en'];
+                            error_log("Found English professor name for '{$professorName}': {$professorNameForUrl}");
+                            break 2; // Break out of both loops
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // If we have an English name, remove spaces as per the expected URL format
+    if ($professorNameForUrl !== $professorName) {
+        $professorNameForUrl = str_replace(' ', '', $professorNameForUrl);
+    } else {
+        // If no translation was found, still ensure spaces are removed for consistency
+        $professorNameForUrl = str_replace(' ', '', $professorNameForUrl);
+    }
+    
+    error_log("Using professor name for URL: '$professorNameForUrl'");
 }
 
 // For logging/debugging
@@ -579,9 +616,40 @@ if ($result) {
         }
     }
     
-    // Immediate redirect on success with new_review parameter
-    if (!empty($redirectUrl)) {
+    // Modify the redirect URL to ensure it uses the English professor name
+    if (!empty($redirectUrl) && !empty($professorNameForUrl)) {
+        // Parse the URL
+        $urlParts = parse_url($redirectUrl);
+        if (isset($urlParts['query'])) {
+            // Parse the query string
+            parse_str($urlParts['query'], $queryParams);
+            
+            // Update the professor parameter with the English name
+            if (isset($queryParams['professor'])) {
+                $queryParams['professor'] = $professorNameForUrl;
+                error_log("Updated professor in redirect URL to: '$professorNameForUrl'");
+            }
+            
+            // Rebuild the query string
+            $newQuery = http_build_query($queryParams);
+            
+            // Rebuild the URL
+            $redirectUrl = $urlParts['path'] . '?' . $newQuery;
+            if (isset($urlParts['fragment'])) {
+                $redirectUrl .= '#' . $urlParts['fragment'];
+            }
+            
+            error_log("Modified redirect URL: $redirectUrl");
+        }
+        
         // Add a query parameter to indicate new review
+        $redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . 'new_review=1&review_id=' . $newRatingId;
+        
+        // Immediately redirect to the course page
+        header('Location: ' . $redirectUrl);
+        exit;
+    } else if (!empty($redirectUrl)) {
+        // Add a query parameter to indicate new review without modifying the professor name
         $redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . 'new_review=1&review_id=' . $newRatingId;
         
         // Immediately redirect to the course page
