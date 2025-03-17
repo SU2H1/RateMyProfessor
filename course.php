@@ -54,23 +54,40 @@ if (!empty($professor_name) && file_exists($jsonFilePath)) {
 // Build the URL for the redirect
 $redirect_url = 'course_page_template.php?';
 
-// Add parameters to the URL
-if (!empty($course_id)) {
-    $redirect_url .= 'id=' . urlencode($course_id) . '&';
+// Prioritize course_code over other parameters
+if (!empty($course_code)) {
+    $redirect_url .= 'course_code=' . urlencode($course_code) . '&';
+} 
+// Fall back to other parameters for backward compatibility
+else {
+    if (!empty($course_id)) {
+        $redirect_url .= 'id=' . urlencode($course_id) . '&';
+    }
+    
+    if (!empty($course_name)) {
+        // Also add course_code parameter for compatibility with new format
+        // Try to find course_code from database if available
+        $db = new SQLite3('database/ratemyteacher.db');
+        $stmt = $db->prepare("SELECT course_code FROM courses WHERE name = :name LIMIT 1");
+        $stmt->bindValue(':name', $course_name, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        
+        if ($row && !empty($row['course_code'])) {
+            $redirect_url .= 'course_code=' . urlencode($row['course_code']) . '&';
+        } else {
+            // Keep backward compatibility if we couldn't find the course code
+            $redirect_url .= 'course=' . urlencode($course_name) . '&';
+        }
+    }
 }
 
-if (!empty($course_name)) {
-    $redirect_url .= 'course=' . urlencode($course_name) . '&';
-}
-
+// Add professor parameter if available
 if (!empty($professorNameForUrl)) {
     $redirect_url .= 'professor=' . urlencode($professorNameForUrl) . '&';
 }
 
-if (!empty($course_code)) {
-    $redirect_url .= 'course_code=' . urlencode($course_code) . '&';
-}
-
+// Add year parameter if available
 if (!empty($year)) {
     $redirect_url .= 'year=' . urlencode($year) . '&';
 }
