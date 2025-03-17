@@ -52,7 +52,7 @@ if ($courseName) {
 }
 
 // Get professor name from POST or extract from URL
-$professorName = isset($_POST['professor_name']) ? $_POST['professor_name'] : null;
+$professorName = isset($_GET['name']) ? $_GET['name'] : null;
 
 // Extract professor from URL if not provided directly
 if (!$professorName && isset($_POST['redirect_url'])) {
