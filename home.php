@@ -993,7 +993,11 @@ elseif (!isset($_COOKIE['language'])) {
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
                     <?php foreach ($topProfessors as $professor): ?>
-                    <a href="professor_page_template.php?name=<?php echo urlencode($professor['english_name']); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <?php
+                    // Replace spaces with plus signs for consistent URL handling
+                    $nameForUrl = str_replace(' ', '+', $professor['english_name']);
+                    ?>
+                    <a href="professor_page_template.php?name=<?php echo $nameForUrl; ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
@@ -1212,12 +1216,26 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasProfessors) {
                 const profSection = document.createElement('div');
                 profSection.className = 'search-section';
-                profSection.innerHTML = `<h3>${labels.professors} (${data.professors.length})</h3>`;
+                
+                // Remove duplicate professors by ID
+                const uniqueProfessors = [];
+                const profIds = new Set();
+                
+                data.professors.forEach(prof => {
+                    // Skip if we've already seen this professor ID
+                    if (profIds.has(prof.id)) return;
+                    
+                    // Add to unique set
+                    profIds.add(prof.id);
+                    uniqueProfessors.push(prof);
+                });
+                
+                profSection.innerHTML = `<h3>${labels.professors} (${uniqueProfessors.length})</h3>`;
                 
                 const profList = document.createElement('div');
                 profList.className = 'search-list professor-search-list';
                 
-                data.professors.forEach(prof => {
+                uniqueProfessors.forEach(prof => {
                     const profItem = document.createElement('div');
                     profItem.className = 'search-item professor-search-item';
                     profItem.setAttribute('data-id', prof.id);
@@ -1244,10 +1262,15 @@ elseif (!isset($_COOKIE['language'])) {
                     
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
-                        // Use English name for URL if available
-                        const nameForUrl = (prof.name_en || prof.name).replace(/\s+/g, '');
+                        // Use name_no_spaces if available, otherwise replace spaces with '+' in the name
+                        let nameForUrl;
+                        if (prof.name_no_spaces) {
+                            nameForUrl = prof.name_no_spaces;
+                        } else {
+                            nameForUrl = (prof.name_en || prof.name).replace(/\s+/g, '+');
+                        }
                         
-                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(nameForUrl)}&lang=${currentLang}`;
+                        window.location.href = `professor_page_template.php?name=${nameForUrl}&lang=${currentLang}`;
                         console.log(`Navigating to professor: ${nameForUrl}`);
                     });
                     
@@ -1262,12 +1285,28 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasCourses) {
                 const courseSection = document.createElement('div');
                 courseSection.className = 'search-section';
-                courseSection.innerHTML = `<h3>${labels.courses} (${data.courses.length})</h3>`;
+                
+                // Remove duplicate courses by course_code
+                const uniqueCourses = [];
+                const courseCodes = new Set();
+                
+                data.courses.forEach(course => {
+                    const courseCode = course.course_code || course.course_id;
+                    
+                    // Skip if we've already seen this course code
+                    if (!courseCode || courseCodes.has(courseCode)) return;
+                    
+                    // Add to unique set
+                    courseCodes.add(courseCode);
+                    uniqueCourses.push(course);
+                });
+                
+                courseSection.innerHTML = `<h3>${labels.courses} (${uniqueCourses.length})</h3>`;
                 
                 const courseList = document.createElement('div');
                 courseList.className = 'search-list course-search-list';
                 
-                data.courses.forEach(course => {
+                uniqueCourses.forEach(course => {
                     const courseItem = document.createElement('div');
                     courseItem.className = 'search-item course-search-item';
                     courseItem.setAttribute('data-id', course.id);
@@ -1372,8 +1411,11 @@ elseif (!isset($_COOKIE['language'])) {
                         const profName = item.querySelector('h3').textContent;
                         console.log("Professor name from HTML:", profName);
                         
+                        // Replace spaces with plus signs for consistent URL format
+                        const profNameForUrl = profName.replace(/\s+/g, '+');
+                        
                         // Create the redirect URL with the current language - no ID needed
-                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profName)}&lang=${currentLang}`;
+                        const redirectUrl = `professor_page_template.php?name=${profNameForUrl}&lang=${currentLang}`;
                         console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect

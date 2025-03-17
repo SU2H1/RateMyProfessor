@@ -127,8 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.style.backgroundColor = '#f9f9f9';
                 });
                 item.addEventListener('click', function() {
-                    // Get professor name with no spaces for URL parameter
-                    const profNameForUrl = prof.name.replace(/\s+/g, '');
+                    // Get professor name with spaces replaced with plus signs for URL parameter
+                    const profNameForUrl = prof.name.replace(/\s+/g, '+');
                     // Save the URL we're redirecting to for debugging
                     const url = `professor.php?id=${prof.id}&professor=${profNameForUrl}&lang=${lang}`;
                     console.log("Redirecting to professor page:", url);

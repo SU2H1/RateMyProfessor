@@ -92,9 +92,21 @@ $db = new SQLite3('database/ratemyteacher.db');
 
 // Try to find professor in the database by name
 $professorId = null;
-$professorNameNoSpaces = str_replace(' ', '', $professorParam);
-$stmt = $db->prepare("SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like");
-$stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
+
+// Need to handle both types of name formatting for backward compatibility
+$professorNameNoSpaces = str_replace(' ', '', $professorParam); // For old URLs with no spaces
+$professorNameWithPlus = str_replace('+', ' ', $professorParam); // For new URLs with + signs
+
+// Try to find the professor using both formats
+$stmt = $db->prepare("
+    SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count 
+    FROM professors 
+    WHERE name = :name_with_spaces 
+       OR REPLACE(name, ' ', '') = :name_no_spaces 
+       OR REPLACE(name, ' ', '') LIKE :name_like
+");
+$stmt->bindValue(':name_with_spaces', $professorNameWithPlus, SQLITE3_TEXT);
+$stmt->bindValue(':name_no_spaces', $professorNameNoSpaces, SQLITE3_TEXT);
 $stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
 $result = $stmt->execute();
 $row = $result->fetchArray(SQLITE3_ASSOC);
@@ -137,23 +149,25 @@ if ($professorId) {
     foreach ($data['courses'] as $course) {
         foreach ($course['professors'] as $prof) {
             if (isset($prof['name']['ja']) && isset($prof['name']['en'])) {
-                $jaToEnMap[$prof['name']['ja']] = str_replace(' ', '', $prof['name']['en']);
+                $jaToEnMap[$prof['name']['ja']] = str_replace(' ', '+', $prof['name']['en']);
             }
         }
     }
 
     $altProfessorName = isset($jaToEnMap[$professorParam]) ? $jaToEnMap[$professorParam] : null;
 
-    // Build the SQL query to search by either name
+    // Build the SQL query to search by either name, supporting both URL formats
     $stmt = $db->prepare("
         SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count 
         FROM professors 
-        WHERE REPLACE(name, ' ', '') = :name 
+        WHERE name = :name_with_spaces
+           OR REPLACE(name, ' ', '') = :name_no_spaces 
            OR REPLACE(name, ' ', '') LIKE :name_like
            OR (:alt_name IS NOT NULL AND (REPLACE(name, ' ', '') = :alt_name OR REPLACE(name, ' ', '') LIKE :alt_name_like))
     ");
     
-    $stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
+    $stmt->bindValue(':name_with_spaces', $professorNameWithPlus, SQLITE3_TEXT);
+    $stmt->bindValue(':name_no_spaces', $professorNameNoSpaces, SQLITE3_TEXT);
     $stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
     $stmt->bindValue(':alt_name', $altProfessorName, SQLITE3_TEXT);
     $stmt->bindValue(':alt_name_like', $altProfessorName ? '%' . $altProfessorName . '%' : null, SQLITE3_TEXT);
@@ -169,7 +183,8 @@ if ($professorId) {
     if (isset($data['ratings'])) {
         foreach ($data['ratings'] as $rating) {
             if (isset($rating['professor']) && 
-                strcasecmp(str_replace(' ', '', $rating['professor']), $professorNameNoSpaces) === 0) {
+                (strcasecmp(str_replace(' ', '', $rating['professor']), $professorNameNoSpaces) === 0 ||
+                 strcasecmp($rating['professor'], $professorNameWithPlus) === 0)) {
                 if (isset($rating['content_quality'])) {
                     $allContentRatings[] = $rating['content_quality'];
                 }

@@ -336,8 +336,8 @@ if (!$course && $courseParam) {
             // Check professor name if specified - exact match with professor's English name without spaces
             if ($professorParam) {
                 foreach ($c['professors'] as $prof) {
-                    // Check English name (without spaces)
-                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                    // Check English name (spaces replaced with + signs)
+                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '+', $prof['name']['en']) : '';
                     
                     // Check Japanese name 
                     $profNameUrlJa = isset($prof['name']['ja']) ? $prof['name']['ja'] : '';
@@ -427,7 +427,7 @@ if (!$course && $courseParam) {
                 // Check professor name if specified
                 if ($professorParam) {
                     foreach ($c['professors'] as $prof) {
-                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '+', $prof['name']['en']) : '';
                         if ($profNameUrl === $professorParam) {
                             $matchesProfessor = true;
                             break;
