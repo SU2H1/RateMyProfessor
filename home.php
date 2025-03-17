@@ -1033,7 +1033,7 @@ elseif (!isset($_COOKIE['language'])) {
         continue;
     }
     ?>
-<a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['english_professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+<a href="course.php?course_code=<?php echo urlencode($course['course_code']); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>" data-course-code="<?php echo htmlspecialchars($course['course_code']); ?>">
             <div>
                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
                 <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
@@ -1294,17 +1294,14 @@ elseif (!isset($_COOKIE['language'])) {
                     
                     // Add click event to view course page
                     courseItem.addEventListener('click', () => {
-                        // Use English name for URL if available
-                        const nameForUrl = course.name_en || course.english_course_name || course.name;
-                        const profNameForUrl = course.professor_name_en || course.english_professor_name || course.professor_name;
-
-                        let url = `course.php?course=${encodeURIComponent(nameForUrl)}`;
-                        if (profNameForUrl) {
-                            url += `&professor=${encodeURIComponent(profNameForUrl)}`;
-                        }
+                        // Use course_code for URL instead of course name
+                        const courseCode = course.course_code || course.course_id || '';
+                        
+                        // Use course code parameter instead of course name
+                        let url = `course.php?course_code=${encodeURIComponent(courseCode)}`;
                         url += `&lang=${currentLang}`;
                         window.location.href = url;
-                        console.log(`Navigating to course: ${nameForUrl}`);
+                        console.log(`Navigating to course code: ${courseCode}`);
                     });
                     
                     courseList.appendChild(courseItem);
@@ -1421,9 +1418,12 @@ elseif (!isset($_COOKIE['language'])) {
                         const courseName = item.querySelector('h3').textContent;
                         console.log("Course name from HTML:", courseName);
                         
-                        // Create the redirect URL with the current language - using course.php instead
-                        const redirectUrl = `course.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
-                        console.log("Redirecting to:", redirectUrl);
+                        // Get course_code from data-course-code attribute if available
+                        const courseCode = item.getAttribute('data-course-code') || '';
+                        
+                        // Create the redirect URL with course_code
+                        const redirectUrl = `course.php?course_code=${encodeURIComponent(courseCode)}&lang=${currentLang}`;
+                        console.log("Redirecting to course code:", courseCode);
                         
                         // Perform the redirect
                         location.href = redirectUrl;
