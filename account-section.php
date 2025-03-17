@@ -368,7 +368,11 @@ include_once "header.php";
                             <?php endif; ?>
                             
                             <div class="review-actions">
-                            <a href="course.php?course=<?php echo urlencode($review["course_name"]); ?>&professor=<?php echo isset($review["professor_name"]) ? urlencode($review["professor_name"]) : ''; ?>" class="btn-secondary">View Course</a>                                    <i class="fas fa-trash-alt"></i>
+                            <?php 
+// Get preferred language from cookie, default to Japanese if not set
+$currentLang = isset($_COOKIE['language']) ? $_COOKIE['language'] : 'ja';
+?>
+<a href="course.php?course_code=<?php echo urlencode($review["course_code"]); ?>&lang=<?php echo $currentLang; ?>" class="btn-secondary">View Course</a>                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
                         </div>
