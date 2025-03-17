@@ -703,7 +703,7 @@ if ($reviewCount > 0) {
                 <?php else: ?>
                     <?php foreach ($professorCourses as $course): ?>
                         <div class="course-card" style="background-color: #f9f9f9; border-radius: 8px; padding: 15px; min-width: 200px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <a href="course_page_template.php?course=<?php echo urlencode($course['translations']['en']['name']); ?>&professor=<?php echo urlencode($professorParam); ?>&lang=<?php echo $lang; ?>" style="text-decoration: none; color: inherit;">                                <div class="course-name" style="font-weight: bold; font-size: 1.1em; color: #1e3a8a; margin-bottom: 5px;"><?php echo htmlspecialchars($course['translations'][$lang]['name']); ?></div>
+                        <a href="course_page_template.php?course_code=<?php echo urlencode($course['course_id']); ?>&lang=<?php echo $lang; ?>" style="text-decoration: none; color: inherit;">                                <div class="course-name" style="font-weight: bold; font-size: 1.1em; color: #1e3a8a; margin-bottom: 5px;"><?php echo htmlspecialchars($course['translations'][$lang]['name']); ?></div>
                             </a>
                             <div class="course-field" style="color: #666; font-size: 0.9em; margin-bottom: 10px;"><?php echo htmlspecialchars($course['translations'][$lang]['field']); ?></div>
                         </div>
