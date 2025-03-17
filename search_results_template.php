@@ -341,7 +341,7 @@
                                         : str_replace(' ', '+', $professor['name']);
                                     $profNameDisplay = $lang === 'ja' && isset($professor['name_ja']) ? $professor['name_ja'] : $professor['name'];
                                 ?>
-                                <a href="professor.php?name=<?php echo urlencode($profNameForUrl); ?>&lang=<?php echo $lang; ?>">
+                                <a href="professor.php?name=<?php echo $profNameForUrl; ?>&lang=<?php echo $lang; ?>">
                                     <?php echo htmlspecialchars($profNameDisplay); ?>
                                 </a>
                                 <!-- Debug info -->
@@ -398,7 +398,7 @@
                             <div class="result-meta">
                                 <?php if (!empty($course['professor_name'])): ?>
                                     <?php echo $lang === 'ja' ? '担当教員: ' : 'Taught by: '; ?>
-                                    <a href="professor.php?name=<?php echo urlencode(!empty($course['professor_name_no_spaces']) ? $course['professor_name_no_spaces'] : str_replace(' ', '+', $course['professor_name'])); ?>&lang=<?php echo $lang; ?>">
+                                    <a href="professor.php?name=<?php echo !empty($course['professor_name_no_spaces']) ? $course['professor_name_no_spaces'] : str_replace(' ', '+', $course['professor_name']); ?>&lang=<?php echo $lang; ?>">
                                         <?php echo htmlspecialchars($lang === 'ja' && isset($course['professor_name_ja']) ? $course['professor_name_ja'] : $course['professor_name']); ?>
                                     </a>
                                 <?php endif; ?>
