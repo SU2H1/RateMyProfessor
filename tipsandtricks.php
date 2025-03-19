@@ -475,7 +475,7 @@ $switchText = $language == 'ja' ? 'English' : '日本語';
         <section>
             <h2><?php echo $t['section_student']; ?></h2>
             <ul>
-                <li><a href="https://www.amazon.co.jp/Prime-Student/b?ie=UTF8&node=2410972051" target="_blank">Amazon Prime</a></li>
+                <li><a href="https://www.amazon.co.jp/b?node=2410972051&tag=su2h1-22" target="_blank">Amazon Prime</a></li>
                 <li><a href="https://www.apple.com/jp/shop/education-pricing" target="_blank">Apple Products</a></li>
                 <li><a href="https://www.spotify.com/jp/student/" target="_blank">Spotify</a></li>
             </ul>
