@@ -16,6 +16,109 @@ $username = $_SESSION["username"];
 $email = $_SESSION["email"];
 $user_id = $_SESSION["id"];
 
+// Get language preference from URL parameter or cookie
+$lang = isset($_GET['lang']) ? $_GET['lang'] : (isset($_COOKIE['language']) ? $_COOKIE['language'] : 'en');
+// Convert jp to ja for internal consistency
+if ($lang === 'jp') $lang = 'ja';
+
+// Always update the cookie when language is set in URL
+if (isset($_GET['lang'])) {
+    setcookie('language', $lang, time() + (86400 * 30), "/"); // 30 days expiry
+} 
+// Set language cookie if not already set
+else if (!isset($_COOKIE['language'])) {
+    setcookie('language', $lang, time() + (86400 * 30), "/"); // 30 days expiry
+}
+
+// Language-specific text
+$text = [
+    'en' => [
+        'my_account' => 'My Account',
+        'profile_settings' => 'Profile Settings',
+        'security' => 'Security',
+        'my_reviews' => 'My Reviews',
+        'delete_account' => 'Delete Account',
+        'username' => 'Username',
+        'update_username' => 'Update Username',
+        'current_password' => 'Current Password',
+        'new_password' => 'New Password',
+        'confirm_password' => 'Confirm Password',
+        'change_password' => 'Change Password',
+        'no_reviews' => 'You haven\'t written any reviews yet.',
+        'delete_review' => 'Delete Review',
+        'delete_confirm' => 'Are you sure you want to delete this review?',
+        'cannot_undo' => 'This action cannot be undone.',
+        'cancel' => 'Cancel',
+        'delete' => 'Delete',
+        'view_course' => 'View Course',
+        'member_since' => 'Member since',
+        'danger_zone' => 'Danger Zone',
+        'delete_account_warning' => 'Once you delete your account, there is no going back. Please be certain.',
+        'delete_my_account' => 'Delete My Account',
+        'password_required' => 'Please enter your current password.',
+        'new_password_required' => 'Please enter a new password.',
+        'confirm_password_required' => 'Please confirm the new password.',
+        'passwords_no_match' => 'Passwords did not match.',
+        'password_success' => 'Password updated successfully!',
+        'username_required' => 'Please enter a username.',
+        'username_invalid' => 'Username can only contain letters, numbers, and underscores.',
+        'username_exists' => 'This username is already taken.',
+        'username_success' => 'Username updated successfully!',
+        'content_quality' => 'Content Quality',
+        'difficulty' => 'Difficulty',
+        'takes_attendance' => 'Takes Attendance',
+        'always' => 'Always',
+        'sometimes' => 'Sometimes',
+        'never' => 'Never',
+        'language' => 'Language'
+    ],
+    'ja' => [
+        'my_account' => 'マイアカウント',
+        'profile_settings' => 'プロフィール設定',
+        'security' => 'セキュリティ',
+        'my_reviews' => 'マイレビュー',
+        'delete_account' => 'アカウント削除',
+        'username' => 'ユーザー名',
+        'update_username' => 'ユーザー名を更新',
+        'current_password' => '現在のパスワード',
+        'new_password' => '新しいパスワード',
+        'confirm_password' => 'パスワードを確認',
+        'change_password' => 'パスワードを変更',
+        'no_reviews' => 'まだレビューを書いていません。',
+        'delete_review' => 'レビューを削除',
+        'delete_confirm' => 'このレビューを削除してもよろしいですか？',
+        'cannot_undo' => 'この操作は元に戻せません。',
+        'cancel' => 'キャンセル',
+        'delete' => '削除',
+        'view_course' => 'コースを見る',
+        'member_since' => '登録日',
+        'danger_zone' => '危険ゾーン',
+        'delete_account_warning' => 'アカウントを削除すると、元に戻すことはできません。必ず確認してください。',
+        'delete_my_account' => 'アカウントを削除する',
+        'password_required' => '現在のパスワードを入力してください。',
+        'new_password_required' => '新しいパスワードを入力してください。',
+        'confirm_password_required' => '新しいパスワードを確認してください。',
+        'passwords_no_match' => 'パスワードが一致しません。',
+        'password_success' => 'パスワードが正常に更新されました！',
+        'username_required' => 'ユーザー名を入力してください。',
+        'username_invalid' => 'ユーザー名には文字、数字、アンダースコアのみを含めることができます。',
+        'username_exists' => 'このユーザー名は既に使用されています。',
+        'username_success' => 'ユーザー名が正常に更新されました！',
+        'content_quality' => 'コンテンツの質',
+        'difficulty' => '難易度',
+        'takes_attendance' => '出席確認',
+        'always' => '毎回',
+        'sometimes' => '時々',
+        'never' => 'なし',
+        'language' => '言語'
+    ]
+];
+
+// Use English as fallback if language not supported
+if (!isset($text[$lang])) {
+    $lang = 'en';
+}
+
 // Password update variables
 $password_err = $new_password_err = $confirm_password_err = $success_msg = "";
 
@@ -61,8 +164,22 @@ try {
     // Build the SQL query dynamically based on available fields
     $comment_field = $has_comments_field ? 'r.comments' : ($has_comment_field ? 'r.comment' : 'NULL');
     
+    // Check if we have a course_name_ja field
+    $has_course_name_ja = false;
+    $course_columns_result = $conn->query($course_columns_sql);
+    while ($column = $course_columns_result->fetchArray(SQLITE3_ASSOC)) {
+        if ($column['name'] === 'name_ja') {
+            $has_course_name_ja = true;
+            break;
+        }
+    }
+    
+    // Add Japanese course name if available
+    $course_name_ja_field = $has_course_name_ja ? 'c.name_ja AS course_name_ja' : 'c.' . $course_name_field . ' AS course_name_ja';
+    
     $review_sql = "SELECT r.*, 
-                  c.$course_name_field AS course_name, 
+                  c.$course_name_field AS course_name,
+                  $course_name_ja_field, 
                   c.$course_code_field AS course_code,
                   $comment_field AS review_text
                   FROM ratings r 
@@ -232,7 +349,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_password"])) {
 $conn->close();
 
 // HTML header with title
-$page_title = "My Account";
+$page_title = $text[$lang]['my_account'];
 include_once "header.php";
 ?>
 
@@ -244,63 +361,84 @@ include_once "header.php";
             </div>
             <h3><?php echo htmlspecialchars($username); ?></h3>
             <p class="user-email"><?php echo htmlspecialchars($email); ?></p>
-            <p class="join-date">Member since: <?php echo $join_date; ?></p>
+            <p class="join-date"><?php echo $text[$lang]['member_since']; ?>: <?php echo $join_date; ?></p>
         </div>
         
         <ul class="sidebar-nav">
-            <li><a href="#profile-settings" data-section="profile-settings">Profile Settings</a></li>
-            <li class="active"><a href="#my-reviews" data-section="my-reviews">My Reviews (<?php echo $reviews_count; ?>)</a></li>
-            <li class="danger-item"><a href="#delete-account" data-section="delete-account">Delete Account</a></li>
+            <li><a href="#profile-settings" data-section="profile-settings"><?php echo $text[$lang]['profile_settings']; ?></a></li>
+            <li class="active"><a href="#my-reviews" data-section="my-reviews"><?php echo $text[$lang]['my_reviews']; ?> (<?php echo $reviews_count; ?>)</a></li>
+            <li class="danger-item"><a href="#delete-account" data-section="delete-account"><?php echo $text[$lang]['delete_account']; ?></a></li>
         </ul>
     </div>
     
     <div class="account-content">
+        <!-- Language Toggle -->
+        <div class="language-toggle" style="text-align: right; margin-bottom: 15px;">
+            <span style="color: #666; margin-right: 10px;"><?php echo $text[$lang]['language']; ?>:</span>
+            <?php
+            // Preserve current section in URL when switching languages
+            $currentUrl = $_SERVER['REQUEST_URI'];
+            $baseUrl = strtok($currentUrl, '?');
+            $params = $_GET;
+            
+            // Set English URL
+            $params['lang'] = 'en';
+            $englishUrl = $baseUrl . '?' . http_build_query($params);
+            
+            // Set Japanese URL
+            $params['lang'] = 'ja';
+            $japaneseUrl = $baseUrl . '?' . http_build_query($params);
+            ?>
+            <a href="<?php echo $englishUrl; ?>" class="lang-btn <?php echo $lang === 'en' ? 'active' : ''; ?>" style="display: inline-block; padding: 5px 15px; margin-left: 10px; border: 1px solid #1e3a8a; border-radius: 4px; text-decoration: none; color: <?php echo $lang === 'en' ? 'white' : '#1e3a8a'; ?>; background-color: <?php echo $lang === 'en' ? '#1e3a8a' : 'transparent'; ?>;">English</a>
+            <a href="<?php echo $japaneseUrl; ?>" class="lang-btn <?php echo $lang === 'ja' ? 'active' : ''; ?>" style="display: inline-block; padding: 5px 15px; margin-left: 10px; border: 1px solid #1e3a8a; border-radius: 4px; text-decoration: none; color: <?php echo $lang === 'ja' ? 'white' : '#1e3a8a'; ?>; background-color: <?php echo $lang === 'ja' ? '#1e3a8a' : 'transparent'; ?>;">日本語</a>
+        </div>
+        
         <!-- Profile Settings Section -->
         <div id="profile-settings" class="account-section">
-            <h2>Profile Settings</h2>
+            <h2><?php echo $text[$lang]['profile_settings']; ?></h2>
             
             <!-- Username Update Form -->
             <div class="settings-card">
-                <h3>Update Username</h3>
+                <h3><?php echo $text[$lang]['update_username']; ?></h3>
                 <?php if (!empty($username_success)) : ?>
                     <div class="success-message"><?php echo $username_success; ?></div>
                 <?php endif; ?>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                     <div class="form-group">
-                        <label>New Username</label>
+                        <label><?php echo $text[$lang]['username']; ?></label>
                         <input type="text" name="new_username" class="form-control" value="<?php echo htmlspecialchars($new_username); ?>">
                         <span class="help-block"><?php echo $username_err; ?></span>
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="update_username" class="btn-primary" value="Update Username">
+                        <input type="submit" name="update_username" class="btn-primary" value="<?php echo $text[$lang]['update_username']; ?>">
                     </div>
                 </form>
             </div>
             
             <!-- Password Update Form -->
             <div class="settings-card">
-                <h3>Change Password</h3>
+                <h3><?php echo $text[$lang]['change_password']; ?></h3>
                 <?php if (!empty($success_msg)) : ?>
                     <div class="success-message"><?php echo $success_msg; ?></div>
                 <?php endif; ?>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                     <div class="form-group">
-                        <label>Current Password</label>
+                        <label><?php echo $text[$lang]['current_password']; ?></label>
                         <input type="password" name="password" class="form-control">
                         <span class="help-block"><?php echo $password_err; ?></span>
                     </div>
                     <div class="form-group">
-                        <label>New Password</label>
+                        <label><?php echo $text[$lang]['new_password']; ?></label>
                         <input type="password" name="new_password" class="form-control">
                         <span class="help-block"><?php echo $new_password_err; ?></span>
                     </div>
                     <div class="form-group">
-                        <label>Confirm New Password</label>
+                        <label><?php echo $text[$lang]['confirm_password']; ?></label>
                         <input type="password" name="confirm_password" class="form-control">
                         <span class="help-block"><?php echo $confirm_password_err; ?></span>
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="update_password" class="btn-primary" value="Change Password">
+                        <input type="submit" name="update_password" class="btn-primary" value="<?php echo $text[$lang]['change_password']; ?>">
                     </div>
                 </form>
             </div>
@@ -308,7 +446,7 @@ include_once "header.php";
         
         <!-- My Reviews Section -->
         <div id="my-reviews" class="account-section active">
-            <h2>My Reviews</h2>
+            <h2><?php echo $text[$lang]['my_reviews']; ?></h2>
             
             <?php if (isset($_GET['debug']) && $_GET['debug'] == '1'): ?>
                 <div class="debug-info" style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-family: monospace; font-size: 12px;">
@@ -328,23 +466,45 @@ include_once "header.php";
                     <?php foreach ($reviews as $review): ?>
                         <div class="review-card">
                             <div class="review-header">
-                                <h3><?php echo htmlspecialchars($review["course_name"]); ?> (<?php echo htmlspecialchars($review["course_code"]); ?>)</h3>
-                                <span class="review-date"><?php echo date("M j, Y", strtotime($review["created_at"])); ?></span>
+                                <h3><?php 
+                                    // Use Japanese course name if Japanese language is selected and available
+                                    $displayCourseName = ($lang === 'ja' && !empty($review["course_name_ja"])) 
+                                        ? $review["course_name_ja"] 
+                                        : $review["course_name"];
+                                    echo htmlspecialchars($displayCourseName); 
+                                ?> (<?php echo htmlspecialchars($review["course_code"]); ?>)</h3>
+                                <span class="review-date"><?php 
+                                    // Format date based on language
+                                    $reviewDate = strtotime($review["created_at"]);
+                                    echo $lang === 'ja' 
+                                        ? date("Y年n月j日", $reviewDate) 
+                                        : date("M j, Y", $reviewDate); 
+                                ?></span>
                             </div>
                             
                             <div class="review-ratings">
                                 <div class="rating-item">
-                                    <span class="rating-label">Content Quality:</span>
+                                    <span class="rating-label"><?php echo $text[$lang]['content_quality']; ?>:</span>
                                     <span class="rating-value"><?php echo $review["content_quality"]; ?>/5</span>
                                 </div>
                                 <div class="rating-item">
-                                    <span class="rating-label">Difficulty:</span>
+                                    <span class="rating-label"><?php echo $text[$lang]['difficulty']; ?>:</span>
                                     <span class="rating-value"><?php echo $review["difficulty"]; ?>/5</span>
                                 </div>
                                 <?php if (isset($review["takes_attendance"])): ?>
                                 <div class="rating-item">
-                                    <span class="rating-label">Takes Attendance:</span>
-                                    <span class="rating-value"><?php echo htmlspecialchars($review["takes_attendance"]); ?></span>
+                                    <span class="rating-label"><?php echo $text[$lang]['takes_attendance']; ?>:</span>
+                                    <span class="rating-value"><?php 
+                                        if ($review["takes_attendance"] === 'always') {
+                                            echo $text[$lang]['always'];
+                                        } elseif ($review["takes_attendance"] === 'sometimes') {
+                                            echo $text[$lang]['sometimes'];
+                                        } elseif ($review["takes_attendance"] === 'never') {
+                                            echo $text[$lang]['never'];
+                                        } else {
+                                            echo htmlspecialchars($review["takes_attendance"]);
+                                        }
+                                    ?></span>
                                 </div>
                                 <?php endif; ?>
                             </div>
@@ -368,7 +528,7 @@ include_once "header.php";
                             <?php endif; ?>
                             
                             <div class="review-actions">
-                            <a href="course.php?course=<?php echo urlencode($review["course_name"]); ?>&professor=<?php echo isset($review["professor_name"]) ? urlencode($review["professor_name"]) : ''; ?>" class="btn-secondary">View Course</a>                                    <i class="fas fa-trash-alt"></i>
+                            <a href="course.php?course_code=<?php echo urlencode($review["course_code"]); ?>&lang=<?php echo $lang; ?>" class="btn-secondary"><?php echo $text[$lang]['view_course']; ?></a>                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
                         </div>
@@ -870,16 +1030,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="confirm-dialog-content">
                     <div class="confirm-header">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Delete Review</h3>
+                        <h3><?php echo $text[$lang]['delete_review']; ?></h3>
                         <button class="close-dialog">&times;</button>
                     </div>
                     <div class="confirm-body">
-                        <p>Are you sure you want to delete this review?</p>
-                        <p class="warning-text">This action cannot be undone.</p>
+                        <p><?php echo $text[$lang]['delete_confirm']; ?></p>
+                        <p class="warning-text"><?php echo $text[$lang]['cannot_undo']; ?></p>
                     </div>
                     <div class="confirm-buttons">
-                        <button class="cancel-btn">Cancel</button>
-                        <button class="confirm-btn">Delete</button>
+                        <button class="cancel-btn"><?php echo $text[$lang]['cancel']; ?></button>
+                        <button class="confirm-btn"><?php echo $text[$lang]['delete']; ?></button>
                     </div>
                 </div>
             `;

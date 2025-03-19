@@ -52,7 +52,7 @@ if ($courseName) {
 }
 
 // Get professor name from POST or extract from URL
-$professorName = isset($_POST['professor_name']) ? $_POST['professor_name'] : null;
+$professorName = isset($_GET['name']) ? $_GET['name'] : null;
 
 // Extract professor from URL if not provided directly
 if (!$professorName && isset($_POST['redirect_url'])) {
@@ -403,9 +403,29 @@ try {
     }
 }
 
-// Get or create professor record
+// Before setting a default professorDbId, try to get the correct professor_id from the courses table
+if (isset($courseDbId) && $courseDbId) {
+    // Look up the correct professor_id for this course
+    $profLookupStmt = $db->prepare("SELECT professor_id FROM courses WHERE id = :course_id LIMIT 1");
+    $profLookupStmt->bindValue(':course_id', $courseDbId, SQLITE3_INTEGER);
+    $profLookupResult = $profLookupStmt->execute();
+    $courseData = $profLookupResult->fetchArray(SQLITE3_ASSOC);
+    
+    // Use the professor_id from the courses table if available
+    if ($courseData && isset($courseData['professor_id']) && $courseData['professor_id']) {
+        $professorDbId = $courseData['professor_id'];
+        error_log("Found professor_id {$professorDbId} from courses table for course ID: {$courseDbId}");
+    } else {
+        error_log("No professor_id found in courses table for course ID: {$courseDbId}");
+    }
+}
+
+// Get or create professor record (only if we don't already have a professor ID from the course)
 // Initialize with a default professor ID to avoid NOT NULL constraint
-$professorDbId = 1; // Default to ID 1 (we'll update this if we find a match)
+if (!isset($professorDbId) || !$professorDbId) {
+    $professorDbId = 1; // Default to ID 1 (we'll update this if we find a match)
+}
+
 if ($professorName) {
     // Check if the professor exists
     $stmt = $db->prepare("

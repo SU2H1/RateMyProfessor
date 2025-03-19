@@ -82,9 +82,15 @@ if ($data === null) {
 
 // Get course parameters from the URL
 $courseParam = isset($_GET['course']) ? urldecode($_GET['course']) : null;
-// Fix potential encoding issues with course name
-if ($courseParam) {
-    // If we detect broken UTF-8 characters or specific problematic encodings
+$courseCodeParam = isset($_GET['course_code']) ? $_GET['course_code'] : null;
+
+// Support both old and new URL formats
+if ($courseCodeParam) {
+    // If we have course_code parameter, prefer it over course name
+    error_log("Using course_code parameter: " . $courseCodeParam);
+} else if ($courseParam) {
+    // For backward compatibility - still support course name parameter
+    // Fix potential encoding issues with course name
     if (strpos($courseParam, '�') !== false || !mb_check_encoding($courseParam, 'UTF-8')) {
         error_log("Detected encoding issues with course parameter: " . bin2hex($courseParam));
         // Try to fix by manually setting common course names
@@ -94,12 +100,17 @@ if ($courseParam) {
         }
     }
 }
+
 $professorParam = isset($_GET['professor']) ? $_GET['professor'] : null;
 $year = isset($_GET['year']) ? $_GET['year'] : null;
 
-// Debug original and processed course parameter
-error_log("Original course parameter: " . (isset($_GET['course']) ? $_GET['course'] : 'null'));
-error_log("Processed course parameter: " . ($courseParam ?? 'null'));
+// Debug parameters
+if ($courseCodeParam) {
+    error_log("Course code parameter: " . $courseCodeParam);
+} else {
+    error_log("Original course parameter: " . ($courseParam ?? 'null'));
+    error_log("Processed course parameter: " . ($courseParam ?? 'null'));
+}
 
 // Force a clean reload if we're viewing from a review submission
 if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
@@ -109,11 +120,9 @@ if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
     header("Expires: 0");
 }
 
-// No longer doing any special case handling for course names
-// Treat all courses consistently
-
 // Debug output
 error_log("Course: " . ($courseParam ?? 'none'));
+error_log("Course code: " . ($courseCodeParam ?? 'none'));
 error_log("Professor: " . ($professorParam ?? 'none'));
 error_log("Year: " . ($year ?? 'none'));
 
@@ -122,9 +131,9 @@ $lang = isset($_GET['lang']) ? $_GET['lang'] : 'ja';
 // Convert "jp" to "ja" for internal consistency
 if ($lang === 'jp') $lang = 'ja';
 
-// We need at least course name
-if (!$courseParam) {
-    echo "Course name is required.";
+// We need at least course name or course code
+if (!$courseParam && !$courseCodeParam) {
+    echo "Course information is required.";
     exit;
 }
 
@@ -148,8 +157,46 @@ $course = null;
 // Initialize dbCourse variable
 $dbCourse = null;
 
-// First try to find by direct database ID if provided
-if ($courseId && is_numeric($courseId)) {
+// First try to find by course_code if provided
+if ($courseCodeParam) {
+    try {
+        error_log("Attempting to connect to database to find course by course_code: $courseCodeParam");
+        $db = new SQLite3('database/ratemyteacher.db');
+        
+        // Try to find the course in the database by course_code
+        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE course_code = :course_code LIMIT 1");
+        $stmt->bindValue(':course_code', $courseCodeParam, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
+        
+        if ($dbCourse) {
+            error_log("Found course in database by course_code: $courseCodeParam, Name: " . ($dbCourse['name'] ?? 'Unknown'));
+            $courseId = $dbCourse['id']; // Set the course ID for later use
+            
+            // If we found the course in DB, see if we can find it in JSON data for additional info
+            foreach ($data['courses'] as $c) {
+                if (isset($c['course_id']) && $c['course_id'] === $courseCodeParam) {
+                    $course = $c;
+                    error_log("Found matching course in JSON data by course_code: " . $courseCodeParam);
+                    break;
+                }
+            }
+        } else {
+            // If not found in database, try to find it directly in JSON data
+            foreach ($data['courses'] as $c) {
+                if (isset($c['course_id']) && $c['course_id'] === $courseCodeParam) {
+                    $course = $c;
+                    error_log("Found course in JSON data by course_code: " . $courseCodeParam);
+                    break;
+                }
+            }
+        }
+    } catch (Exception $e) {
+        error_log("Database error when looking up course by course_code: " . $e->getMessage());
+    }
+}
+// Fall back to course ID if provided (legacy support)
+else if ($courseId && is_numeric($courseId)) {
     try {
         error_log("Attempting to connect to database to find course by ID: $courseId");
         $db = new SQLite3('database/ratemyteacher.db');
@@ -177,7 +224,7 @@ if ($courseId && is_numeric($courseId)) {
     }
 }
 
-// If course not yet found in JSON data but we have course name parameter, try to find it
+// If course not yet found in JSON data but we have course name parameter, try to find it (backward compatibility)
 if (!$course && $courseParam) {
     error_log("Searching for course by name parameter: $courseParam");
     
@@ -289,8 +336,8 @@ if (!$course && $courseParam) {
             // Check professor name if specified - exact match with professor's English name without spaces
             if ($professorParam) {
                 foreach ($c['professors'] as $prof) {
-                    // Check English name (without spaces)
-                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                    // Check English name (spaces replaced with + signs)
+                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '+', $prof['name']['en']) : '';
                     
                     // Check Japanese name 
                     $profNameUrlJa = isset($prof['name']['ja']) ? $prof['name']['ja'] : '';
@@ -380,7 +427,7 @@ if (!$course && $courseParam) {
                 // Check professor name if specified
                 if ($professorParam) {
                     foreach ($c['professors'] as $prof) {
-                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '+', $prof['name']['en']) : '';
                         if ($profNameUrl === $professorParam) {
                             $matchesProfessor = true;
                             break;
@@ -1001,7 +1048,7 @@ if (isset($course['semester'])) {
     }
 }
 
-// Set up category scores for display
+// Set up category scores for display 1
 $categoryScores = [
     'content' => [
         'score' => 0, 
@@ -2079,8 +2126,7 @@ $sampleReviews = [];
             <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当教員' : 'Professors'; ?></h2>
             <div class="professors">
                 <?php foreach ($course['professors'] as $professor): ?>
-                    <div class="professor-card" onclick="window.location.href='professor_page_template.php?name=<?php echo urlencode(str_replace(' ', '', $professor['name']['en'])); ?>&lang=<?php echo $lang; ?>'">
-                    <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
+                    <div class="professor-card" onclick="window.location.href='professor_page_template.php?name=<?php echo urlencode($professor['name']['en']); ?>&lang=<?php echo $lang; ?>'">                    <div class="professor-name"><?php echo htmlspecialchars($professor['name'][$lang]); ?></div>
                     <div class="professor-department"><?php echo htmlspecialchars($professor['department'][$lang]); ?></div>
                     <?php
                     // Try to get professor rating from database

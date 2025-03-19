@@ -146,7 +146,6 @@ function getTopProfessors($limit = 5) {
 }
 
 // Function to get top rated courses
-// Function to get top rated courses
 function getTopCourses($limit = 5) {
     global $conn;
     $courses = [];
@@ -240,12 +239,44 @@ function getTopCourses($limit = 5) {
                 $courses[] = $row;
             }
         }
+        
+        // If we don't have enough courses with ratings, get courses without ratings
+        if (count($courses) < $limit) {
+            $remaining = $limit - count($courses);
+            
+            // Create a string of IDs to exclude
+            $excludeIds = array_map(function($course) {
+                return $course['id'];
+            }, $courses);
+            
+            $excludeClause = count($excludeIds) > 0 ? "WHERE c.id NOT IN (" . implode(",", $excludeIds) . ")" : "";
+            
+            $stmt = $conn->prepare("
+                SELECT c.id, c.name as course_name, c.course_code, p.name as professor_name
+                FROM courses c
+                LEFT JOIN professors p ON c.professor_id = p.id
+                $excludeClause
+                LIMIT :limit
+            ");
+            $stmt->bindValue(':limit', $remaining, SQLITE3_INTEGER);
+            $result = $stmt->execute();
+            
+            while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                // Ensure we have a professor name
+                if (!isset($row['professor_name']) || empty($row['professor_name'])) {
+                    $row['professor_name'] = "Unknown Professor";
+                }
+                
+                // Add default rating
+                $row['avg_rating'] = "N/A";
+                $courses[] = $row;
+            }
+        }
     } catch (Exception $e) {
         error_log("Error fetching top courses: " . $e->getMessage());
     }
     
-    // Add placeholder data if we have few or no courses with reviews
-    // This ensures the Japanese translation code has data to work with
+    // If we still don't have enough courses, add placeholder data
     if (count($courses) < $limit) {
         $placeholders = [
             ['course_name' => 'Global Environmental Policy', 'professor_name' => 'Prof. Watanabe Kenji', 'avg_rating' => '4.8'],
@@ -254,11 +285,6 @@ function getTopCourses($limit = 5) {
             ['course_name' => 'Macroeconomic Theory', 'professor_name' => 'Prof. Nakamura Yuki', 'avg_rating' => '4.4'],
             ['course_name' => 'Public Policy Analysis', 'professor_name' => 'Dr. Tanaka Hiroshi', 'avg_rating' => '4.3']
         ];
-        
-        // These are our course translations - we'll add metadata to help identify placeholders
-        foreach ($placeholders as &$placeholder) {
-            $placeholder['is_placeholder'] = true; // Flag to identify placeholder data
-        }
         
         // Add placeholder data until we reach the limit
         $missingCount = $limit - count($courses);
@@ -397,7 +423,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher - Public Testing</title>
+    <title>Rate My Teacher - SU2H1</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -914,9 +940,9 @@ elseif (!isset($_COOKIE['language'])) {
                     $loginLabel = $currentLang == 'ja' ? 'ログイン' : 'Login';
                     $registerLabel = $currentLang == 'ja' ? '登録' : 'Register';
                     $topProfessorsLabel = $currentLang == 'ja' ? '人気の教授' : 'Top Professors';
-                    //$professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
+                    $professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
                     $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
-                    //$coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
+                    $coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
                     ?>
@@ -930,7 +956,9 @@ elseif (!isset($_COOKIE['language'])) {
                             <a href="register.php"><?php echo $registerLabel; ?></a>
                         <?php endif; ?>
                         <a href="#popular-professors"><?php echo $topProfessorsLabel; ?></a>
+                        <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $currentLang; ?>"><?php echo $professorsLabel; ?></a>
                         <a href="#top-courses"><?php echo $topCoursesLabel; ?></a>
+                        <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $currentLang; ?>"><?php echo $coursesLabel; ?></a>
                         <a href="tipsandtricks.php"><?php echo $tipsLabel; ?></a>
                         <?php if ($isLoggedIn): ?>
                             <a href="delete_account.php" class="delete-account"><?php echo $deleteAccountLabel; ?></a>
@@ -993,11 +1021,7 @@ elseif (!isset($_COOKIE['language'])) {
                 <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
                 <div class="professor-list">
                     <?php foreach ($topProfessors as $professor): ?>
-                    <?php
-                    // Replace spaces with plus signs for consistent URL handling
-                    $nameForUrl = str_replace(' ', '+', $professor['english_name']);
-                    ?>
-                    <a href="professor_page_template.php?name=<?php echo $nameForUrl; ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                    <a href="professor_page_template.php?name=<?php echo urlencode($professor['english_name']); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
                         <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
@@ -1028,37 +1052,30 @@ elseif (!isset($_COOKIE['language'])) {
                 <div class="course-list">
 
 
-
-<?php foreach ($topCourses as $course): ?>
-    <?php 
-    // Skip placeholder courses or courses without reviews
-    if (isset($course['is_placeholder']) || 
-        (!isset($course['avg_rating']) || $course['avg_rating'] === 'N/A' || $course['avg_rating'] <= 0)) {
-        continue;
-    }
-    ?>
-<a href="course.php?course_code=<?php echo urlencode($course['course_code']); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>" data-course-code="<?php echo htmlspecialchars($course['course_code']); ?>">
-            <div>
-                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
-                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
-            </div>
-            <div class="rating">
-                <?php 
-                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
-                    $fullStars = floor($course['avg_rating']);
-                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
-                    echo str_repeat('★', $fullStars);
-                    echo $hasHalfStar ? '½' : '';
-                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
-                    echo ' <span>' . $course['avg_rating'] . '</span>';
-                } else {
-                    echo '☆☆☆☆☆ <span>No ratings</span>';
-                }
-                ?>
-            </div>
-        </div>
-    </a>
-<?php endforeach; ?>
+                    <?php foreach ($topCourses as $course): ?>
+                    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
+                        <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+                            <div>
+                                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
+                                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+                            </div>
+                            <div class="rating">
+                                <?php 
+                                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
+                                    $fullStars = floor($course['avg_rating']);
+                                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
+                                    echo str_repeat('★', $fullStars);
+                                    echo $hasHalfStar ? '½' : '';
+                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                                    echo ' <span>' . $course['avg_rating'] . '</span>';
+                                } else {
+                                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </a>
+                    <?php endforeach; ?>
 
 
                     
@@ -1207,7 +1224,7 @@ elseif (!isset($_COOKIE['language'])) {
             const hasCourses = data.courses && data.courses.length > 0;
             
             if (!hasProfessors && !hasCourses) {
-                searchResultsDiv.innerHTML = `<div class="no-results">${labels.noResults}</div>`;
+                searchResultsDiv.innerHTML = `<div class="no-results">No results found for "${searchTerm}"</div>`;
                 searchResultsDiv.style.display = 'block'; // Ensure dropdown is visible
                 return;
             }
@@ -1216,62 +1233,35 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasProfessors) {
                 const profSection = document.createElement('div');
                 profSection.className = 'search-section';
-                
-                // Remove duplicate professors by ID
-                const uniqueProfessors = [];
-                const profIds = new Set();
-                
-                data.professors.forEach(prof => {
-                    // Skip if we've already seen this professor ID
-                    if (profIds.has(prof.id)) return;
-                    
-                    // Add to unique set
-                    profIds.add(prof.id);
-                    uniqueProfessors.push(prof);
-                });
-                
-                profSection.innerHTML = `<h3>${labels.professors} (${uniqueProfessors.length})</h3>`;
+                profSection.innerHTML = `<h3>Professors (${data.professors.length})</h3>`;
                 
                 const profList = document.createElement('div');
                 profList.className = 'search-list professor-search-list';
                 
-                uniqueProfessors.forEach(prof => {
+                data.professors.forEach(prof => {
                     const profItem = document.createElement('div');
                     profItem.className = 'search-item professor-search-item';
                     profItem.setAttribute('data-id', prof.id);
 
-                    // Use the appropriate language name based on current language
-                    const displayName = currentLang === 'ja' && prof.name_ja ? prof.name_ja : prof.name;
-                    const displayDepartment = currentLang === 'ja' && prof.department_ja ? prof.department_ja : prof.department;
-                    
-                    // Store both English and Japanese names as data attributes
-                    profItem.setAttribute('data-name-en', prof.name_en || prof.name);
-                    profItem.setAttribute('data-name-ja', prof.name_ja || prof.name);
-
                     const ratingHtml = generateStarRating(prof.avg_rating);
                     profItem.innerHTML = `
                         <div class="search-item-info">
-                            <h4>${displayName}</h4>
-                            <p>${displayDepartment || labels.departmentNotSpecified}</p>
+                            <h4>${prof.name}</h4>
+                            <p>${prof.department || 'Department not specified'}</p>
                         </div>
                         <div class="search-item-rating">
                             ${ratingHtml}
-                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} ${prof.review_count !== 1 ? labels.reviews : labels.review}</div>` : ''}
+                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} review${prof.review_count !== 1 ? 's' : ''}</div>` : ''}
                         </div>
                     `;
                     
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
-                        // Use name_no_spaces if available, otherwise replace spaces with '+' in the name
-                        let nameForUrl;
-                        if (prof.name_no_spaces) {
-                            nameForUrl = prof.name_no_spaces;
-                        } else {
-                            nameForUrl = (prof.name_en || prof.name).replace(/\s+/g, '+');
-                        }
-                        
-                        window.location.href = `professor_page_template.php?name=${nameForUrl}&lang=${currentLang}`;
-                        console.log(`Navigating to professor: ${nameForUrl}`);
+                        // Redirect to professor page
+                        const nameForUrl = prof.english_name ? prof.english_name.replace(/\s+/g, '') : prof.name.replace(/\s+/g, '');
+
+                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
+                        debug(`Navigating to professor: ${nameForUrl}`);
                     });
                     
                     profList.appendChild(profItem);
@@ -1285,62 +1275,42 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasCourses) {
                 const courseSection = document.createElement('div');
                 courseSection.className = 'search-section';
-                
-                // Remove duplicate courses by course_code
-                const uniqueCourses = [];
-                const courseCodes = new Set();
-                
-                data.courses.forEach(course => {
-                    const courseCode = course.course_code || course.course_id;
-                    
-                    // Skip if we've already seen this course code
-                    if (!courseCode || courseCodes.has(courseCode)) return;
-                    
-                    // Add to unique set
-                    courseCodes.add(courseCode);
-                    uniqueCourses.push(course);
-                });
-                
-                courseSection.innerHTML = `<h3>${labels.courses} (${uniqueCourses.length})</h3>`;
+                courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
                 
                 const courseList = document.createElement('div');
                 courseList.className = 'search-list course-search-list';
                 
-                uniqueCourses.forEach(course => {
+                data.courses.forEach(course => {
                     const courseItem = document.createElement('div');
                     courseItem.className = 'search-item course-search-item';
                     courseItem.setAttribute('data-id', course.id);
                     
-                    // Use appropriate language for display
-                    const displayName = currentLang === 'ja' && course.name_ja ? course.name_ja : course.name;
-                    const displayProfessor = currentLang === 'ja' && course.professor_name_ja ? course.professor_name_ja : course.professor_name;
-                    
-                    // Store both language versions as data attributes
-                    courseItem.setAttribute('data-name-en', course.name_en || course.name);
-                    courseItem.setAttribute('data-name-ja', course.name_ja || course.name);
-                    
                     const ratingHtml = generateStarRating(course.avg_rating);
                     courseItem.innerHTML = `
                         <div class="search-item-info">
-                            <h4>${displayName}</h4>
-                            <p>${displayProfessor ? `${labels.professor}: ${displayProfessor}` : ''} ${course.course_code ? `· ${labels.code}: ${course.course_code}` : ''}</p>
+                            <h4>${course.name}</h4>
+                            <p>${course.professor_name ? `Professor: ${course.professor_name}` : ''} ${course.course_code ? `· Code: ${course.course_code}` : ''}</p>
                         </div>
                         <div class="search-item-rating">
                             ${ratingHtml}
-                            ${course.review_count ? `<div class="rating-count">${course.review_count} ${course.review_count !== 1 ? labels.reviews : labels.review}</div>` : ''}
+                            ${course.review_count ? `<div class="rating-count">${course.review_count} review${course.review_count !== 1 ? 's' : ''}</div>` : ''}
                         </div>
                     `;
                     
                     // Add click event to view course page
                     courseItem.addEventListener('click', () => {
-                        // Use course_code for URL instead of course name
-                        const courseCode = course.course_code || course.course_id || '';
-                        
-                        // Use course code parameter instead of course name
-                        let url = `course.php?course_code=${encodeURIComponent(courseCode)}`;
+                        const nameForUrl = course.english_course_name || course.name;
+
+                        let url = `course_page_template.php?course=${encodeURIComponent(nameForUrl)}`;
+                        if (course.english_professor_name || course.professor_name) {
+                            // Remove spaces from professor name for URL
+                            const profNameForUrl = (course.english_professor_name || course.professor_name).replace(/\s+/g, '');
+                            url += `&professor=${encodeURIComponent(profNameForUrl)}`;
+                        }
                         url += `&lang=${currentLang}`;
                         window.location.href = url;
-                        console.log(`Navigating to course code: ${courseCode}`);
+                        debug(`Navigating to course: ${nameForUrl}`);
+
                     });
                     
                     courseList.appendChild(courseItem);
@@ -1411,11 +1381,8 @@ elseif (!isset($_COOKIE['language'])) {
                         const profName = item.querySelector('h3').textContent;
                         console.log("Professor name from HTML:", profName);
                         
-                        // Replace spaces with plus signs for consistent URL format
-                        const profNameForUrl = profName.replace(/\s+/g, '+');
-                        
                         // Create the redirect URL with the current language - no ID needed
-                        const redirectUrl = `professor_page_template.php?name=${profNameForUrl}&lang=${currentLang}`;
+                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profName)}&lang=${currentLang}`;
                         console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect
@@ -1460,12 +1427,9 @@ elseif (!isset($_COOKIE['language'])) {
                         const courseName = item.querySelector('h3').textContent;
                         console.log("Course name from HTML:", courseName);
                         
-                        // Get course_code from data-course-code attribute if available
-                        const courseCode = item.getAttribute('data-course-code') || '';
-                        
-                        // Create the redirect URL with course_code
-                        const redirectUrl = `course.php?course_code=${encodeURIComponent(courseCode)}&lang=${currentLang}`;
-                        console.log("Redirecting to course code:", courseCode);
+                        // Create the redirect URL with the current language - using course.php instead
+                        const redirectUrl = `course.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
+                        console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect
                         location.href = redirectUrl;
