@@ -2261,11 +2261,25 @@ $sampleReviews = [];
 
 <!-- Student Reviews section follows after the grade distribution and failure rate -->
 
-        <div class="reviews">
-            <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
-            <?php if (!empty($reviews)): ?>
+<div class="reviews">
+    <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
+    <?php if (!empty($reviews)): ?>
+        <div class="<?php echo (!$isLoggedIn) ? 'review-login-overlay' : ''; ?>">
+            <?php if (!$isLoggedIn): ?>
+            <div class="login-message">
+                <h3><?php echo $lang === 'ja' ? 'ログインするとレビューが見られます' : 'Log in to see reviews'; ?></h3>
+                <p><?php echo $lang === 'ja' ? '学生のレビューを閲覧するにはログインが必要です。' : 'You need to log in to view student reviews.'; ?></p>
+                <div class="login-buttons">
+                    <a href="login.php" class="login-btn"><?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?></a>
+                    <a href="register.php" class="register-btn"><?php echo $lang === 'ja' ? '登録' : 'Register'; ?></a>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <div class="<?php echo (!$isLoggedIn) ? 'blur-content' : ''; ?>">
                 <?php foreach ($reviews as $review): ?>
                 <div class="review-card" id="review-<?php echo $review['id']; ?>">
+                    <!-- Review content remains the same -->
                     <div class="review-header">
                         <div class="reviewer"><?php echo htmlspecialchars($review['username']); ?></div>
                         <div class="review-date">
@@ -2494,15 +2508,17 @@ $sampleReviews = [];
                     </div>
                 </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <div style="text-align: center; padding: 40px 20px; color: var(--secondary-color); background-color: white; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-size: 64px; margin-bottom: 10px;">
-                        <i class="far fa-comment-dots"></i>
-                    </div>
-                    <h3><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
-                    <p><?php echo $lang === 'ja' ? 'この講義の最初のレビューを投稿しましょう！' : 'Be the first to review this course!'; ?></p>
-                </div>
-            <?php endif; ?>
+            </div>
+        </div>
+    <?php else: ?>
+        <div style="text-align: center; padding: 40px 20px; color: var(--secondary-color); background-color: white; border-radius: 8px; margin-bottom: 20px;">
+            <div style="font-size: 64px; margin-bottom: 10px;">
+                <i class="far fa-comment-dots"></i>
+            </div>
+            <h3><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
+            <p><?php echo $lang === 'ja' ? 'この講義の最初のレビューを投稿しましょう！' : 'Be the first to review this course!'; ?></p>
+        </div>
+    <?php endif; ?>
             
             <a href="#rating-form" class="add-review-btn">
                 <?php echo $lang === 'ja' ? 'レビューを投稿する' : 'Post a Review'; ?>
@@ -2732,6 +2748,72 @@ $sampleReviews = [];
         /* Add hover effect for dropdown menu */
         .dropdown:hover .dropdown-content {
             display: block !important;
+        }
+        /* Review blur styles for non-logged in users */
+        .blur-content {
+            filter: blur(5px);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .review-login-overlay {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .login-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(30, 58, 138, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .login-message h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .login-message p {
+            margin-bottom: 20px;
+        }
+
+        .login-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .login-btn, .register-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn {
+            background-color: white;
+            color: #1e3a8a;
+        }
+
+        .register-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            opacity: 0.9;
         }
     </style>
     <script>
