@@ -82,9 +82,15 @@ if ($data === null) {
 
 // Get course parameters from the URL
 $courseParam = isset($_GET['course']) ? urldecode($_GET['course']) : null;
-// Fix potential encoding issues with course name
-if ($courseParam) {
-    // If we detect broken UTF-8 characters or specific problematic encodings
+$courseCodeParam = isset($_GET['course_code']) ? $_GET['course_code'] : null;
+
+// Support both old and new URL formats
+if ($courseCodeParam) {
+    // If we have course_code parameter, prefer it over course name
+    error_log("Using course_code parameter: " . $courseCodeParam);
+} else if ($courseParam) {
+    // For backward compatibility - still support course name parameter
+    // Fix potential encoding issues with course name
     if (strpos($courseParam, '�') !== false || !mb_check_encoding($courseParam, 'UTF-8')) {
         error_log("Detected encoding issues with course parameter: " . bin2hex($courseParam));
         // Try to fix by manually setting common course names
@@ -94,12 +100,17 @@ if ($courseParam) {
         }
     }
 }
+
 $professorParam = isset($_GET['professor']) ? $_GET['professor'] : null;
 $year = isset($_GET['year']) ? $_GET['year'] : null;
 
-// Debug original and processed course parameter
-error_log("Original course parameter: " . (isset($_GET['course']) ? $_GET['course'] : 'null'));
-error_log("Processed course parameter: " . ($courseParam ?? 'null'));
+// Debug parameters
+if ($courseCodeParam) {
+    error_log("Course code parameter: " . $courseCodeParam);
+} else {
+    error_log("Original course parameter: " . ($courseParam ?? 'null'));
+    error_log("Processed course parameter: " . ($courseParam ?? 'null'));
+}
 
 // Force a clean reload if we're viewing from a review submission
 if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
@@ -109,11 +120,9 @@ if (isset($_GET['new_review']) && $_GET['new_review'] == 1) {
     header("Expires: 0");
 }
 
-// No longer doing any special case handling for course names
-// Treat all courses consistently
-
 // Debug output
 error_log("Course: " . ($courseParam ?? 'none'));
+error_log("Course code: " . ($courseCodeParam ?? 'none'));
 error_log("Professor: " . ($professorParam ?? 'none'));
 error_log("Year: " . ($year ?? 'none'));
 
@@ -122,9 +131,9 @@ $lang = isset($_GET['lang']) ? $_GET['lang'] : 'ja';
 // Convert "jp" to "ja" for internal consistency
 if ($lang === 'jp') $lang = 'ja';
 
-// We need at least course name
-if (!$courseParam) {
-    echo "Course name is required.";
+// We need at least course name or course code
+if (!$courseParam && !$courseCodeParam) {
+    echo "Course information is required.";
     exit;
 }
 
@@ -148,8 +157,46 @@ $course = null;
 // Initialize dbCourse variable
 $dbCourse = null;
 
-// First try to find by direct database ID if provided
-if ($courseId && is_numeric($courseId)) {
+// First try to find by course_code if provided
+if ($courseCodeParam) {
+    try {
+        error_log("Attempting to connect to database to find course by course_code: $courseCodeParam");
+        $db = new SQLite3('database/ratemyteacher.db');
+        
+        // Try to find the course in the database by course_code
+        $stmt = $db->prepare("SELECT id, name, course_code FROM courses WHERE course_code = :course_code LIMIT 1");
+        $stmt->bindValue(':course_code', $courseCodeParam, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $dbCourse = $result->fetchArray(SQLITE3_ASSOC);
+        
+        if ($dbCourse) {
+            error_log("Found course in database by course_code: $courseCodeParam, Name: " . ($dbCourse['name'] ?? 'Unknown'));
+            $courseId = $dbCourse['id']; // Set the course ID for later use
+            
+            // If we found the course in DB, see if we can find it in JSON data for additional info
+            foreach ($data['courses'] as $c) {
+                if (isset($c['course_id']) && $c['course_id'] === $courseCodeParam) {
+                    $course = $c;
+                    error_log("Found matching course in JSON data by course_code: " . $courseCodeParam);
+                    break;
+                }
+            }
+        } else {
+            // If not found in database, try to find it directly in JSON data
+            foreach ($data['courses'] as $c) {
+                if (isset($c['course_id']) && $c['course_id'] === $courseCodeParam) {
+                    $course = $c;
+                    error_log("Found course in JSON data by course_code: " . $courseCodeParam);
+                    break;
+                }
+            }
+        }
+    } catch (Exception $e) {
+        error_log("Database error when looking up course by course_code: " . $e->getMessage());
+    }
+}
+// Fall back to course ID if provided (legacy support)
+else if ($courseId && is_numeric($courseId)) {
     try {
         error_log("Attempting to connect to database to find course by ID: $courseId");
         $db = new SQLite3('database/ratemyteacher.db');
@@ -177,7 +224,7 @@ if ($courseId && is_numeric($courseId)) {
     }
 }
 
-// If course not yet found in JSON data but we have course name parameter, try to find it
+// If course not yet found in JSON data but we have course name parameter, try to find it (backward compatibility)
 if (!$course && $courseParam) {
     error_log("Searching for course by name parameter: $courseParam");
     
@@ -289,8 +336,8 @@ if (!$course && $courseParam) {
             // Check professor name if specified - exact match with professor's English name without spaces
             if ($professorParam) {
                 foreach ($c['professors'] as $prof) {
-                    // Check English name (without spaces)
-                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                    // Check English name (spaces replaced with + signs)
+                    $profNameUrlEn = isset($prof['name']['en']) ? str_replace(' ', '+', $prof['name']['en']) : '';
                     
                     // Check Japanese name 
                     $profNameUrlJa = isset($prof['name']['ja']) ? $prof['name']['ja'] : '';
@@ -380,7 +427,7 @@ if (!$course && $courseParam) {
                 // Check professor name if specified
                 if ($professorParam) {
                     foreach ($c['professors'] as $prof) {
-                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '', $prof['name']['en']) : '';
+                        $profNameUrl = isset($prof['name']['en']) ? str_replace(' ', '+', $prof['name']['en']) : '';
                         if ($profNameUrl === $professorParam) {
                             $matchesProfessor = true;
                             break;
@@ -2054,10 +2101,24 @@ $sampleReviews = [];
                 </div>
             </div>
 
-        <div class="rating-overview" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
+            <div class="rating-overview" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
+    <div class="<?php echo (!$isLoggedIn) ? 'review-login-overlay' : ''; ?>" style="width: 100%;">
+        <?php if (!$isLoggedIn): ?>
+        <div class="login-message">
+            <h3><?php echo $lang === 'ja' ? 'ログインすると詳細情報が見られます' : 'Log in to see course analytics'; ?></h3>
+            <p><?php echo $lang === 'ja' ? 'コース評価や難易度データを閲覧するにはログインが必要です。' : 'You need to log in to view course ratings and difficulty data.'; ?></p>
+            <div class="login-buttons">
+                <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-btn"><?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?></a>
+                <a href="register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="register-btn"><?php echo $lang === 'ja' ? '登録' : 'Register'; ?></a>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <div class="<?php echo (!$isLoggedIn) ? 'blur-content' : ''; ?>">
             <div class="rating-details" style="flex-grow: 1; min-width: 300px;">
                 <?php foreach ($categoryScores as $key => $category): ?>
                 <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <!-- Content remains the same -->
                     <div class="category-name" style="width: 200px; font-size: 0.95em; color: #444;">
                         <?php echo $category['label']; ?>
                         <div style="font-size: 0.8em; color: #666;">
@@ -2074,6 +2135,8 @@ $sampleReviews = [];
                 <?php endforeach; ?>
             </div>
         </div>
+    </div>
+</div>
 
         <div class="professor-info" style="margin-bottom: 30px;">
             <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当教員' : 'Professors'; ?></h2>
@@ -2117,10 +2180,23 @@ $sampleReviews = [];
 
         <!-- Replace your existing course-info grid with this centered layout -->
         <div style="text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
-            <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; width: 100%; text-align: center;">
-                <?php echo $lang === 'ja' ? '成績分布と落単率' : 'Grade Distribution and Failure Rate'; ?>
-            </h2>
-            
+    <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; width: 100%; text-align: center;">
+        <?php echo $lang === 'ja' ? '成績分布と落単率' : 'Grade Distribution and Failure Rate'; ?>
+    </h2>
+    
+    <div class="<?php echo (!$isLoggedIn) ? 'review-login-overlay' : ''; ?>" style="width: 100%; position: relative;">
+        <?php if (!$isLoggedIn): ?>
+        <div class="login-message">
+            <h3><?php echo $lang === 'ja' ? 'ログインすると成績データが見られます' : 'Log in to see grade data'; ?></h3>
+            <p><?php echo $lang === 'ja' ? '成績分布と落単率データを閲覧するにはログインが必要です。' : 'You need to log in to view grade distribution and failure rate data.'; ?></p>
+            <div class="login-buttons">
+                <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-btn"><?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?></a>
+                <a href="register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="register-btn"><?php echo $lang === 'ja' ? '登録' : 'Register'; ?></a>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <div class="<?php echo (!$isLoggedIn) ? 'blur-content' : ''; ?>">
             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; width: 100%; max-width: 1000px;">
                 <!-- Grade Distribution -->
                 <div style="flex: 1; min-width: 300px; max-width: 500px;">
@@ -2214,11 +2290,25 @@ $sampleReviews = [];
 
 <!-- Student Reviews section follows after the grade distribution and failure rate -->
 
-        <div class="reviews">
-            <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
-            <?php if (!empty($reviews)): ?>
+<div class="reviews">
+    <h2 class="section-title"><?php echo $lang === 'ja' ? '学生のレビュー' : 'Student Reviews'; ?></h2>
+    <?php if (!empty($reviews)): ?>
+        <div class="<?php echo (!$isLoggedIn) ? 'review-login-overlay' : ''; ?>">
+            <?php if (!$isLoggedIn): ?>
+            <div class="login-message">
+        <h3><?php echo $lang === 'ja' ? 'ログインするとレビューが見られます' : 'Log in to see reviews'; ?></h3>
+        <p><?php echo $lang === 'ja' ? '学生のレビューを閲覧するにはログインが必要です。' : 'You need to log in to view student reviews.'; ?></p>
+        <div class="login-buttons">
+            <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-btn"><?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?></a>
+            <a href="register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="register-btn"><?php echo $lang === 'ja' ? '登録' : 'Register'; ?></a>
+        </div>
+    </div>
+            <?php endif; ?>
+            
+            <div class="<?php echo (!$isLoggedIn) ? 'blur-content' : ''; ?>">
                 <?php foreach ($reviews as $review): ?>
                 <div class="review-card" id="review-<?php echo $review['id']; ?>">
+                    <!-- Review content remains the same -->
                     <div class="review-header">
                         <div class="reviewer"><?php echo htmlspecialchars($review['username']); ?></div>
                         <div class="review-date">
@@ -2245,31 +2335,32 @@ $sampleReviews = [];
                         </div>
                         
                         <!-- Content & Difficulty Ratings -->
+<!-- Content & Difficulty Ratings -->
                         <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 10px; font-size: 14px;">
                             <?php if (isset($review['content_rating'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '授業内容:' : 'Content:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '授業内容:' : 'Content:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['content_rating']; ?>/5</span>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (isset($review['difficulty_rating'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '難易度:' : 'Difficulty:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '難易度:' : 'Difficulty:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['difficulty_rating']; ?>/5</span>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($review['grade'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '成績:' : 'Grade:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '成績:' : 'Grade:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['grade']; ?></span>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($review['textbook'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;">
                                     <?php 
                                     echo $lang === 'ja' ? 
@@ -2292,7 +2383,7 @@ $sampleReviews = [];
                             
                             <?php if (!empty($review['attendance_check'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '出席確認:' : 'Attendance:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '出席確認:' : 'Attendance:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;">
                                     <?php 
                                     echo $lang === 'ja' ? 
@@ -2319,10 +2410,10 @@ $sampleReviews = [];
                         // Parse first_half and second_half JSON if they exist
                         $firstHalf = [];
                         $secondHalf = [];
-                        
+
                         error_log("first_half value: " . (isset($review['first_half']) ? $review['first_half'] : 'not set'));
                         error_log("second_half value: " . (isset($review['second_half']) ? $review['second_half'] : 'not set'));
-                        
+
                         if (!empty($review['first_half'])) {
                             if (is_string($review['first_half'])) {
                                 try {
@@ -2342,7 +2433,7 @@ $sampleReviews = [];
                                 $firstHalf = $review['first_half'];
                             }
                         }
-                        
+
                         if (!empty($review['second_half'])) {
                             if (is_string($review['second_half'])) {
                                 try {
@@ -2362,18 +2453,18 @@ $sampleReviews = [];
                                 $secondHalf = $review['second_half'];
                             }
                         }
-                        
+
                         error_log("Parsed first_half: " . print_r($firstHalf, true));
                         error_log("Parsed second_half: " . print_r($secondHalf, true));
-                        
+
                         // Only display assessment methods if we have data
                         if (!empty($firstHalf) || !empty($secondHalf)):
                         ?>
                         <div style="margin-top: 15px; font-size: 14px;">
                             <?php if (!empty($firstHalf)): ?>
                             <div style="margin-bottom: 8px;">
-                                <span style="font-weight: bold; color: #666;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></span>
-                                <span>
+                                <span style="font-weight: bold; color: #000000;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></span>
+                                <span style="color: #000000;">
                                     <?php 
                                     $firstHalfLabels = [];
                                     foreach ($firstHalf as $method) {
@@ -2403,8 +2494,8 @@ $sampleReviews = [];
                             
                             <?php if (!empty($secondHalf)): ?>
                             <div>
-                                <span style="font-weight: bold; color: #666;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></span>
-                                <span>
+                                <span style="font-weight: bold; color: #000000;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></span>
+                                <span style="color: #000000;">
                                     <?php 
                                     $secondHalfLabels = [];
                                     foreach ($secondHalf as $method) {
@@ -2433,11 +2524,10 @@ $sampleReviews = [];
                             <?php endif; ?>
                         </div>
                         <?php endif; ?>
-                    </div>
                     
                     <!-- Review Content -->
                     <?php if (!empty($review['comment'])): ?>
-                    <div class="review-content" style="margin-bottom: 10px;">
+                    <div class="review-content" style="margin-bottom: 10px; color: #000000;">
                         <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
                     </div>
                     <?php endif; ?>
@@ -2447,15 +2537,17 @@ $sampleReviews = [];
                     </div>
                 </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <div style="text-align: center; padding: 40px 20px; color: var(--secondary-color); background-color: white; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-size: 64px; margin-bottom: 10px;">
-                        <i class="far fa-comment-dots"></i>
-                    </div>
-                    <h3><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
-                    <p><?php echo $lang === 'ja' ? 'この講義の最初のレビューを投稿しましょう！' : 'Be the first to review this course!'; ?></p>
-                </div>
-            <?php endif; ?>
+            </div>
+        </div>
+    <?php else: ?>
+        <div style="text-align: center; padding: 40px 20px; color: var(--secondary-color); background-color: white; border-radius: 8px; margin-bottom: 20px;">
+            <div style="font-size: 64px; margin-bottom: 10px;">
+                <i class="far fa-comment-dots"></i>
+            </div>
+            <h3><?php echo $lang === 'ja' ? 'まだレビューがありません' : 'No Reviews Yet'; ?></h3>
+            <p><?php echo $lang === 'ja' ? 'この講義の最初のレビューを投稿しましょう！' : 'Be the first to review this course!'; ?></p>
+        </div>
+    <?php endif; ?>
             
             <a href="#rating-form" class="add-review-btn">
                 <?php echo $lang === 'ja' ? 'レビューを投稿する' : 'Post a Review'; ?>
@@ -2686,8 +2778,139 @@ $sampleReviews = [];
         .dropdown:hover .dropdown-content {
             display: block !important;
         }
+        /* Review blur styles for non-logged in users */
+        .blur-content {
+            filter: blur(5px);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .review-login-overlay {
+            position: relative;
+            margin: 30px 0;
+        }
+
+    @media (max-width: 767px) {
+        .login-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(30, 58, 138, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            min-height: 200px;
+            display: flex;
+            lex-direction: column;
+            justify-content: center;
+        }
+    }
+
+        .login-message h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .login-message p {
+            margin-bottom: 20px;
+        }
+
+        .login-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .login-btn, .register-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn {
+            background-color: white;
+            color: #1e3a8a;
+        }
+
+        .register-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            opacity: 0.9;
+        }
+        .review-login-overlay {
+    position: relative;
+    margin: 30px 0;
+    width: 100%;
+}
     </style>
     <script>
+    function showLoginPrompt() {
+        // Create login prompt modal
+        const loginModal = document.createElement('div');
+        loginModal.style.cssText = 'position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;';
+        
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = 'background-color: white; padding: 30px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);';
+        
+        // Check current language
+        const isJapanese = '<?php echo $lang; ?>' === 'ja';
+        
+        const title = document.createElement('h3');
+        title.textContent = isJapanese ? 'ログインが必要です' : 'Login Required';
+        title.style.cssText = 'color: #1e3a8a; margin-top: 0;';
+        
+        const message = document.createElement('p');
+        message.textContent = isJapanese 
+            ? 'レビューを投稿するにはログインが必要です。' 
+            : 'You need to be logged in to post a review.';
+        message.style.cssText = 'margin-bottom: 20px;';
+        
+        const buttonContainer = document.createElement('div');
+        
+        // Get current URL for redirect
+        const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        
+        const loginButton = document.createElement('a');
+        loginButton.textContent = isJapanese ? 'ログイン' : 'Login';
+        loginButton.href = 'login.php?redirect=' + currentUrl;
+        loginButton.style.cssText = 'display: inline-block; background-color: #1e3a8a; color: white; padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px;';
+        
+        const registerButton = document.createElement('a');
+        registerButton.textContent = isJapanese ? '登録' : 'Register';
+        registerButton.href = 'register.php?redirect=' + currentUrl;
+        registerButton.style.cssText = 'display: inline-block; background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;';
+        
+        const closeButton = document.createElement('button');
+        closeButton.textContent = isJapanese ? '閉じる' : 'Close';
+        closeButton.style.cssText = 'display: block; width: 100%; background-color: #f8f9fa; border: 1px solid #ddd; color: #333; padding: 10px; margin-top: 15px; border-radius: 4px; cursor: pointer;';
+        closeButton.onclick = function() {
+            document.body.removeChild(loginModal);
+        };
+        
+        buttonContainer.appendChild(loginButton);
+        buttonContainer.appendChild(registerButton);
+        
+        modalContent.appendChild(title);
+        modalContent.appendChild(message);
+        modalContent.appendChild(buttonContainer);
+        modalContent.appendChild(closeButton);
+        
+        loginModal.appendChild(modalContent);
+        document.body.appendChild(loginModal);
+    }
     </script>
 
 <!-- 1. First, find and close your content div before the footer -->
@@ -2762,12 +2985,13 @@ $sampleReviews = [];
         document.addEventListener('DOMContentLoaded', function() {
             // Add click event to review button if not logged in
             const reviewBtn = document.querySelector('.add-review-btn');
-            if (reviewBtn && !reviewBtn.getAttribute('href').startsWith('#')) {
+            if (reviewBtn) {
+                <?php if (!$isLoggedIn): ?>
                 reviewBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    alert('<?php echo $lang === 'ja' ? 'レビューを投稿するにはログインが必要です。' : 'You need to log in to post a review.'; ?>');
-                    window.location.href = 'login.php';
+                    showLoginPrompt();
                 });
+                <?php endif; ?>
             }
 
             // Rating form enhancements for logged in users
