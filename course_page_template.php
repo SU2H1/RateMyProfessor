@@ -2267,13 +2267,13 @@ $sampleReviews = [];
         <div class="<?php echo (!$isLoggedIn) ? 'review-login-overlay' : ''; ?>">
             <?php if (!$isLoggedIn): ?>
             <div class="login-message">
-                <h3><?php echo $lang === 'ja' ? 'ログインするとレビューが見られます' : 'Log in to see reviews'; ?></h3>
-                <p><?php echo $lang === 'ja' ? '学生のレビューを閲覧するにはログインが必要です。' : 'You need to log in to view student reviews.'; ?></p>
-                <div class="login-buttons">
-                    <a href="login.php" class="login-btn"><?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?></a>
-                    <a href="register.php" class="register-btn"><?php echo $lang === 'ja' ? '登録' : 'Register'; ?></a>
-                </div>
-            </div>
+        <h3><?php echo $lang === 'ja' ? 'ログインするとレビューが見られます' : 'Log in to see reviews'; ?></h3>
+        <p><?php echo $lang === 'ja' ? '学生のレビューを閲覧するにはログインが必要です。' : 'You need to log in to view student reviews.'; ?></p>
+        <div class="login-buttons">
+            <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-btn"><?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?></a>
+            <a href="register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="register-btn"><?php echo $lang === 'ja' ? '登録' : 'Register'; ?></a>
+        </div>
+    </div>
             <?php endif; ?>
             
             <div class="<?php echo (!$isLoggedIn) ? 'blur-content' : ''; ?>">
@@ -2840,14 +2840,17 @@ $sampleReviews = [];
         
         const buttonContainer = document.createElement('div');
         
+        // Get current URL for redirect
+        const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        
         const loginButton = document.createElement('a');
         loginButton.textContent = isJapanese ? 'ログイン' : 'Login';
-        loginButton.href = 'login.php';
+        loginButton.href = 'login.php?redirect=' + currentUrl;
         loginButton.style.cssText = 'display: inline-block; background-color: #1e3a8a; color: white; padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px;';
         
         const registerButton = document.createElement('a');
         registerButton.textContent = isJapanese ? '登録' : 'Register';
-        registerButton.href = 'register.php';
+        registerButton.href = 'register.php?redirect=' + currentUrl;
         registerButton.style.cssText = 'display: inline-block; background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;';
         
         const closeButton = document.createElement('button');
