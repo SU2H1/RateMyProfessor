@@ -2367,10 +2367,10 @@ $sampleReviews = [];
                         // Parse first_half and second_half JSON if they exist
                         $firstHalf = [];
                         $secondHalf = [];
-                        
+
                         error_log("first_half value: " . (isset($review['first_half']) ? $review['first_half'] : 'not set'));
                         error_log("second_half value: " . (isset($review['second_half']) ? $review['second_half'] : 'not set'));
-                        
+
                         if (!empty($review['first_half'])) {
                             if (is_string($review['first_half'])) {
                                 try {
@@ -2390,7 +2390,7 @@ $sampleReviews = [];
                                 $firstHalf = $review['first_half'];
                             }
                         }
-                        
+
                         if (!empty($review['second_half'])) {
                             if (is_string($review['second_half'])) {
                                 try {
@@ -2410,18 +2410,18 @@ $sampleReviews = [];
                                 $secondHalf = $review['second_half'];
                             }
                         }
-                        
+
                         error_log("Parsed first_half: " . print_r($firstHalf, true));
                         error_log("Parsed second_half: " . print_r($secondHalf, true));
-                        
+
                         // Only display assessment methods if we have data
                         if (!empty($firstHalf) || !empty($secondHalf)):
                         ?>
                         <div style="margin-top: 15px; font-size: 14px;">
                             <?php if (!empty($firstHalf)): ?>
                             <div style="margin-bottom: 8px;">
-                                <span style="font-weight: bold; color: #666;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></span>
-                                <span>
+                                <span style="font-weight: bold; color: #000000;"><?php echo $lang === 'ja' ? '授業前半:' : 'First Half:'; ?></span>
+                                <span style="color: #000000;">
                                     <?php 
                                     $firstHalfLabels = [];
                                     foreach ($firstHalf as $method) {
@@ -2451,8 +2451,8 @@ $sampleReviews = [];
                             
                             <?php if (!empty($secondHalf)): ?>
                             <div>
-                                <span style="font-weight: bold; color: #666;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></span>
-                                <span>
+                                <span style="font-weight: bold; color: #000000;"><?php echo $lang === 'ja' ? '授業後半:' : 'Second Half:'; ?></span>
+                                <span style="color: #000000;">
                                     <?php 
                                     $secondHalfLabels = [];
                                     foreach ($secondHalf as $method) {
@@ -2481,11 +2481,10 @@ $sampleReviews = [];
                             <?php endif; ?>
                         </div>
                         <?php endif; ?>
-                    </div>
                     
                     <!-- Review Content -->
                     <?php if (!empty($review['comment'])): ?>
-                    <div class="review-content" style="margin-bottom: 10px;">
+                    <div class="review-content" style="margin-bottom: 10px; color: #000000;">
                         <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
                     </div>
                     <?php endif; ?>
