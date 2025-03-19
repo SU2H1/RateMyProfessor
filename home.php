@@ -1065,8 +1065,58 @@ elseif (!isset($_COOKIE['language'])) {
                 </div>
             </div>
         </main>
+        <div style="margin: 0 2rem 2rem;">
+    <a href="https://www.amazon.co.jp/b?node=2410972051&tag=su2h1-22" target="_blank" style="display: block; text-decoration: none; font-size: 0; line-height: 0;">
+        <img src="/Images/amazon-prime-student-banner.png" alt="Amazon Prime Student" style="width: 100%; display: block; border: none; margin: 0; padding: 0; box-shadow: none; border-radius: 0;">
+    </a>
+</div>
+
+<style>
+/* Amazon Banner Styles */
+.amazon-banner-section {
+    margin: 0 2rem 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.amazon-banner-link {
+    display: block;
+    width: 100%;
+    cursor: pointer;
+}
+
+.amazon-banner-image {
+    width: 100%;
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .amazon-banner-section {
+        margin: 0 1.5rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .amazon-banner-section {
+        margin: 0 1rem 1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Track banner click (optional)
+    const amazonBanner = document.querySelector('.amazon-banner-link');
+    if (amazonBanner) {
+        amazonBanner.addEventListener('click', function() {
+            console.log('Amazon Prime Student banner clicked');
+        });
+    }
+});
+</script>
         
-        <!-- Tips link redirects to tipsandtricks.php -->
         
         <!-- Modals for professor details -->
         <div id="professorModal" class="modal">
