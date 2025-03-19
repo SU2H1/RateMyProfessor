@@ -2735,6 +2735,57 @@ $sampleReviews = [];
         }
     </style>
     <script>
+    function showLoginPrompt() {
+        // Create login prompt modal
+        const loginModal = document.createElement('div');
+        loginModal.style.cssText = 'position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;';
+        
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = 'background-color: white; padding: 30px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);';
+        
+        // Check current language
+        const isJapanese = '<?php echo $lang; ?>' === 'ja';
+        
+        const title = document.createElement('h3');
+        title.textContent = isJapanese ? 'ログインが必要です' : 'Login Required';
+        title.style.cssText = 'color: #1e3a8a; margin-top: 0;';
+        
+        const message = document.createElement('p');
+        message.textContent = isJapanese 
+            ? 'レビューを投稿するにはログインが必要です。' 
+            : 'You need to be logged in to post a review.';
+        message.style.cssText = 'margin-bottom: 20px;';
+        
+        const buttonContainer = document.createElement('div');
+        
+        const loginButton = document.createElement('a');
+        loginButton.textContent = isJapanese ? 'ログイン' : 'Login';
+        loginButton.href = 'login.php';
+        loginButton.style.cssText = 'display: inline-block; background-color: #1e3a8a; color: white; padding: 10px 20px; margin-right: 10px; text-decoration: none; border-radius: 4px;';
+        
+        const registerButton = document.createElement('a');
+        registerButton.textContent = isJapanese ? '登録' : 'Register';
+        registerButton.href = 'register.php';
+        registerButton.style.cssText = 'display: inline-block; background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;';
+        
+        const closeButton = document.createElement('button');
+        closeButton.textContent = isJapanese ? '閉じる' : 'Close';
+        closeButton.style.cssText = 'display: block; width: 100%; background-color: #f8f9fa; border: 1px solid #ddd; color: #333; padding: 10px; margin-top: 15px; border-radius: 4px; cursor: pointer;';
+        closeButton.onclick = function() {
+            document.body.removeChild(loginModal);
+        };
+        
+        buttonContainer.appendChild(loginButton);
+        buttonContainer.appendChild(registerButton);
+        
+        modalContent.appendChild(title);
+        modalContent.appendChild(message);
+        modalContent.appendChild(buttonContainer);
+        modalContent.appendChild(closeButton);
+        
+        loginModal.appendChild(modalContent);
+        document.body.appendChild(loginModal);
+    }
     </script>
 
 <!-- 1. First, find and close your content div before the footer -->
@@ -2809,12 +2860,13 @@ $sampleReviews = [];
         document.addEventListener('DOMContentLoaded', function() {
             // Add click event to review button if not logged in
             const reviewBtn = document.querySelector('.add-review-btn');
-            if (reviewBtn && !reviewBtn.getAttribute('href').startsWith('#')) {
+            if (reviewBtn) {
+                <?php if (!$isLoggedIn): ?>
                 reviewBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    alert('<?php echo $lang === 'ja' ? 'レビューを投稿するにはログインが必要です。' : 'You need to log in to post a review.'; ?>');
-                    window.location.href = 'login.php';
+                    showLoginPrompt();
                 });
+                <?php endif; ?>
             }
 
             // Rating form enhancements for logged in users
