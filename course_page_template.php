@@ -2292,31 +2292,32 @@ $sampleReviews = [];
                         </div>
                         
                         <!-- Content & Difficulty Ratings -->
+<!-- Content & Difficulty Ratings -->
                         <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 10px; font-size: 14px;">
                             <?php if (isset($review['content_rating'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '授業内容:' : 'Content:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '授業内容:' : 'Content:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['content_rating']; ?>/5</span>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (isset($review['difficulty_rating'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '難易度:' : 'Difficulty:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '難易度:' : 'Difficulty:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['difficulty_rating']; ?>/5</span>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($review['grade'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '成績:' : 'Grade:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '成績:' : 'Grade:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;"><?php echo $review['grade']; ?></span>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($review['textbook'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '教科書:' : 'Textbook:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;">
                                     <?php 
                                     echo $lang === 'ja' ? 
@@ -2339,7 +2340,7 @@ $sampleReviews = [];
                             
                             <?php if (!empty($review['attendance_check'])): ?>
                             <div>
-                                <span><?php echo $lang === 'ja' ? '出席確認:' : 'Attendance:'; ?></span>
+                                <span style="color: #000000;"><?php echo $lang === 'ja' ? '出席確認:' : 'Attendance:'; ?></span>
                                 <span style="color: #1e3a8a; font-weight: bold;">
                                     <?php 
                                     echo $lang === 'ja' ? 
