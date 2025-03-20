@@ -51,14 +51,17 @@ async function scrapeCourses() {
       }
     }
 
-    // Define the fields to scrape
+    // Define the years and fields to scrape
+    const yearsToScrape = ['2025', '2024', '2023'];
     const fieldsToScrape = ['基盤科目', '先端科目', '特設科目'];
 
-    // Process each field
-    for (const field of fieldsToScrape) {
-      console.log(`Scraping field: ${field}`);
-      const courses = await processField(page, field, browser);
-      allCourses.push(...courses);
+    // Process each year and field
+    for (const year of yearsToScrape) {
+      for (const field of fieldsToScrape) {
+        console.log(`Scraping year: ${year}, field: ${field}`);
+        const courses = await processYearAndField(page, year, field, browser);
+        allCourses.push(...courses);
+      }
     }
 
     // Save results
@@ -208,9 +211,9 @@ async function login(page) {
   }
 }
 
-// Process a specific field
-async function processField(page, field, browser) {
-  console.log(`Processing field: ${field}`);
+// Process a specific year and field
+async function processYearAndField(page, year, field, browser) {
+  console.log(`Processing year: ${year}, field: ${field}`);
 
   const allCourses = [];
 
@@ -218,11 +221,11 @@ async function processField(page, field, browser) {
   await page.goto('https://gslbs.keio.jp/syllabus/search');
   await delay(2000);
 
-  // Set year to 2025 if the dropdown exists
+  // Set year to the specified year if the dropdown exists
   const yearSelector = 'select[name="KEYWORD_TTBLYR"]';
   if (await page.$(yearSelector)) {
-    await page.select(yearSelector, '2025');
-    console.log('Selected year: 2025');
+    await page.select(yearSelector, year);
+    console.log(`Selected year: ${year}`);
   }
 
   // Select the field from the 分野 dropdown using the correct selector
@@ -376,7 +379,7 @@ async function processField(page, field, browser) {
         // Create the course object
         const course = {
           course_id: japaneseDetails.course_id || englishDetails.course_id,
-          year: '2025',
+          year: year,
           semester: 'spring',
           translations: {
             ja: {

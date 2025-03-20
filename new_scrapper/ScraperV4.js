@@ -1,216 +1,5 @@
-const puppeteer = require('puppeteer');
-const fs = require('fs');
-const path = require('path');
-
-// Configuration
-const config = {
-  outputFile: path.join(__dirname, 'keio_courses.json'),
-  credentials: {
-    username: 'kaitosumishi@keio.jp',
-    password: '0528QBSkaito'
-  },
-  maxPagesPerUrl: 20,
-  delay: 2000 // Delay between page requests in ms
-};
-
-// Helper function for delays
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Main scraping function
-async function scrapeCourses() {
-  console.log('Starting Keio course scraper...');
-
-  const browser = await puppeteer.launch({ 
-    headless: false, // Set to true for production
-    defaultViewport: null,
-    slowMo: 100
-  });
-
-  try {
-    const page = await browser.newPage();
-    page.setDefaultTimeout(30000);
-
-    // Handle logging
-    page.on('console', msg => console.log('Browser console:', msg.text()));
-
-    // Login to the system
-    await login(page);
-
-    // Load existing courses if any
-    let existingCourses = [];
-    if (fs.existsSync(config.outputFile)) {
-      try {
-        const jsonData = fs.readFileSync(config.outputFile, 'utf8');
-        const parsedData = JSON.parse(jsonData);
-        if (parsedData.courses && Array.isArray(parsedData.courses)) {
-          existingCourses = parsedData.courses;
-          console.log(`Loaded ${existingCourses.length} existing courses from file.`);
-        }
-      } catch (error) {
-        console.error('Error loading existing courses:', error);
-      }
-    }
-
-    // Define the fields to scrape
-    const fieldsToScrape = ['基盤科目', '先端科目', '特設科目'];
-
-    // Process each field
-    for (const field of fieldsToScrape) {
-      console.log(`Scraping field: ${field}`);
-      const courses = await processField(page, field, browser);
-      allCourses.push(...courses);
-    }
-
-    // Save results
-    const meta = {
-      total_count: allCourses.length,
-      languages: ['ja', 'en'],
-      generated_date: new Date().toISOString()
-    };
-
-    const jsonContent = JSON.stringify({
-      courses: allCourses,
-      meta: meta
-    }, null, 2);
-
-    fs.writeFileSync(config.outputFile, jsonContent, 'utf8');
-    console.log(`Saved ${allCourses.length} courses to ${config.outputFile}`);
-
-  } catch (error) {
-    console.error('Error during scraping:', error);
-  } finally {
-    await browser.close();
-    console.log('Browser closed. Scraping complete.');
-  }
-}
-
-// Login function
-async function login(page) {
-  console.log('Logging in to Keio syllabus system...');
-
-  try {
-    // Navigate to syllabus search page
-    console.log('Navigating to syllabus page...');
-    await page.goto('https://gslbs.keio.jp/syllabus/search');
-    await delay(2000);
-    console.log(`Redirected to: ${page.url()}`);
-
-    // STEP 1: HANDLE USERNAME SCREEN
-    console.log('Looking for username field...');
-    await page.waitForSelector('input[type="text"]', { visible: true });
-    console.log('Username field found, entering username');
-    await page.type('input[type="text"]', config.credentials.username);
-
-    // Try to find the Next button using multiple approaches
-    console.log('Looking for Next button...');
-    const buttonSelectors = [
-      'button',
-      'input[type="submit"]',
-      '.button-primary', 
-      'button[type="submit"]',
-      'button.button'
-    ];
-
-    let nextButtonFound = false;
-
-    for (const selector of buttonSelectors) {
-      const button = await page.$(selector);
-      if (button) {
-        console.log(`Found Next button with selector: ${selector}`);
-        await button.click();
-        nextButtonFound = true;
-        break;
-      }
-    }
-
-    // Method 2: If Method 1 fails, try finding by text content using JavaScript
-    if (!nextButtonFound) {
-      console.log('Trying to find Next button by text content...');
-      const clickedNextButton = await page.evaluate(() => {
-        const possibleButtons = [
-          ...document.querySelectorAll('button'),
-          ...document.querySelectorAll('input[type="submit"]'),
-          ...document.querySelectorAll('.button'),
-          ...document.querySelectorAll('[role="button"]')
-        ];
-
-        const nextButton = Array.from(possibleButtons).find(el => 
-          el.textContent.includes('Next') || 
-          el.value === 'Next' ||
-          el.innerText.includes('Next'));
-
-        if (nextButton) {
-          nextButton.click();
-          return true;
-        }
-        return false;
-      });
-
-      if (clickedNextButton) {
-        console.log('Found and clicked Next button via JavaScript');
-        nextButtonFound = true;
-      }
-    }
-
-    if (!nextButtonFound) {
-      throw new Error('Could not find Next button');
-    }
-
-    // Wait for password page
-    console.log('Waiting for password page...');
-    await delay(5000);
-
-    // Try to find password field
-    console.log('Looking for password field...');
-    const passwordField = await page.$('input[type="password"]');
-
-    if (passwordField) {
-      console.log('Password field found, entering password');
-      await page.type('input[type="password"]', config.credentials.password);
-
-      // Click verify button using same multiple-approach strategy
-      console.log('Looking for Verify button...');
-      let verifyClicked = false;
-
-      for (const selector of buttonSelectors) {
-        const verifyButton = await page.$(selector);
-        if (verifyButton) {
-          console.log(`Found Verify button with selector: ${selector}`);
-          await verifyButton.click();
-          verifyClicked = true;
-          console.log('Clicked Verify button');
-          break;
-        }
-      }
-
-      if (!verifyClicked) {
-        throw new Error('Could not find Verify button');
-      }
-
-      // Wait for login completion
-      console.log('Waiting for login to complete...');
-      await delay(10000);
-      console.log(`Current URL after login: ${page.url()}`);
-
-      // Check if login was successful
-      if (!page.url().includes('gslbs.keio.jp')) {
-        throw new Error('Login failed. Could not reach syllabus page.');
-      }
-
-      console.log('Login successful!');
-    } else {
-      throw new Error('Password field not found');
-    }
-
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
-  }
-}
-
-// Process a specific field
-async function processField(page, field, browser) {
-  console.log(`Processing field: ${field}`);
+async function processYearAndField(page, year, field, browser) {
+  console.log(`Processing year: ${year}, field: ${field}`);
 
   const allCourses = [];
 
@@ -218,11 +7,11 @@ async function processField(page, field, browser) {
   await page.goto('https://gslbs.keio.jp/syllabus/search');
   await delay(2000);
 
-  // Set year to 2025 if the dropdown exists
+  // Set year to the specified year if the dropdown exists
   const yearSelector = 'select[name="KEYWORD_TTBLYR"]';
   if (await page.$(yearSelector)) {
-    await page.select(yearSelector, '2025');
-    console.log('Selected year: 2025');
+    await page.select(yearSelector, year);
+    console.log(`Selected year: ${year}`);
   }
 
   // Select the field from the 分野 dropdown using the correct selector
@@ -376,8 +165,8 @@ async function processField(page, field, browser) {
         // Create the course object
         const course = {
           course_id: japaneseDetails.course_id || englishDetails.course_id,
-          year: '2025',
-          semester: 'spring',
+          year: year,
+          semester: 'spring', // Adjust this based on actual semester data
           translations: {
             ja: {
               name: japaneseDetails.name,
@@ -403,12 +192,25 @@ async function processField(page, field, browser) {
                 en: englishDetails.field
               }
             }
-          ]
+          ],
+          available_years: [year] // Initialize with the current year
         };
 
-        // Add to our collection
-        allCourses.push(course);
-        console.log(`Added course: ${course.translations.ja.name}`);
+        // Check if the course already exists
+        const existingCourse = findExistingCourse(allCourses, course);
+
+        if (existingCourse) {
+          // Merge the available_years
+          if (!existingCourse.available_years.includes(year)) {
+            existingCourse.available_years.push(year);
+            existingCourse.available_years.sort(); // Optional: Sort years
+            console.log(`Merged course: ${course.translations.ja.name} for year ${year}`);
+          }
+        } else {
+          // Add the new course to the collection
+          allCourses.push(course);
+          console.log(`Added new course: ${course.translations.ja.name}`);
+        }
       }
 
       // Close the detail page
@@ -432,9 +234,3 @@ async function processField(page, field, browser) {
 
   return allCourses;
 }
-
-// Execute the main function
-scrapeCourses().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
