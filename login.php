@@ -30,6 +30,31 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     exit;
 }
 
+// Get browser language
+function getBrowserLanguage() {
+    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        $browserLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        return $browserLang == 'ja' ? 'ja' : 'en';
+    }
+    return 'en'; // Default to English
+}
+
+// Check for URL language parameter
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'] === 'ja' ? 'ja' : 'en';
+    setcookie('language', $lang, time() + (86400 * 30), "/"); // 30 days
+    $_COOKIE['language'] = $lang; // Set for current request
+}
+// Set language preference if not already set
+elseif (!isset($_COOKIE['language'])) {
+    $browserLang = getBrowserLanguage();
+    setcookie('language', $browserLang, time() + (86400 * 30), "/"); // 30 days
+    $_COOKIE['language'] = $browserLang; // Set for current request
+}
+
+// Determine current language
+$currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja' : 'en';
+
 // Define variables and initialize with empty values
 $email = $password = "";
 $email_err = $password_err = $login_err = "";
@@ -38,14 +63,14 @@ $email_err = $password_err = $login_err = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if email is empty
     if (empty(trim($_POST["email"]))) {
-        $email_err = "Please enter email.";
+        $email_err = $currentLang == 'ja' ? "メールアドレスを入力してください。" : "Please enter email.";
     } else {
         $email = trim($_POST["email"]);
     }
     
     // Check if password is empty
     if (empty(trim($_POST["password"]))) {
-        $password_err = "Please enter your password.";
+        $password_err = $currentLang == 'ja' ? "パスワードを入力してください。" : "Please enter your password.";
     } else {
         $password = trim($_POST["password"]);
     }
@@ -114,28 +139,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         exit();
                     } else {
                         // Password is not valid
-                        $login_err = "Invalid email or password.";
+                        $login_err = $currentLang == 'ja' ? "メールアドレスまたはパスワードが無効です。" : "Invalid email or password.";
                     }
                 } else {
                     // Email doesn't exist
-                    $login_err = "Invalid email or password.";
+                    $login_err = $currentLang == 'ja' ? "メールアドレスまたはパスワードが無効です。" : "Invalid email or password.";
                 }
             } else {
-                $login_err = "Something went wrong. Please try again later.";
+                $login_err = $currentLang == 'ja' ? "問題が発生しました。後でもう一度お試しください。" : "Something went wrong. Please try again later.";
             }
         } catch (Exception $e) {
-            $login_err = "Error: " . $e->getMessage();
+            $login_err = $currentLang == 'ja' ? "エラー: " . $e->getMessage() : "Error: " . $e->getMessage();
         }
     }
 }
+
+// Set language-specific text
+$textLogin = $currentLang == 'ja' ? 'ログイン' : 'Login';
+$textPleaseCredentials = $currentLang == 'ja' ? 'ログインするには資格情報を入力してください。' : 'Please fill in your credentials to login.';
+$textEmail = $currentLang == 'ja' ? 'メールアドレス' : 'Email';
+$textPassword = $currentLang == 'ja' ? 'パスワード' : 'Password';
+$textSubmit = $currentLang == 'ja' ? 'ログイン' : 'Login';
+$textNoAccount = $currentLang == 'ja' ? 'アカウントをお持ちでないですか？ <a href="register.php?lang=' . $currentLang . '">今すぐ登録</a>。' : 'Don\'t have an account? <a href="register.php?lang=' . $currentLang . '">Sign up now</a>.';
+$textForgotPassword = $currentLang == 'ja' ? '<a href="reset-password.php?lang=' . $currentLang . '">パスワードをお忘れですか？</a>' : '<a href="reset-password.php?lang=' . $currentLang . '">Forgot your password?</a>';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $currentLang; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - RateMyTeacher</title>
+    <title><?php echo $textLogin; ?> - RateMyTeacher</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         .wrapper {
@@ -175,12 +209,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 20px;
             border-radius: 4px;
         }
+        .language-toggle {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .language-toggle a {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            padding: 8px 0;
+            text-decoration: none;
+            border: 1px solid #1e3a8a;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        
+        .language-toggle a.active {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        
+        .language-toggle a:not(.active) {
+            background-color: white;
+            color: #1e3a8a;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
-        <h2>Login</h2>
-        <p>Please fill in your credentials to login.</p>
+        <div class="language-toggle">
+            <a href="?lang=en<?php echo isset($_GET['redirect']) ? '&redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="<?php echo $currentLang == 'en' ? 'active' : ''; ?>">English</a>
+            <a href="?lang=ja<?php echo isset($_GET['redirect']) ? '&redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="<?php echo $currentLang == 'ja' ? 'active' : ''; ?>">日本語</a>
+        </div>
+        
+        <h2><?php echo $textLogin; ?></h2>
+        <p><?php echo $textPleaseCredentials; ?></p>
 
         <?php 
         if (!empty($login_err)) {
@@ -190,12 +255,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?><?php echo isset($_GET['redirect']) ? '?redirect=' . htmlspecialchars(urlencode($_GET['redirect'])) : ''; ?>" method="post">
             <div class="form-group">
-                <label>Email</label>
+                <label><?php echo $textEmail; ?></label>
                 <input type="email" name="email" class="form-control" value="<?php echo $email; ?>">
                 <span class="help-block"><?php echo $email_err; ?></span>
             </div>    
             <div class="form-group">
-                <label>Password</label>
+                <label><?php echo $textPassword; ?></label>
                 <input type="password" name="password" class="form-control">
                 <span class="help-block"><?php echo $password_err; ?></span>
             </div>
@@ -203,10 +268,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_GET['redirect']); ?>">
             <?php endif; ?>
             <div class="form-group">
-                <input type="submit" class="btn-primary" value="Login">
+                <input type="submit" class="btn-primary" value="<?php echo $textSubmit; ?>">
             </div>
-            <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
-            <p><a href="reset-password.php">Forgot your password?</a></p>
+            <p><?php echo $textNoAccount; ?></p>
+            <p><?php echo $textForgotPassword; ?></p>
         </form>
     </div>
 </body>

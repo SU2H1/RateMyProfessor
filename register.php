@@ -126,16 +126,67 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Get browser language
+function getBrowserLanguage() {
+    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        $browserLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        return $browserLang == 'ja' ? 'ja' : 'en';
+    }
+    return 'en'; // Default to English
+}
+
+// Check for URL language parameter
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'] === 'ja' ? 'ja' : 'en';
+    setcookie('language', $lang, time() + (86400 * 30), "/"); // 30 days
+    $_COOKIE['language'] = $lang; // Set for current request
+}
+// Set language preference if not already set
+elseif (!isset($_COOKIE['language'])) {
+    $browserLang = getBrowserLanguage();
+    setcookie('language', $browserLang, time() + (86400 * 30), "/"); // 30 days
+    $_COOKIE['language'] = $browserLang; // Set for current request
+}
+
 // Determine current language
 $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja' : 'en';
+
+// Set language-specific text
+$textSignUp = $currentLang == 'ja' ? 'アカウント登録' : 'Sign Up';
+$textPleaseForm = $currentLang == 'ja' ? 'アカウント作成のためにフォームに記入してください。' : 'Please fill this form to create an account.';
+$textRegSuccess = $currentLang == 'ja' ? '登録完了！メールを確認してアカウントを認証してください。' : 'Registration successful! Please check your email to verify your account.';
+$textVerifLink = $currentLang == 'ja' ? '認証リンクがkeio.jpメールアドレスに送信されました。' : 'A verification link has been sent to your keio.jp email address.';
+$textClickLogin = $currentLang == 'ja' ? 'メール認証後、<a href="login.php">こちらからログイン</a>してください。' : '<a href="login.php">Click here to login</a> after verifying your email.';
+$textUsername = $currentLang == 'ja' ? 'ユーザー名' : 'Username';
+$textUsernamePlease = $currentLang == 'ja' ? 'ユーザー名を入力してください。' : 'Please enter a username.';
+$textUsernameTaken = $currentLang == 'ja' ? 'このユーザー名は既に使用されています。' : 'This username is already taken.';
+$textEmail = $currentLang == 'ja' ? 'メール（keio.jpのメールアドレスが必要です）' : 'Email (must be a keio.jp address)';
+$textEmailPlease = $currentLang == 'ja' ? 'メールアドレスを入力してください。' : 'Please enter an email.';
+$textValidEmail = $currentLang == 'ja' ? '有効なkeio.jpメールアドレスを使用してください。' : 'Please use a valid keio.jp email address.';
+$textEmailRegistered = $currentLang == 'ja' ? 'このメールアドレスは既に登録されています。' : 'This email is already registered.';
+$textPassword = $currentLang == 'ja' ? 'パスワード' : 'Password';
+$textPasswordPlease = $currentLang == 'ja' ? 'パスワードを入力してください。' : 'Please enter a password.';
+$textPasswordLength = $currentLang == 'ja' ? 'パスワードは8文字以上必要です。' : 'Password must have at least 8 characters.';
+$textConfirmPassword = $currentLang == 'ja' ? 'パスワード（確認）' : 'Confirm Password';
+$textConfirmPlease = $currentLang == 'ja' ? 'パスワードを確認してください。' : 'Please confirm password.';
+$textPasswordMatch = $currentLang == 'ja' ? 'パスワードが一致しません。' : 'Password did not match.';
+$textKeioDisclaimer = $currentLang == 'ja' ? 'このサービスは慶應義塾大学とは関連がなく、個人プロジェクトであることを理解しています。' : 'I hereby understand that this service is not associated with Keio University and is a personal project.';
+$textAgreeToS = $currentLang == 'ja' ? '私は<a href="ToS.php?lang=' . $currentLang . '" class="terms-link" target="_blank">利用規約</a>に同意します' : 'I agree to the <a href="ToS.php?lang=' . $currentLang . '" class="terms-link" target="_blank">Terms of Service</a>';
+$textTermsErr = $currentLang == 'ja' ? '登録するには利用規約に同意する必要があります。' : 'You must agree to the Terms of Service to register.';
+$textDisclaimerErr = $currentLang == 'ja' ? 'このサービスが慶應義塾大学と関連していないことを確認する必要があります。' : 'You must acknowledge that this service is not associated with Keio University.';
+$textSubmit = $currentLang == 'ja' ? '送信' : 'Submit';
+$textReset = $currentLang == 'ja' ? 'リセット' : 'Reset';
+$textHaveAccount = $currentLang == 'ja' ? 'すでにアカウントをお持ちですか？ <a href="login.php">こちらからログイン</a>してください。' : 'Already have an account? <a href="login.php">Login here</a>.';
+$textErr = $currentLang == 'ja' ? 'エラーが発生しました。後でもう一度お試しください。' : 'Oops! Something went wrong. Please try again later.';
+$textVerifErr = $currentLang == 'ja' ? '認証メールの送信中にエラーが発生しました。サポートにお問い合わせください。' : 'Error sending verification email. Please contact support.';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $currentLang; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - SU2H1 Rating</title>
+    <title><?php echo $textSignUp; ?> - Rate My Teacher</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         .wrapper {
@@ -208,57 +259,110 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
         .terms-link:hover {
             text-decoration: none;
         }
+        
+        .language-toggle {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .language-toggle a {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            padding: 8px 0;
+            text-decoration: none;
+            border: 1px solid #1e3a8a;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        
+        .language-toggle a.active {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        
+        .language-toggle a:not(.active) {
+            background-color: white;
+            color: #1e3a8a;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
-        <h2>Sign Up</h2>
-        <p>Please fill this form to create an account.</p>
+        <div class="language-toggle">
+            <a href="?lang=en" class="<?php echo $currentLang == 'en' ? 'active' : ''; ?>">English</a>
+            <a href="?lang=ja" class="<?php echo $currentLang == 'ja' ? 'active' : ''; ?>">日本語</a>
+        </div>
+        
+        <h2><?php echo $textSignUp; ?></h2>
+        <p><?php echo $textPleaseForm; ?></p>
         
         <?php if ($registration_success): ?>
             <div class="success-message">
-                <p>Registration successful! Please check your email to verify your account.</p>
-                <p>A verification link has been sent to your keio.jp email address.</p>
-                <p><a href="login.php">Click here to login</a> after verifying your email.</p>
+                <p><?php echo $textRegSuccess; ?></p>
+                <p><?php echo $textVerifLink; ?></p>
+                <p><?php echo $textClickLogin; ?></p>
             </div>
         <?php else: ?>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="form-group">
-                    <label>Username</label>
+                    <label><?php echo $textUsername; ?></label>
                     <input type="text" name="username" class="form-control" value="<?php echo $username; ?>">
-                    <span class="help-block"><?php echo $username_err; ?></span>
+                    <span class="help-block"><?php 
+                        if (!empty($username_err)) {
+                            echo ($username_err == "Please enter a username.") ? $textUsernamePlease : 
+                                 (($username_err == "This username is already taken.") ? $textUsernameTaken : $username_err);
+                        }
+                    ?></span>
                 </div>    
                 <div class="form-group">
-                    <label>Email (must be a keio.jp address)</label>
+                    <label><?php echo $textEmail; ?></label>
                     <input type="email" name="email" class="form-control" value="<?php echo $email; ?>">
-                    <span class="help-block"><?php echo $email_err; ?></span>
+                    <span class="help-block"><?php 
+                        if (!empty($email_err)) {
+                            echo ($email_err == "Please enter an email.") ? $textEmailPlease : 
+                                 (($email_err == "Please use a valid keio.jp email address.") ? $textValidEmail : 
+                                 (($email_err == "This email is already registered.") ? $textEmailRegistered : $email_err));
+                        }
+                    ?></span>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <label><?php echo $textPassword; ?></label>
                     <input type="password" name="password" class="form-control">
-                    <span class="help-block"><?php echo $password_err; ?></span>
+                    <span class="help-block"><?php 
+                        if (!empty($password_err)) {
+                            echo ($password_err == "Please enter a password.") ? $textPasswordPlease : 
+                                 (($password_err == "Password must have at least 8 characters.") ? $textPasswordLength : $password_err);
+                        }
+                    ?></span>
                 </div>
                 <div class="form-group">
-                    <label>Confirm Password</label>
+                    <label><?php echo $textConfirmPassword; ?></label>
                     <input type="password" name="confirm_password" class="form-control">
-                    <span class="help-block"><?php echo $confirm_password_err; ?></span>
+                    <span class="help-block"><?php 
+                        if (!empty($confirm_password_err)) {
+                            echo ($confirm_password_err == "Please confirm password.") ? $textConfirmPlease : 
+                                 (($confirm_password_err == "Password did not match.") ? $textPasswordMatch : $confirm_password_err);
+                        }
+                    ?></span>
                 </div>
                 <div class="terms-agreement">
                     <input type="checkbox" name="keio_disclaimer" id="keio_disclaimer" value="agree">
-                    <label for="keio_disclaimer">I hereby understand that this service is not associated with Keio University and is a personal project.</label>
-                    <span class="help-block"><?php echo $keio_disclaimer_err; ?></span>
+                    <label for="keio_disclaimer"><?php echo $textKeioDisclaimer; ?></label>
+                    <span class="help-block"><?php echo !empty($keio_disclaimer_err) ? $textDisclaimerErr : ''; ?></span>
                 </div>
                 <div class="terms-agreement">
                     <input type="checkbox" name="terms" id="terms" value="agree">
-                    <label for="terms">I agree to the <a href="ToS.php?lang=<?php echo $currentLang; ?>" class="terms-link" target="_blank"><?php echo $currentLang == 'ja' ? '利用規約' : 'Terms of Service'; ?></a></label>
-                    <span class="help-block"><?php echo $terms_err; ?></span>
+                    <label for="terms"><?php echo $textAgreeToS; ?></label>
+                    <span class="help-block"><?php echo !empty($terms_err) ? $textTermsErr : ''; ?></span>
                 </div>
                 <div class="form-group">
-                    <input type="submit" class="btn-primary" id='submit-btn' value="Submit" disabled>
-                    <input type="reset" class="btn-default" value="Reset">
+                    <input type="submit" class="btn-primary" id='submit-btn' value="<?php echo $textSubmit; ?>" disabled>
+                    <input type="reset" class="btn-default" value="<?php echo $textReset; ?>">
                 </div>
 
-                <p>Already have an account? <a href="login.php">Login here</a>.</p>
+                <p><?php echo $textHaveAccount; ?></p>
             </form>
         <?php endif; ?>
     </div> 
