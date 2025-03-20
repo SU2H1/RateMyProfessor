@@ -288,83 +288,68 @@ async function processSearchResults(page, existingCourses, browser) {
     console.log('表示順 dropdown not found or not visible within 5 seconds');
   }
   
-  // Process all pages one by one, taking a screenshot at each step for troubleshooting
-  let done = false;
-  let paginationRound = 1; // To keep track of pagination rounds
+  // Start processing pages
+  let hasMorePagesToVisit = true;
   
-  // First, process page 1
-  await processCurrentPage(page, browser, allCourses, processedRegNumbers, 1);
-  saveCoursesToFile(allCourses, 1);
-  
-  // Now process the rest of the pages
-  while (!done) {
-    console.log(`Starting pagination round ${paginationRound}`);
-    
-    // Take a screenshot before looking at pagination
-    await page.screenshot({ path: `pagination_round_${paginationRound}.png` });
-    
-    // Get an array of all visible page number buttons
-    const pageNumbers = await page.evaluate(() => {
-      const pageLinks = Array.from(document.querySelectorAll('li.page-item a.page-link'));
-      return pageLinks
-        .map(link => {
-          const num = parseInt(link.textContent.trim());
-          return isNaN(num) ? null : {
-            number: num,
-            active: link.parentElement.classList.contains('active')
+  while (hasMorePagesToVisit) {
+    // Get all visible page number buttons (excluding Next, Previous, First, Last buttons)
+    const visiblePageNumbers = await page.evaluate(() => {
+      const pageItems = Array.from(document.querySelectorAll('li.page-item'));
+      return pageItems
+        .filter(item => {
+          // Keep only items with numeric text content
+          const text = item.textContent.trim();
+          return !isNaN(parseInt(text)) && !item.classList.contains('active');
+        })
+        .map(item => {
+          return {
+            pageNumber: parseInt(item.textContent.trim()),
+            isActive: item.classList.contains('active')
           };
         })
-        .filter(item => item !== null) // Remove non-numeric items
-        .sort((a, b) => a.number - b.number); // Sort numerically
+        .sort((a, b) => a.pageNumber - b.pageNumber); // Sort by page number
     });
     
-    console.log(`Found page numbers:`, pageNumbers.map(p => `${p.number}${p.active ? ' (active)' : ''}`).join(', '));
+    console.log('Available page numbers to visit:', visiblePageNumbers.map(p => p.pageNumber));
     
-    // Get the currently active page number
-    const activePage = pageNumbers.find(p => p.active)?.number || 1;
-    console.log(`Currently on page ${activePage}`);
+    // Get the current active page number
+    const currentPageNumber = await page.evaluate(() => {
+      const activeItem = document.querySelector('li.page-item.active');
+      return activeItem ? parseInt(activeItem.textContent.trim()) : 1;
+    });
     
-    // Find the lowest page number that's higher than the active page
-    const nextPageObj = pageNumbers.find(p => p.number > activePage && !p.active);
+    console.log(`Currently on page ${currentPageNumber}`);
     
-    if (nextPageObj) {
-      // Found a next page number to click
-      console.log(`Will click on page number ${nextPageObj.number}`);
-      
-      // Click on this page number
-      const clicked = await page.evaluate((nextPageNum) => {
-        const pageLinks = Array.from(document.querySelectorAll('li.page-item a.page-link'));
-        const targetLink = pageLinks.find(link => {
-          const num = parseInt(link.textContent.trim());
-          return !isNaN(num) && num === nextPageNum;
-        });
+    // Process the current page first
+    await processCurrentPage(page, browser, allCourses, processedRegNumbers, currentPageNumber);
+    
+    // Save current progress
+    saveCoursesToFile(allCourses, currentPageNumber);
+    
+    // Find the next unvisited page number
+    const nextPageToVisit = visiblePageNumbers.find(p => p.pageNumber > currentPageNumber);
+    
+    if (nextPageToVisit) {
+      // Click on the next page number
+      console.log(`Navigating to page ${nextPageToVisit.pageNumber}...`);
+      await page.evaluate((pageNum) => {
+        const pageItems = Array.from(document.querySelectorAll('li.page-item'));
+        const targetItem = pageItems.find(item => 
+          item.textContent.trim() === pageNum.toString() && 
+          !item.classList.contains('active')
+        );
         
-        if (targetLink) {
-          targetLink.click();
-          return true;
+        if (targetItem) {
+          const link = targetItem.querySelector('a');
+          if (link) link.click();
         }
-        return false;
-      }, nextPageObj.number);
+      }, nextPageToVisit.pageNumber);
       
-      if (clicked) {
-        console.log(`Clicked on page ${nextPageObj.number}`);
-        
-        // Wait for page to load
-        await delay(3000);
-        
-        // Process this page
-        await processCurrentPage(page, browser, allCourses, processedRegNumbers, nextPageObj.number);
-        
-        // Save progress
-        saveCoursesToFile(allCourses, nextPageObj.number);
-      } else {
-        console.log(`Failed to click on page ${nextPageObj.number}`);
-      }
+      // Wait for the page to load
+      await delay(3000);
     } else {
-      // No higher page numbers found, try to click the "Next" button to get more page numbers
-      console.log('No higher page numbers found, trying to click "Next" button');
-      
-      const nextButtonClicked = await page.evaluate(() => {
+      // No more visible page numbers, try to click "Next" button
+      const hasNextButton = await page.evaluate(() => {
         const nextButton = document.querySelector('li.next:not(.disabled) a.page-link');
         if (nextButton) {
           nextButton.click();
@@ -373,13 +358,12 @@ async function processSearchResults(page, existingCourses, browser) {
         return false;
       });
       
-      if (nextButtonClicked) {
-        console.log('Clicked "Next" pagination button to reveal more page numbers');
+      if (hasNextButton) {
+        console.log('Clicked "Next" to see more page numbers');
         await delay(3000);
-        paginationRound++;
       } else {
-        console.log('No "Next" button found or it was disabled, we must be at the last page');
-        done = true;
+        console.log('No more pages available, finishing scraping');
+        hasMorePagesToVisit = false;
       }
     }
   }
@@ -390,9 +374,6 @@ async function processSearchResults(page, existingCourses, browser) {
 // Process the current page
 async function processCurrentPage(page, browser, allCourses, processedRegNumbers, pageNumber) {
   console.log(`Processing page ${pageNumber}...`);
-  
-  // Take a screenshot of the current page for debugging
-  await page.screenshot({ path: `page_${pageNumber}.png` });
   
   // Get all syllabus detail links on the current page
   const syllabusLinks = await page.$$('.btn.btn-info.btn-sm.syllabus-detail.slbs-btn-1');
