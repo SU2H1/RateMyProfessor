@@ -6,8 +6,8 @@ const path = require('path');
 const config = {
   outputFile: path.join(__dirname, 'keio_courses.json'),
   credentials: {
-    username: 'kaitosumishi@keio.jp',
-    password: '0528QBSkaito'
+    username: 'enter keio.jp Email here',
+    password: 'Your Password'
   },
   maxPagesPerUrl: 20,
   delay: 2000 // Delay between page requests in ms
