@@ -734,9 +734,22 @@ if ($reviewCount > 0) {
                         <!-- Course name for the review -->
                         <div class="review-course" style="margin-bottom: 10px; font-size: 0.9em; color: #1e3a8a;">
                             <strong><?php echo $lang === 'ja' ? 'コース: ' : 'Course: '; ?></strong>
-                            <?php echo htmlspecialchars($review['course_name']); ?>
+                            <?php 
+                            // Find the translated course name if it exists
+                            $translatedCourseName = $review['course_name']; // Default to English name
+                            
+                            // Look for the course in the course data to find its translation
+                            foreach ($professorCourses as $course) {
+                                if ($course['translations']['en']['name'] === $review['course_name']) {
+                                    // If we found a match, use the translated name according to current language
+                                    $translatedCourseName = $course['translations'][$lang]['name'];
+                                    break;
+                                }
+                            }
+                            
+                            echo htmlspecialchars($translatedCourseName);
+                            ?>
                         </div>
-                        
                         <!-- Rating information -->
                         <div class="review-ratings" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
                             <div class="review-rating" style="color: #ffc107;">
