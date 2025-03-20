@@ -1,0 +1,21 @@
+{
+  "name": "ratemyprofessor",
+  "version": "1.0.0",
+  "description": "A web application for rating and reviewing university courses and professors, built with PHP and SQLite.",
+  "main": "hard_search.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SU2H1/RateMyProfessor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SU2H1/RateMyProfessor/issues"
+  },
+  "homepage": "https://github.com/SU2H1/RateMyProfessor#readme"
+}
