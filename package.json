@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/SU2H1/RateMyProfessor/issues"
   },
-  "homepage": "https://github.com/SU2H1/RateMyProfessor#readme"
+  "homepage": "https://github.com/SU2H1/RateMyProfessor#readme",
+  "dependencies": {
+    "puppeteer": "^24.4.0"
+  }
 }
