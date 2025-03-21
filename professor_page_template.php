@@ -92,21 +92,9 @@ $db = new SQLite3('database/ratemyteacher.db');
 
 // Try to find professor in the database by name
 $professorId = null;
-
-// Need to handle both types of name formatting for backward compatibility
-$professorNameNoSpaces = str_replace(' ', '', $professorParam); // For old URLs with no spaces
-$professorNameWithPlus = str_replace('+', ' ', $professorParam); // For new URLs with + signs
-
-// Try to find the professor using both formats
-$stmt = $db->prepare("
-    SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count 
-    FROM professors 
-    WHERE name = :name_with_spaces 
-       OR REPLACE(name, ' ', '') = :name_no_spaces 
-       OR REPLACE(name, ' ', '') LIKE :name_like
-");
-$stmt->bindValue(':name_with_spaces', $professorNameWithPlus, SQLITE3_TEXT);
-$stmt->bindValue(':name_no_spaces', $professorNameNoSpaces, SQLITE3_TEXT);
+$professorNameNoSpaces = str_replace(' ', '', $professorParam);
+$stmt = $db->prepare("SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count FROM professors WHERE REPLACE(name, ' ', '') = :name OR REPLACE(name, ' ', '') LIKE :name_like");
+$stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
 $stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
 $result = $stmt->execute();
 $row = $result->fetchArray(SQLITE3_ASSOC);
@@ -149,40 +137,23 @@ if ($professorId) {
     foreach ($data['courses'] as $course) {
         foreach ($course['professors'] as $prof) {
             if (isset($prof['name']['ja']) && isset($prof['name']['en'])) {
-                $jaToEnMap[$prof['name']['ja']] = str_replace(' ', '+', $prof['name']['en']);
+                $jaToEnMap[$prof['name']['ja']] = str_replace(' ', '', $prof['name']['en']);
             }
         }
     }
 
     $altProfessorName = isset($jaToEnMap[$professorParam]) ? $jaToEnMap[$professorParam] : null;
 
-    // Build the SQL query to search by either name, supporting both URL formats
+    // Build the SQL query to search by either name
     $stmt = $db->prepare("
-        SELECT 
-            r.id,
-            r.rating,
-            r.content_rating,
-            r.difficulty_rating,
-            r.grade,
-            r.comment,
-            r.created_at,
-            r.textbook,
-            r.attendance_check,
-            r.first_half,
-            r.second_half,
-            r.is_anonymous,
-            u.username,
-            c.name as course_name
-        FROM ratings r
-        LEFT JOIN users u ON r.user_id = u.id
-        LEFT JOIN courses c ON r.course_id = c.id
-        WHERE r.professor_id = :professor_id
-        ORDER BY r.created_at DESC
+        SELECT id, name, avg_content_quality, avg_difficulty, overall_rating, review_count 
+        FROM professors 
+        WHERE REPLACE(name, ' ', '') = :name 
+           OR REPLACE(name, ' ', '') LIKE :name_like
+           OR (:alt_name IS NOT NULL AND (REPLACE(name, ' ', '') = :alt_name OR REPLACE(name, ' ', '') LIKE :alt_name_like))
     ");
-    $stmt->bindValue(':professor_id', $professorId, SQLITE3_INTEGER);
-    $result = $stmt->execute();
-    $stmt->bindValue(':name_with_spaces', $professorNameWithPlus, SQLITE3_TEXT);
-    $stmt->bindValue(':name_no_spaces', $professorNameNoSpaces, SQLITE3_TEXT);
+    
+    $stmt->bindValue(':name', $professorNameNoSpaces, SQLITE3_TEXT);
     $stmt->bindValue(':name_like', '%' . $professorNameNoSpaces . '%', SQLITE3_TEXT);
     $stmt->bindValue(':alt_name', $altProfessorName, SQLITE3_TEXT);
     $stmt->bindValue(':alt_name_like', $altProfessorName ? '%' . $altProfessorName . '%' : null, SQLITE3_TEXT);
@@ -198,8 +169,7 @@ if ($professorId) {
     if (isset($data['ratings'])) {
         foreach ($data['ratings'] as $rating) {
             if (isset($rating['professor']) && 
-                (strcasecmp(str_replace(' ', '', $rating['professor']), $professorNameNoSpaces) === 0 ||
-                 strcasecmp($rating['professor'], $professorNameWithPlus) === 0)) {
+                strcasecmp(str_replace(' ', '', $rating['professor']), $professorNameNoSpaces) === 0) {
                 if (isset($rating['content_quality'])) {
                     $allContentRatings[] = $rating['content_quality'];
                 }
@@ -262,7 +232,6 @@ if ($professorId && $db) {
                 r.attendance_check,
                 r.first_half,
                 r.second_half,
-                r.is_anonymous,
                 u.username,
                 c.name as course_name
             FROM ratings r
@@ -280,13 +249,7 @@ if ($professorId && $db) {
             $timestamp = strtotime($row['created_at']);
             $formattedDate = $timestamp !== false ? date('F j, Y', $timestamp) : 'Unknown Date';
             
-            // Check if the review is anonymous
-            $isAnonymous = isset($row['is_anonymous']) && $row['is_anonymous'] == 1;
-            
-            // Set the username based on anonymity
-            $username = $isAnonymous ? ($lang === 'ja' ? '学生' : 'Student') : ($row['username'] ?? ($lang === 'ja' ? '学生' : 'Student'));
-            
-            // Add to reviews array
+            // Add to reviews array with default username if missing
             $review = [
                 'id' => $row['id'],
                 'rating' => $row['rating'] ?? 3,
@@ -294,12 +257,11 @@ if ($professorId && $db) {
                 'difficulty_rating' => $row['difficulty_rating'] ?? 0,
                 'comment' => $row['comment'] ?? '',
                 'created_at' => $formattedDate,
-                'username' => $username,
+                'username' => $row['username'] ?? 'Student',
                 'course_name' => $row['course_name'] ?? 'Unknown Course',
                 'grade' => $row['grade'] ?? '',
                 'textbook' => $row['textbook'] ?? '',
-                'attendance_check' => $row['attendance_check'] ?? '',
-                'is_anonymous' => $isAnonymous
+                'attendance_check' => $row['attendance_check'] ?? ''
             ];
             
             // Calculate totals for ratings
@@ -741,7 +703,7 @@ if ($reviewCount > 0) {
                 <?php else: ?>
                     <?php foreach ($professorCourses as $course): ?>
                         <div class="course-card" style="background-color: #f9f9f9; border-radius: 8px; padding: 15px; min-width: 200px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <a href="course_page_template.php?course_code=<?php echo urlencode($course['course_id']); ?>&lang=<?php echo $lang; ?>" style="text-decoration: none; color: inherit;">                                <div class="course-name" style="font-weight: bold; font-size: 1.1em; color: #1e3a8a; margin-bottom: 5px;"><?php echo htmlspecialchars($course['translations'][$lang]['name']); ?></div>
+                        <a href="course_page_template.php?course=<?php echo urlencode($course['translations']['en']['name']); ?>&professor=<?php echo urlencode($professorParam); ?>&lang=<?php echo $lang; ?>" style="text-decoration: none; color: inherit;">                                <div class="course-name" style="font-weight: bold; font-size: 1.1em; color: #1e3a8a; margin-bottom: 5px;"><?php echo htmlspecialchars($course['translations'][$lang]['name']); ?></div>
                             </a>
                             <div class="course-field" style="color: #666; font-size: 0.9em; margin-bottom: 10px;"><?php echo htmlspecialchars($course['translations'][$lang]['field']); ?></div>
                         </div>
@@ -764,19 +726,30 @@ if ($reviewCount > 0) {
             <?php else: ?>
                 <?php foreach ($reviews as $review): ?>
                     <div class="review-card" style="border-bottom: 1px solid #f0f0f0; padding: 20px 0; margin-bottom: 10px;">
-                        <div class="reviewer" style="font-weight: bold;">
-                            <?php echo htmlspecialchars($review['username']); ?>
-                            <?php if ($review['is_anonymous']): ?>
-                                <span style="font-size: 0.8em; color: #666;">(<?php echo $lang === 'ja' ? '匿名' : 'Anonymous'; ?>)</span>
-                            <?php endif; ?>
+                        <div class="review-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div class="reviewer" style="font-weight: bold;"><?php echo htmlspecialchars($review['username']); ?></div>
+                            <div class="review-date" style="color: #666; font-size: 0.9em;"><?php echo $review['created_at']; ?></div>
                         </div>
                         
                         <!-- Course name for the review -->
                         <div class="review-course" style="margin-bottom: 10px; font-size: 0.9em; color: #1e3a8a;">
                             <strong><?php echo $lang === 'ja' ? 'コース: ' : 'Course: '; ?></strong>
-                            <?php echo htmlspecialchars($review['course_name']); ?>
+                            <?php 
+                            // Find the translated course name if it exists
+                            $translatedCourseName = $review['course_name']; // Default to English name
+                            
+                            // Look for the course in the course data to find its translation
+                            foreach ($professorCourses as $course) {
+                                if ($course['translations']['en']['name'] === $review['course_name']) {
+                                    // If we found a match, use the translated name according to current language
+                                    $translatedCourseName = $course['translations'][$lang]['name'];
+                                    break;
+                                }
+                            }
+                            
+                            echo htmlspecialchars($translatedCourseName);
+                            ?>
                         </div>
-                        
                         <!-- Rating information -->
                         <div class="review-ratings" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
                             <div class="review-rating" style="color: #ffc107;">

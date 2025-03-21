@@ -6,8 +6,8 @@ const path = require('path');
 const config = {
   outputFile: path.join(__dirname, 'keio_courses.json'),
   credentials: {
-    username: 'kaitosumishi@keio.jp',
-    password: '0528QBSkaito'
+    username: 'username@keio.jp',
+    password: 'password'
   },
   maxPagesPerUrl: 20,
   delay: 2000 // Delay between page requests in ms
@@ -84,7 +84,7 @@ async function login(page) {
   try {
     // Navigate to syllabus search page
     console.log('Navigating to syllabus page...');
-    await page.goto('https://gslbs.keio.jp/syllabus/search');
+    await page.goto('https://gslbs.keio.jp/syllabus/search', { waitUntil: 'networkidle2' });
     await delay(2000);
     console.log(`Redirected to: ${page.url()}`);
 
@@ -253,12 +253,7 @@ async function processSearchResults(page, existingCourses, browser) {
   const searchButtonSelector = 'button[data-action_id="SYLLABUS_SEARCH_KEYWORD_EXECUTE"]';
   const searchButton = await page.$(searchButtonSelector);
   if (searchButton) {
-    await Promise.all([
-      searchButton.click(),
-      page.waitForNavigation({ waitUntil: 'networkidle2' })
-    ]).catch(e => {
-      console.log('Navigation after search button click failed:', e.message);
-    });
+    await searchButton.click();
     console.log('Search button clicked');
   } else {
     // Try to find the search button by text
@@ -270,21 +265,10 @@ async function processSearchResults(page, existingCourses, browser) {
         b.textContent.includes('Search'));
       if (searchBtn) searchBtn.click();
     });
-
-    await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {
-      console.log('Navigation timeout, continuing anyway...');
-    });
   }
-
-  // Process the search results page
-  console.log('Processing search results page...');
-
-  // Wait for the course results to load dynamically
-  console.log('Waiting for course results to load...');
-  await page.waitForSelector('.btn.btn-info.btn-sm.syllabus-detail.slbs-btn-1', { timeout: 30000 }).catch(() => {
-    console.log('No course results found on this page.');
-    return allCourses;
-  });
+  
+  // Wait for navigation and results to load
+  await delay(5000);
 
   // Set "表示順" to "科目名順" AFTER the course results have loaded
   console.log('Setting 表示順 to 科目名順...');
@@ -297,56 +281,143 @@ async function processSearchResults(page, existingCourses, browser) {
     // Select the option with value "2" (科目名順)
     await page.select(displayOrderSelector, '2');
     console.log('Set 表示順 to 科目名順');
+    
+    // Wait for sorting to take effect
+    await delay(2000);
   } catch (error) {
     console.log('表示順 dropdown not found or not visible within 5 seconds');
   }
-
-  // Get all syllabus detail links
-  const syllabusLinks = await page.$$('.btn.btn-info.btn-sm.syllabus-detail.slbs-btn-1');
-  console.log(`Found ${syllabusLinks.length} syllabus links on the results page.`);
-
-  for (let i = 0; i < syllabusLinks.length; i++) {
-    const syllabusLink = syllabusLinks[i];
-
-    // Open the syllabus details in a new tab
-    const syllabusUrl = await page.evaluate(link => link.href, syllabusLink);
-    const detailPage = await browser.newPage();
-    await detailPage.goto(syllabusUrl, { waitUntil: 'networkidle2' });
-
-    console.log(`Navigated to course detail page: ${detailPage.url()}`);
-
-    // Extract Japanese details
-    const japaneseDetails = await detailPage.evaluate(() => {
-      const findValueByLabel = (label) => {
-        const tr = Array.from(document.querySelectorAll('tr')).find(el => 
-          el.querySelector('th') && el.querySelector('th').textContent.trim().includes(label));
-        if (tr) {
-          const td = tr.querySelector('td');
-          return td ? td.textContent.trim() : '';
-        }
-        return '';
-      };
-
-      return {
-        name: document.querySelector('h2.class-name') ? document.querySelector('h2.class-name').textContent.trim() : '',
-        field: findValueByLabel('分野'),
-        credits: findValueByLabel('単位数'),
-        semester: findValueByLabel('学期'),
-        professor: findValueByLabel('担当者名'),
-        course_id: findValueByLabel('登録番号')
-      };
+  
+  // Process all pages one by one, taking a screenshot at each step for troubleshooting
+  let done = false;
+  let paginationRound = 1; // To keep track of pagination rounds
+  
+  // First, process page 1
+  await processCurrentPage(page, browser, allCourses, processedRegNumbers, 1);
+  saveCoursesToFile(allCourses, 1);
+  
+  // Now process the rest of the pages
+  while (!done) {
+    console.log(`Starting pagination round ${paginationRound}`);
+    
+    // Take a screenshot before looking at pagination
+    await page.screenshot({ path: `pagination_round_${paginationRound}.png` });
+    
+    // Get an array of all visible page number buttons
+    const pageNumbers = await page.evaluate(() => {
+      const pageLinks = Array.from(document.querySelectorAll('li.page-item a.page-link'));
+      return pageLinks
+        .map(link => {
+          const num = parseInt(link.textContent.trim());
+          return isNaN(num) ? null : {
+            number: num,
+            active: link.parentElement.classList.contains('active')
+          };
+        })
+        .filter(item => item !== null) // Remove non-numeric items
+        .sort((a, b) => a.number - b.number); // Sort numerically
     });
+    
+    console.log(`Found page numbers:`, pageNumbers.map(p => `${p.number}${p.active ? ' (active)' : ''}`).join(', '));
+    
+    // Get the currently active page number
+    const activePage = pageNumbers.find(p => p.active)?.number || 1;
+    console.log(`Currently on page ${activePage}`);
+    
+    // Find the lowest page number that's higher than the active page
+    const nextPageObj = pageNumbers.find(p => p.number > activePage && !p.active);
+    
+    if (nextPageObj) {
+      // Found a next page number to click
+      console.log(`Will click on page number ${nextPageObj.number}`);
+      
+      // Click on this page number
+      const clicked = await page.evaluate((nextPageNum) => {
+        const pageLinks = Array.from(document.querySelectorAll('li.page-item a.page-link'));
+        const targetLink = pageLinks.find(link => {
+          const num = parseInt(link.textContent.trim());
+          return !isNaN(num) && num === nextPageNum;
+        });
+        
+        if (targetLink) {
+          targetLink.click();
+          return true;
+        }
+        return false;
+      }, nextPageObj.number);
+      
+      if (clicked) {
+        console.log(`Clicked on page ${nextPageObj.number}`);
+        
+        // Wait for page to load
+        await delay(3000);
+        
+        // Process this page
+        await processCurrentPage(page, browser, allCourses, processedRegNumbers, nextPageObj.number);
+        
+        // Save progress
+        saveCoursesToFile(allCourses, nextPageObj.number);
+      } else {
+        console.log(`Failed to click on page ${nextPageObj.number}`);
+      }
+    } else {
+      // No higher page numbers found, try to click the "Next" button to get more page numbers
+      console.log('No higher page numbers found, trying to click "Next" button');
+      
+      const nextButtonClicked = await page.evaluate(() => {
+        const nextButton = document.querySelector('li.next:not(.disabled) a.page-link');
+        if (nextButton) {
+          nextButton.click();
+          return true;
+        }
+        return false;
+      });
+      
+      if (nextButtonClicked) {
+        console.log('Clicked "Next" pagination button to reveal more page numbers');
+        await delay(3000);
+        paginationRound++;
+      } else {
+        console.log('No "Next" button found or it was disabled, we must be at the last page');
+        done = true;
+      }
+    }
+  }
 
-    console.log('Extracted Japanese details:', japaneseDetails);
+  return allCourses;
+}
 
-    // Switch to English version of the page
-    const englishLink = await detailPage.$('a[href*="lang=en"]');
-    if (englishLink) {
-      await englishLink.click();
-      await detailPage.waitForNavigation({ waitUntil: 'networkidle2' });
+// Process the current page
+async function processCurrentPage(page, browser, allCourses, processedRegNumbers, pageNumber) {
+  console.log(`Processing page ${pageNumber}...`);
+  
+  // Take a screenshot of the current page for debugging
+  await page.screenshot({ path: `page_${pageNumber}.png` });
+  
+  // Get all syllabus detail links on the current page
+  const syllabusLinks = await page.$$('.btn.btn-info.btn-sm.syllabus-detail.slbs-btn-1');
+  console.log(`Found ${syllabusLinks.length} syllabus links on page ${pageNumber}.`);
+  
+  if (syllabusLinks.length === 0) {
+    console.log(`No syllabus links found on page ${pageNumber}, taking screenshot for debugging.`);
+    await page.screenshot({ path: `no_results_page_${pageNumber}.png` });
+    return;
+  }
 
-      // Extract English details
-      const englishDetails = await detailPage.evaluate(() => {
+  // Process each course on this page
+  for (let i = 0; i < syllabusLinks.length; i++) {
+    try {
+      const syllabusLink = syllabusLinks[i];
+
+      // Open the syllabus details in a new tab
+      const syllabusUrl = await page.evaluate(link => link.href, syllabusLink);
+      const detailPage = await browser.newPage();
+      await detailPage.goto(syllabusUrl, { waitUntil: 'networkidle2' });
+
+      console.log(`Navigated to course detail page: ${detailPage.url()}`);
+
+      // Extract Japanese details
+      const japaneseDetails = await detailPage.evaluate(() => {
         const findValueByLabel = (label) => {
           const tr = Array.from(document.querySelectorAll('tr')).find(el => 
             el.querySelector('th') && el.querySelector('th').textContent.trim().includes(label));
@@ -359,21 +430,74 @@ async function processSearchResults(page, existingCourses, browser) {
 
         return {
           name: document.querySelector('h2.class-name') ? document.querySelector('h2.class-name').textContent.trim() : '',
-          field: findValueByLabel('Field'),
-          credits: findValueByLabel('Credits'),
-          semester: findValueByLabel('Academic Year/Semester'),
-          professor: findValueByLabel('Lecturer(s)'),
-          course_id: findValueByLabel('Registration Number')
+          field: findValueByLabel('分野'),
+          credits: findValueByLabel('単位数'),
+          semester: findValueByLabel('学期'),
+          professor: findValueByLabel('担当者名'),
+          course_id: findValueByLabel('登録番号')
         };
       });
 
-      console.log('Extracted English details:', englishDetails);
+      console.log('Extracted Japanese details:', japaneseDetails);
+      
+      // Check if we already processed this course
+      const courseKey = `${japaneseDetails.course_id}_2025`;
+      if (processedRegNumbers.has(courseKey)) {
+        console.log(`Skipping already processed course: ${japaneseDetails.name}`);
+        await detailPage.close();
+        continue;
+      }
+
+      // Switch to English version of the page
+      let englishDetails = null;
+      const englishLink = await detailPage.$('a[href*="lang=en"]');
+      if (englishLink) {
+        await englishLink.click();
+        await detailPage.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {});
+
+        // Extract English details
+        englishDetails = await detailPage.evaluate(() => {
+          const findValueByLabel = (label) => {
+            const tr = Array.from(document.querySelectorAll('tr')).find(el => 
+              el.querySelector('th') && el.querySelector('th').textContent.trim().includes(label));
+            if (tr) {
+              const td = tr.querySelector('td');
+              return td ? td.textContent.trim() : '';
+            }
+            return '';
+          };
+
+          return {
+            name: document.querySelector('h2.class-name') ? document.querySelector('h2.class-name').textContent.trim() : '',
+            field: findValueByLabel('Field'),
+            credits: findValueByLabel('Credits'),
+            semester: findValueByLabel('Academic Year/Semester'),
+            professor: findValueByLabel('Lecturer(s)'),
+            course_id: findValueByLabel('Registration Number')
+          };
+        });
+
+        console.log('Extracted English details:', englishDetails);
+      } else {
+        console.log('English link not found, using Japanese details only');
+        englishDetails = {
+          name: japaneseDetails.name,
+          field: '',
+          credits: '',
+          semester: '',
+          professor: japaneseDetails.professor,
+          course_id: japaneseDetails.course_id
+        };
+      }
+
+      // Determine if it's spring semester
+      const isSpringSemester = japaneseDetails.semester?.toLowerCase().includes('春');
 
       // Create the course object
       const course = {
         course_id: japaneseDetails.course_id || englishDetails.course_id,
         year: '2025',
-        semester: 'spring',
+        semester: isSpringSemester ? 'spring' : 'fall',
         translations: {
           ja: {
             name: japaneseDetails.name,
@@ -399,22 +523,53 @@ async function processSearchResults(page, existingCourses, browser) {
               en: englishDetails.field
             }
           }
-        ]
+        ],
+        available_years: ['2025']
       };
 
       // Add to our collection
       allCourses.push(course);
+      processedRegNumbers.add(courseKey);
       console.log(`Added course: ${course.translations.ja.name}`);
-    }
 
-    // Close the detail page
-    await detailPage.close();
+      // Close the detail page
+      await detailPage.close();
+    } catch (error) {
+      console.error(`Error processing course ${i+1}:`, error);
+      // Continue with next course
+    }
 
     // Add a small delay between courses to avoid overloading the server
     await delay(1000);
   }
+}
 
-  return allCourses;
+// Save courses to file
+function saveCoursesToFile(courses, currentPage = null) {
+  try {
+    const meta = {
+      total_count: courses.length,
+      languages: ['ja', 'en'],
+      generated_date: new Date().toISOString()
+    };
+    
+    if (currentPage) {
+      meta.current_page = currentPage;
+    }
+    
+    const jsonContent = JSON.stringify({
+      courses,
+      meta
+    }, null, 2);
+    
+    fs.writeFileSync(config.outputFile, jsonContent, 'utf8');
+    console.log(`Saved ${courses.length} courses to file${currentPage ? ` after page ${currentPage}` : ''}`);
+    
+    return true;
+  } catch (error) {
+    console.error('Error saving courses to file:', error);
+    return false;
+  }
 }
 
 // Execute the main function
