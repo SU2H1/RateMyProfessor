@@ -34,6 +34,13 @@ require_once 'session_config.php'; //NEW
 session_start();
 $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 
+// Add these variables right after $isLoggedIn is defined
+$email = $password = "";
+$email_err = $password_err = $login_err = "";
+
+
+
+
 function normalizeText($text) {
     if (empty($text)) return $text;
     
@@ -174,6 +181,80 @@ if ($courseId && is_numeric($courseId)) {
         }
     } catch (Exception $e) {
         error_log("Database error when looking up course by ID: " . $e->getMessage());
+    }
+}
+
+// Process login form submission (add this right after setting the variables above)
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_submit'])) {
+    // Check if email is empty
+    if (empty(trim($_POST["email"]))) {
+        $email_err = "Please enter email.";
+    } else {
+        $email = trim($_POST["email"]);
+    }
+    
+    // Check if password is empty
+    if (empty(trim($_POST["password"]))) {
+        $password_err = "Please enter your password.";
+    } else {
+        $password = trim($_POST["password"]);
+    }
+    
+    // Validate credentials
+    if (empty($email_err) && empty($password_err)) {
+        try {
+
+            // For SQLite3, we need to use a different approach than mysqli
+            $db = new SQLite3('database/ratemyteacher.db');
+            $sql = "SELECT id, username, email, password, is_verified FROM users WHERE email = :email";
+    
+            $loginStmt = $db->prepare($sql);
+            if ($loginStmt) {
+                // Bind parameters
+                $loginStmt->bindValue(':email', $email, SQLITE3_TEXT);
+                
+                // Execute the statement
+                $loginResult = $loginStmt->execute();
+                
+                // Check if we found a user
+                if ($loginRow = $loginResult->fetchArray(SQLITE3_ASSOC)) {
+                    // Check password
+                    if (password_verify($password, $loginRow['password'])) {
+                        // Auto-verify all accounts for development
+                        if ($loginRow['is_verified'] == 0) {
+                            // Update the user to be verified
+                            $verify_sql = "UPDATE users SET is_verified = 1 WHERE id = :id";
+                            $verify_stmt = $db->prepare($verify_sql);
+                            $verify_stmt->bindValue(':id', $loginRow['id'], SQLITE3_INTEGER);
+                            $verify_stmt->execute();
+                        }
+                        
+                        // Store data in session variables
+                        $_SESSION["loggedin"] = true;
+                        $_SESSION["id"] = $loginRow['id'];
+                        $_SESSION["username"] = $loginRow['username'];
+                        $_SESSION["email"] = $loginRow['email'];
+                        
+                        // Make sure session data is saved
+                        session_write_close();
+                        
+                        // Redirect to the same page to refresh with logged in state
+                        header("Location: " . $_SERVER['REQUEST_URI']);
+                        exit();
+                    } else {
+                        // Password is not valid
+                        $login_err = "Invalid email or password.";
+                    }
+                } else {
+                    // Email doesn't exist
+                    $login_err = "Invalid email or password.";
+                }
+            } else {
+                $login_err = "Something went wrong. Please try again later.";
+            }
+        } catch (Exception $e) {
+            $login_err = "Error: " . $e->getMessage();
+        }
     }
 }
 
@@ -1977,6 +2058,127 @@ $sampleReviews = [];
         .add-review-btn:hover, .primary-btn:hover, #rateButton:hover, #writeReviewButton:hover {
             background-color: #2a4db0 !important;
         }
+
+        .content-blur {
+        filter: blur(5px);
+        pointer-events: none;
+        user-select: none;
+        }
+    
+        /* Login overlay styles */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-title {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .login-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .login-form .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .login-form .help-block {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .login-form .btn-primary {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .login-form .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .login-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .login-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .or-divider::before,
+        .or-divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .or-divider span {
+            padding: 0 10px;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -2025,8 +2227,52 @@ $sampleReviews = [];
             </div>
         </div>
     </header>
-
+    <?php if (!$isLoggedIn): ?>
+        <div class="login-overlay">
+            <div class="login-container">
+                <h2 class="login-title"><?php echo $lang === 'ja' ? 'ログインして続行' : 'Login to Continue'; ?></h2>
+                
+                <?php if (!empty($login_err)): ?>
+                    <div class="login-error"><?php echo $login_err; ?></div>
+                <?php endif; ?>
+                
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . '?' . $_SERVER['QUERY_STRING']); ?>" method="post" class="login-form">
+                    <div class="form-group">
+                        <label><?php echo $lang === 'ja' ? 'メールアドレス' : 'Email'; ?></label>
+                        <input type="email" name="email" class="form-control" value="<?php echo $email; ?>" required>
+                        <span class="help-block"><?php echo $email_err; ?></span>
+                    </div>
+                    <div class="form-group">
+                        <label><?php echo $lang === 'ja' ? 'パスワード' : 'Password'; ?></label>
+                        <input type="password" name="password" class="form-control" required>
+                        <span class="help-block"><?php echo $password_err; ?></span>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="login_submit" class="btn-primary">
+                            <?php echo $lang === 'ja' ? 'ログイン' : 'Login'; ?>
+                        </button>
+                    </div>
+                    
+                    <div class="or-divider">
+                        <span><?php echo $lang === 'ja' ? 'または' : 'OR'; ?></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <a href="register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="btn-secondary" style="display: block; text-align: center; text-decoration: none;">
+                            <?php echo $lang === 'ja' ? '新規登録' : 'Register'; ?>
+                        </a>
+                    </div>
+                    
+                    <div class="login-actions">
+                        <a href="reset-password.php"><?php echo $lang === 'ja' ? 'パスワードをお忘れですか？' : 'Forgot Password?'; ?></a>
+                        <a href="home.php"><?php echo $lang === 'ja' ? 'ホームに戻る' : 'Back to Home'; ?></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <?php endif; ?>
     <div class="container" style="width: 100%; min-height: 100vh; display: flex; flex-direction: column; max-width: 1200px; margin: 0 auto; padding: 2rem;">
+        <div class="<?php echo (!$isLoggedIn) ? 'content-blur' : ''; ?>">
         <div class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
             <div class="course-header">
                 <h1 class="course-title" style="color: #1e3a8a; margin-bottom: 1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;"><?php echo htmlspecialchars($translation['name']); ?></h1>
@@ -2691,7 +2937,12 @@ $sampleReviews = [];
     </script>
 
 <!-- 1. First, find and close your content div before the footer -->
-</div> <!-- End of the .container or .content-box div -->
+</div> <!-- End of the content wrapper div -->
+</div> <!-- End of the container div -->
+
+<?php
+// This completes the modifications needed for the blur effect and login overlay
+?>
 
     <!-- 2. Replace the footer with this implementation that sits outside any containers -->
     <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
