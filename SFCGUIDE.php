@@ -4,8 +4,29 @@
  * Michelin Guide Style with multiple restaurant entries
  */
 
-// Get language preference
-$lang = isset($_GET['lang']) && $_GET['lang'] === 'en' ? 'en' : 'ja';
+// Function to get browser language
+function getBrowserLanguage() {
+    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        $browserLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        return $browserLang == 'ja' ? 'ja' : 'en';
+    }
+    return 'en'; // Default to English
+}
+
+// Check for URL language parameter
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'] === 'ja' ? 'ja' : 'en';
+    setcookie('language', $lang, time() + (86400 * 30), "/"); // 30 days
+    $_COOKIE['language'] = $lang; // Set for current request
+}
+// Set language preference if not already set
+elseif (isset($_COOKIE['language'])) {
+    $lang = $_COOKIE['language'] === 'ja' ? 'ja' : 'en';
+} else {
+    $lang = getBrowserLanguage(); // Default based on browser
+    setcookie('language', $lang, time() + (86400 * 30), "/");
+    $_COOKIE['language'] = $lang; // Set for current request
+}
 
 // ===== RESTAURANTS DATA - ADD NEW RESTAURANTS HERE =====
 $restaurants = [
@@ -316,6 +337,39 @@ function getLangSwitchUrl($currentLang) {
             padding-top: 15px;
             border-top: 1px solid #eee;
         }
+
+        /* Back to home button */
+        .back-to-home {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+        
+        .back-to-home:hover {
+            background-color: #152a63;
+        }
+        
+        /* Language toggle styling from home.php */
+        .language-toggle {
+            display: flex;
+            align-items: center;
+        }
+        
+        .language-toggle a {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            padding: 8px 0;
+            margin-left: 5px;
+            text-decoration: none;
+            border: 1px solid #1e3a8a;
+            border-radius: 4px;
+            font-size: 14px;
+        }
         
         /* Print styles */
         @media print {
@@ -345,11 +399,24 @@ function getLangSwitchUrl($currentLang) {
 <body>
     <header>
         <div class="logo">
+            <a href="home.php" class="back-to-home">
+                <?php echo $lang === 'ja' ? 'ホームに戻る' : 'Back to Home'; ?>
+            </a>
             <?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE'; ?>
         </div>
-        <div class="lang-toggle">
-            <a href="<?php echo getLangSwitchUrl('en'); ?>" class="<?php echo $lang === 'en' ? 'active' : ''; ?>">EN</a>
-            <a href="<?php echo getLangSwitchUrl('ja'); ?>" class="<?php echo $lang === 'ja' ? 'active' : ''; ?>">JP</a>
+        <div class="language-toggle">
+            <a href="?lang=en" class="<?php echo $lang === 'en' ? 'active' : ''; ?>"
+               style="background: <?php echo $lang === 'en' ? '#1e3a8a' : 'white'; ?>; 
+                      color: <?php echo $lang === 'en' ? 'white' : '#1e3a8a'; ?>;"
+               onclick="document.cookie='language=en; path=/; max-age=2592000'; return true;">
+                English
+            </a>
+            <a href="?lang=ja" class="<?php echo $lang === 'ja' ? 'active' : ''; ?>"
+               style="background: <?php echo $lang === 'ja' ? '#1e3a8a' : 'white'; ?>; 
+                      color: <?php echo $lang === 'ja' ? 'white' : '#1e3a8a'; ?>;"
+               onclick="document.cookie='language=ja; path=/; max-age=2592000'; return true;">
+                日本語
+            </a>
         </div>
     </header>
     
@@ -431,7 +498,25 @@ function getLangSwitchUrl($currentLang) {
     <?php endforeach; ?>
     
     <footer>
-        &copy; 2025 <?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC Food Guide'; ?>
+        <p>&copy; 2025 <?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC Food Guide'; ?></p>
+        <p style="margin-top: 10px;">
+            <a href="home.php" style="color: #666; text-decoration: underline;">
+                <?php echo $lang === 'ja' ? 'Rate My Teacherに戻る' : 'Back to Rate My Teacher'; ?>
+            </a>
+        </p>
     </footer>
+
+    <script>
+        // Script to handle language cookie setting
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event listeners to language toggle links
+            document.querySelectorAll('.language-toggle a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const lang = this.href.includes('lang=ja') ? 'ja' : 'en';
+                    document.cookie = `language=${lang}; path=/; max-age=2592000`; // 30 days
+                });
+            });
+        });
+    </script>
 </body>
 </html>
