@@ -381,7 +381,7 @@ function getLangSwitchUrl($currentLang) {
         <h1><?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE'; ?></h1>
         <h2><?php echo $lang === 'ja' ? '慶應義塾大学湘南藤沢キャンパス周辺' : 'Keio University Shonan Fujisawa Campus Area'; ?></h2>
         <div class="year">2025</div>
-        <div class="region"><?php echo $lang === 'ja' ? '藤沢・辻堂・善行' : 'FUJISAWA・TSUJIDO・ZENGYO'; ?></div>
+        <div class="region"><?php echo $lang === 'ja' ? '湘南台・藤沢・辻堂' : 'SHONANDAI・FUJISAWA・TSUJIDO'; ?></div>
     </div>
     
     <!-- Table of Contents -->
