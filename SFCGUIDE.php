@@ -11,71 +11,48 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'en' ? 'en' : 'ja';
 $restaurants = [
     // Restaurant 1
     [
-        'name' => 'Matsunoya',
-        'name_ja' => '松乃家',
-        'cuisine_type' => 'Japanese Tonkatsu',
-        'cuisine_type_ja' => '日本のとんかつ',
-        'address' => '5-23-7 Shinjuku, Tokyo',
-        'address_ja' => '東京都新宿区5-23-7',
-        'phone' => '03-1234-5678',
-        'price_range' => '¥¥',
-        'stars' => 1, // Michelin stars (0-3)
-        'description' => 'Traditional Japanese restaurant specializing in tonkatsu (fried pork cutlet).',
-        'description_ja' => 'とんかつを専門とする伝統的な日本料理店。',
+        'name' => 'Sati',
+        'name_ja' => 'サティー',
+        'cuisine_type' => 'Indian Curry',
+        'cuisine_type_ja' => 'インドカレー',
+        'address' => 'Shonandai Parkside Building 102 1-9-13 Shonandai Fujisawa, Kanagawa',
+        'address_ja' => '神奈川県藤沢市湘南台１丁目9−１３ 湘南台パークサイドビル 102',
+        'phone' => '0466430672',
+        'price_range' => '￥1,000～￥2,000',
+        'stars' => 3, // Michelin stars (0-3)
+        'description' => 'Cheap and delicious Indian curry restaurant.',
+        'description_ja' => '安くて、美味しいインドカレー専門店。',
         'recommendation' => 'Rosu Katsu Set, Hire Katsu Curry',
         'recommendation_ja' => 'ロースカツ定食、ヒレカツカレー',
-        'hours' => 'Lunch 11:30-14:30, Dinner 17:00-22:00',
-        'hours_ja' => 'ランチ 11:30-14:30、ディナー 17:00-22:00',
-        'closed' => 'Mondays',
-        'closed_ja' => '月曜日',
-        'photo' => 'images/restaurants/matsunoya_exterior.jpg',
-        'photo_dish' => 'images/restaurants/matsunoya_tonkatsu.jpg'
+        'hours' => 'Lunch 11:00～15:00, Lunch Buffet on Weekends and Public Holiday 11:00～15:00, Dinner 17:00～22:00',
+        'hours_ja' => 'ランチ 11:00～15:00、土日祝にランチバイキング 11:00～15:00、ディナー 17:00～22:00',
+        'closed' => 'N/A',
+        'closed_ja' => '無し',
+        'photo' => 'ratemyteachersfc.com/public_html/Images/Sati_Photo',
+        'photo_dish' => 'ratemyteachersfc.com/public_html/Images/Sati_Dish'
     ],
     
     // Restaurant 2 
     [
-        'name' => 'Sushiro',
-        'name_ja' => 'スシロー',
-        'cuisine_type' => 'Conveyor Belt Sushi',
-        'cuisine_type_ja' => '回転寿司',
-        'address' => '1-2-3 Shibuya, Tokyo',
-        'address_ja' => '東京都渋谷区1-2-3',
-        'phone' => '03-9876-5432',
-        'price_range' => '¥',
-        'stars' => 0, // Michelin stars (0-3)
-        'description' => 'Popular conveyor belt sushi chain with fresh fish and affordable prices.',
-        'description_ja' => '新鮮な魚と手頃な価格の人気回転寿司チェーン。',
-        'recommendation' => 'Chutoro, Salmon, Uni',
-        'recommendation_ja' => '中トロ、サーモン、うに',
-        'hours' => '11:00-22:00',
+        'name' => 'Ramen Jiro Shonan Fujisawa',
+        'name_ja' => ' ラーメン二郎 湘南藤沢店 ',
+        'cuisine_type' => 'Jiro Ramen',
+        'cuisine_type_ja' => '二郎ラーメン',
+        'address' => '1-10-14 Honcho Fujisawa, Kanagawa',
+        'address_ja' => '神奈川県藤沢市本町1-10-14 ',
+        'phone' => 'N/A',
+        'price_range' => '¥1000',
+        'stars' => 3, // Michelin stars (0-3)
+        'description' => 'One of the best Ramen Jiro with the most delicious chashu.',
+        'description_ja' => 'ラーメン二郎の中でも最高のチャーシューが食べられるお店。',
+        'recommendation' => 'Half size Ramen, Garlic, SUPER Kimchi',
+        'recommendation_ja' => 'ラーメン半分、ニンニク、SUPERキムチ',
+        'hours' => 'Lunch 11:00～14:30, Dinner 17:00～21:00',
         'hours_ja' => '11:00-22:00',
-        'closed' => 'No regular holidays',
-        'closed_ja' => '年中無休',
-        'photo' => 'images/restaurants/sushiro_exterior.jpg',
-        'photo_dish' => 'images/restaurants/sushiro_sushi.jpg'
-    ],
-    
-    // Restaurant 3 - ADD YOUR RESTAURANT HERE
-    [
-        'name' => 'Matsuya',
-        'name_ja' => '松屋',
-        'cuisine_type' => 'Japanese Fast Food',
-        'cuisine_type_ja' => '日本のファストフード',
-        'address' => '4-5-6 Ikebukuro, Tokyo',
-        'address_ja' => '東京都池袋区4-5-6',
-        'phone' => '03-1122-3344',
-        'price_range' => '¥',
-        'stars' => 0,
-        'description' => 'Fast food chain specializing in Japanese-style beef bowls and curry.',
-        'description_ja' => '牛丼やカレーを専門とする日本式ファストフードチェーン。',
-        'recommendation' => 'Gyumeshi, Curry with Cheese',
-        'recommendation_ja' => '牛めし、チーズカレー',
-        'hours' => '24 hours',
-        'hours_ja' => '24時間営業',
-        'closed' => 'Open every day',
-        'closed_ja' => '年中無休',
-        'photo' => 'images/restaurants/matsuya_exterior.jpg',
-        'photo_dish' => 'images/restaurants/matsuya_gyudon.jpg'
+        'closed' => 'Tuesday',
+        'closed_ja' => '火曜日',
+        'photo' => 'ratemyteachersfc.com/public_html/Images/FujisawaJiro_Photo.heic',
+        'photo_dish' => 'ratemyteachersfc.com/public_html/Images/FujisawaJiro_Dish.png'
     ]
     
     // Copy the format above to add more restaurants
