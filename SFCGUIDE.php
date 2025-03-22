@@ -1,0 +1,460 @@
+<?php
+/**
+ * SFC Restaurant Guide - Multiple Restaurants
+ * Michelin Guide Style with multiple restaurant entries
+ */
+
+// Get language preference
+$lang = isset($_GET['lang']) && $_GET['lang'] === 'en' ? 'en' : 'ja';
+
+// ===== RESTAURANTS DATA - ADD NEW RESTAURANTS HERE =====
+$restaurants = [
+    // Restaurant 1
+    [
+        'name' => 'Matsunoya',
+        'name_ja' => '松乃家',
+        'cuisine_type' => 'Japanese Tonkatsu',
+        'cuisine_type_ja' => '日本のとんかつ',
+        'address' => '5-23-7 Shinjuku, Tokyo',
+        'address_ja' => '東京都新宿区5-23-7',
+        'phone' => '03-1234-5678',
+        'price_range' => '¥¥',
+        'stars' => 1, // Michelin stars (0-3)
+        'description' => 'Traditional Japanese restaurant specializing in tonkatsu (fried pork cutlet).',
+        'description_ja' => 'とんかつを専門とする伝統的な日本料理店。',
+        'recommendation' => 'Rosu Katsu Set, Hire Katsu Curry',
+        'recommendation_ja' => 'ロースカツ定食、ヒレカツカレー',
+        'hours' => 'Lunch 11:30-14:30, Dinner 17:00-22:00',
+        'hours_ja' => 'ランチ 11:30-14:30、ディナー 17:00-22:00',
+        'closed' => 'Mondays',
+        'closed_ja' => '月曜日',
+        'photo' => 'images/restaurants/matsunoya_exterior.jpg',
+        'photo_dish' => 'images/restaurants/matsunoya_tonkatsu.jpg'
+    ],
+    
+    // Restaurant 2 
+    [
+        'name' => 'Sushiro',
+        'name_ja' => 'スシロー',
+        'cuisine_type' => 'Conveyor Belt Sushi',
+        'cuisine_type_ja' => '回転寿司',
+        'address' => '1-2-3 Shibuya, Tokyo',
+        'address_ja' => '東京都渋谷区1-2-3',
+        'phone' => '03-9876-5432',
+        'price_range' => '¥',
+        'stars' => 0, // Michelin stars (0-3)
+        'description' => 'Popular conveyor belt sushi chain with fresh fish and affordable prices.',
+        'description_ja' => '新鮮な魚と手頃な価格の人気回転寿司チェーン。',
+        'recommendation' => 'Chutoro, Salmon, Uni',
+        'recommendation_ja' => '中トロ、サーモン、うに',
+        'hours' => '11:00-22:00',
+        'hours_ja' => '11:00-22:00',
+        'closed' => 'No regular holidays',
+        'closed_ja' => '年中無休',
+        'photo' => 'images/restaurants/sushiro_exterior.jpg',
+        'photo_dish' => 'images/restaurants/sushiro_sushi.jpg'
+    ],
+    
+    // Restaurant 3 - ADD YOUR RESTAURANT HERE
+    [
+        'name' => 'Matsuya',
+        'name_ja' => '松屋',
+        'cuisine_type' => 'Japanese Fast Food',
+        'cuisine_type_ja' => '日本のファストフード',
+        'address' => '4-5-6 Ikebukuro, Tokyo',
+        'address_ja' => '東京都池袋区4-5-6',
+        'phone' => '03-1122-3344',
+        'price_range' => '¥',
+        'stars' => 0,
+        'description' => 'Fast food chain specializing in Japanese-style beef bowls and curry.',
+        'description_ja' => '牛丼やカレーを専門とする日本式ファストフードチェーン。',
+        'recommendation' => 'Gyumeshi, Curry with Cheese',
+        'recommendation_ja' => '牛めし、チーズカレー',
+        'hours' => '24 hours',
+        'hours_ja' => '24時間営業',
+        'closed' => 'Open every day',
+        'closed_ja' => '年中無休',
+        'photo' => 'images/restaurants/matsuya_exterior.jpg',
+        'photo_dish' => 'images/restaurants/matsuya_gyudon.jpg'
+    ]
+    
+    // Copy the format above to add more restaurants
+];
+// ===== END OF RESTAURANTS DATA =====
+
+// Helper functions
+function generateStars($count) {
+    $html = '';
+    for ($i = 0; $i < $count; $i++) {
+        $html .= '★ ';
+    }
+    return trim($html);
+}
+
+function getLangSwitchUrl($currentLang) {
+    $params = $_GET;
+    $params['lang'] = $currentLang === 'en' ? 'ja' : 'en';
+    return '?' . http_build_query($params);
+}
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $lang; ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC Food Guide'; ?></title>
+    <style>
+        /* Reset and basic styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #fff;
+        }
+        
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .logo {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .lang-toggle a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #999;
+        }
+        
+        .lang-toggle a.active {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        /* Restaurant entry */
+        .restaurant-entry {
+            display: flex;
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .restaurant-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .restaurant-photos {
+            width: 30%;
+            margin-right: 20px;
+        }
+        
+        .photo {
+            width: 100%;
+            height: auto;
+            margin-bottom: 8px;
+            border: 1px solid #eee;
+        }
+        
+        .photo-placeholder {
+            width: 100%;
+            padding-top: 75%; /* 4:3 aspect ratio */
+            position: relative;
+            background-color: #f0f0f0;
+            border: 1px solid #eee;
+            margin-bottom: 8px;
+        }
+        
+        .photo-placeholder::after {
+            content: "Photo";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .restaurant-info {
+            width: 70%;
+        }
+        
+        .restaurant-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .restaurant-cuisine {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .restaurant-stars {
+            color: #BF0000; /* Michelin red */
+            margin-bottom: 8px;
+        }
+        
+        .restaurant-description {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .restaurant-recommendation {
+            font-size: 14px;
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+        
+        .restaurant-details {
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            line-height: 1.3;
+        }
+        
+        .restaurant-details p {
+            margin-bottom: 4px;
+        }
+        
+        .price {
+            font-weight: bold;
+        }
+        
+        /* Index styling (for guide with many restaurants) */
+        .index-section {
+            margin-bottom: 30px;
+        }
+        
+        .index-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #BF0000; /* Michelin red */
+        }
+        
+        .index-list {
+            columns: 2;
+            column-gap: 20px;
+        }
+        
+        .index-item {
+            margin-bottom: 8px;
+            break-inside: avoid;
+        }
+        
+        .index-item a {
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .index-item a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Table of contents */
+        .toc {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+        
+        .toc h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+        }
+        
+        .toc li {
+            margin-bottom: 6px;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Cover page */
+        .cover {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .cover h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #BF0000; /* Michelin red */
+        }
+        
+        .cover h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+        
+        .cover .year {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .cover .region {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                font-size: 12px;
+                padding: 0;
+            }
+            
+            header {
+                display: none;
+            }
+            
+            .restaurant-entry {
+                page-break-inside: avoid;
+            }
+            
+            .cover {
+                page-break-after: always;
+            }
+            
+            .toc {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE'; ?>
+        </div>
+        <div class="lang-toggle">
+            <a href="<?php echo getLangSwitchUrl('en'); ?>" class="<?php echo $lang === 'en' ? 'active' : ''; ?>">EN</a>
+            <a href="<?php echo getLangSwitchUrl('ja'); ?>" class="<?php echo $lang === 'ja' ? 'active' : ''; ?>">JP</a>
+        </div>
+    </header>
+    
+    <!-- Cover page (you can comment out if not needed) -->
+    <div class="cover">
+        <h1><?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE'; ?></h1>
+        <h2><?php echo $lang === 'ja' ? '慶應義塾大学湘南藤沢キャンパス周辺' : 'Keio University Shonan Fujisawa Campus Area'; ?></h2>
+        <div class="year">2025</div>
+        <div class="region"><?php echo $lang === 'ja' ? '藤沢・辻堂・善行' : 'FUJISAWA・TSUJIDO・ZENGYO'; ?></div>
+    </div>
+    
+    <!-- Table of Contents -->
+    <div class="toc">
+        <h2><?php echo $lang === 'ja' ? '目次' : 'Contents'; ?></h2>
+        <ul>
+            <?php foreach($restaurants as $index => $restaurant): ?>
+            <li>
+                <a href="#restaurant-<?php echo $index; ?>">
+                    <?php echo $lang === 'ja' && isset($restaurant['name_ja']) ? htmlspecialchars($restaurant['name_ja']) : htmlspecialchars($restaurant['name']); ?>
+                </a>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+    <!-- Restaurant entries -->
+    <?php foreach($restaurants as $index => $restaurant): ?>
+        <?php
+        // Get language-specific content
+        $name = $lang === 'ja' && isset($restaurant['name_ja']) ? $restaurant['name_ja'] : $restaurant['name'];
+        $cuisine = $lang === 'ja' && isset($restaurant['cuisine_type_ja']) ? $restaurant['cuisine_type_ja'] : $restaurant['cuisine_type'];
+        $address = $lang === 'ja' && isset($restaurant['address_ja']) ? $restaurant['address_ja'] : $restaurant['address'];
+        $description = $lang === 'ja' && isset($restaurant['description_ja']) ? $restaurant['description_ja'] : $restaurant['description'];
+        $recommendation = $lang === 'ja' && isset($restaurant['recommendation_ja']) ? $restaurant['recommendation_ja'] : $restaurant['recommendation'];
+        $hours = $lang === 'ja' && isset($restaurant['hours_ja']) ? $restaurant['hours_ja'] : $restaurant['hours'];
+        $closed = $lang === 'ja' && isset($restaurant['closed_ja']) ? $restaurant['closed_ja'] : $restaurant['closed'];
+        ?>
+        <div id="restaurant-<?php echo $index; ?>" class="restaurant-entry">
+            <div class="restaurant-photos">
+                <?php if (isset($restaurant['photo']) && file_exists($restaurant['photo'])): ?>
+                    <img src="<?php echo htmlspecialchars($restaurant['photo']); ?>" alt="<?php echo htmlspecialchars($name); ?>" class="photo">
+                <?php else: ?>
+                    <div class="photo-placeholder"></div>
+                <?php endif; ?>
+                
+                <?php if (isset($restaurant['photo_dish']) && file_exists($restaurant['photo_dish'])): ?>
+                    <img src="<?php echo htmlspecialchars($restaurant['photo_dish']); ?>" alt="<?php echo htmlspecialchars($name); ?> dish" class="photo">
+                <?php else: ?>
+                    <div class="photo-placeholder"></div>
+                <?php endif; ?>
+            </div>
+            
+            <div class="restaurant-info">
+                <h2 class="restaurant-name"><?php echo htmlspecialchars($name); ?></h2>
+                <div class="restaurant-cuisine"><?php echo htmlspecialchars($cuisine); ?></div>
+                
+                <?php if (isset($restaurant['stars']) && $restaurant['stars'] > 0): ?>
+                <div class="restaurant-stars"><?php echo generateStars($restaurant['stars']); ?></div>
+                <?php endif; ?>
+                
+                <div class="restaurant-description"><?php echo htmlspecialchars($description); ?></div>
+                
+                <?php if (!empty($recommendation)): ?>
+                <div class="restaurant-recommendation">
+                    <strong><?php echo $lang === 'ja' ? 'おすすめ：' : 'Recommended: '; ?></strong>
+                    <?php echo htmlspecialchars($recommendation); ?>
+                </div>
+                <?php endif; ?>
+                
+                <div class="restaurant-details">
+                    <p><?php echo htmlspecialchars($address); ?></p>
+                    <p><?php echo htmlspecialchars($restaurant['phone']); ?></p>
+                    <p><?php echo htmlspecialchars($hours); ?></p>
+                    <p><?php echo $lang === 'ja' ? '定休日: ' : 'Closed: '; ?><?php echo htmlspecialchars($closed); ?></p>
+                    <p class="price"><?php echo $restaurant['price_range']; ?></p>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+    
+    <footer>
+        &copy; 2025 <?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC Food Guide'; ?>
+    </footer>
+</body>
+</html>
