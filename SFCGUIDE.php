@@ -51,8 +51,8 @@ $restaurants = [
         'hours_ja' => '11:00-22:00',
         'closed' => 'Tuesday',
         'closed_ja' => '火曜日',
-        'photo' => 'ratemyteachersfc.com/public_html/Images/FujisawaJiro_Photo.heic',
-        'photo_dish' => 'ratemyteachersfc.com/public_html/Images/FujisawaJiro_Dish.png'
+        'photo' => 'Images/FujisawaJiro_Photo.png',
+        'photo_dish' => 'Images/FujisawaJiro_Dish.png'
     ]
     
     // Copy the format above to add more restaurants
