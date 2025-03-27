@@ -987,37 +987,7 @@ elseif (!isset($_COOKIE['language'])) {
                 </div>
             </div>
         </div>
-        
-        <main style="flex: 1; display: flex; padding: 2rem;">
-            <div id="popular-professors" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
-                <div class="professor-list">
-                    <?php foreach ($topProfessors as $professor): ?>
-                    <a href="professor_page_template.php?name=<?php echo urlencode($professor['english_name']); ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
-                        <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
-                            <div>
-                                <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
-                                <p><?php echo htmlspecialchars($professor['department'] ?? 'Unknown Department'); ?></p>
-                            </div>
-                            <div class="rating">
-                                <?php 
-                                if ($professor['avg_rating'] !== 'N/A' && $professor['avg_rating'] > 0) {
-                                    $fullStars = floor($professor['avg_rating']);
-                                    $hasHalfStar = $professor['avg_rating'] - $fullStars >= 0.5;
-                                    echo str_repeat('★', $fullStars);
-                                    echo $hasHalfStar ? '½' : '';
-                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
-                                    echo ' <span>' . $professor['avg_rating'] . '</span>';
-                                } else {
-                                    echo '☆☆☆☆☆ <span>No ratings</span>';
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+    
             
             <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
@@ -1228,10 +1198,7 @@ elseif (!isset($_COOKIE['language'])) {
                             <h4>${prof.name}</h4>
                             <p>${prof.department || 'Department not specified'}</p>
                         </div>
-                        <div class="search-item-rating">
-                            ${ratingHtml}
-                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} review${prof.review_count !== 1 ? 's' : ''}</div>` : ''}
-                        </div>
+
                     `;
                     
                     // Add click event to view professor page

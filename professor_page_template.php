@@ -899,47 +899,6 @@ if ($reviewCount > 0) {
                 </div>
             </div>
 
-        <div class="rating-overview" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
-            <div class="overall-rating" style="background-color: #f0f4ff; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <div style="font-size: 18px; margin-bottom: 5px; color: #666;">
-                    <?php echo $lang === 'ja' ? '総合評価' : 'Overall Rating'; ?>
-                </div>
-                <div class="rating-number" style="color: #1e3a8a; font-size: 42px; font-weight: bold;">
-                    <?php echo number_format($overallRating, 1); ?>
-                </div>
-                <div style="font-size: 14px; color: #666; margin-top: 5px;">
-                    <?php echo $reviewCount; ?> <?php echo $lang === 'ja' ? 'レビュー' : 'reviews'; ?>
-                </div>
-            </div>
-            <div class="rating-details" style="flex-grow: 1; min-width: 300px;">
-                <div class="rating-header" style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                    <div style="font-weight: bold; color: #333;"><?php echo $lang === 'ja' ? '評価詳細' : 'Rating Details'; ?></div>
-                    <div style="color: #666; font-size: 0.9em;">
-                        <?php echo $reviewCount; ?> <?php echo $lang === 'ja' ? 'レビュー' : 'reviews'; ?>
-                    </div>
-                </div>
-                <?php foreach ($categoryScores as $key => $category): ?>
-                <div class="rating-category" style="display: flex; align-items: center; margin-bottom: 15px; position: relative;">
-                    <div class="category-name" style="width: 140px; font-size: 0.95em; color: #444; flex-shrink: 0;">
-                        <?php echo $category['label']; ?>
-                        <div style="font-size: 0.8em; color: #666;">
-                            <?php echo $category['description']; ?>
-                        </div>
-                    </div>
-                    <div class="progress-bar" style="flex-grow: 1; height: 8px; background-color: #e9ecef; border-radius: 4px; margin: 0 30px 0 15px; overflow: hidden;">
-                        <div class="progress" style="width: <?php echo $category['percent']; ?>%; height: 100%; background-color: <?php echo $category['color'] ?? '#1e3a8a'; ?>;"></div>
-                    </div>
-                    <div class="category-score" style="min-width: 40px; text-align: right; font-weight: bold; color: #1e3a8a; flex-shrink: 0; position: absolute; right: 0;">
-                        <?php echo isset($category['raw_score']) ? $category['raw_score'] : $category['score']; ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-                <div style="font-size: 0.85em; color: #666; margin-top: 10px;">
-                    <?php echo $lang === 'ja' ? '※ これは教授が教える全てのコースの平均評価です。' : '* This is the average rating across all courses taught by this professor.'; ?>
-                </div>
-            </div>
-        </div>
-
         <div class="professor-courses" style="margin-bottom: 30px;">
             <h2 class="section-title" style="color: #1e3a8a; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;"><?php echo $lang === 'ja' ? '担当コース' : 'Courses Taught'; ?></h2>
             <div class="courses" style="display: flex; flex-wrap: wrap; gap: 20px;">
