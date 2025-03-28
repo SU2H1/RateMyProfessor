@@ -397,7 +397,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher - SU2H1</title>
+    <title>Rate My Teacher - Public Testing</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -898,165 +898,6 @@ elseif (!isset($_COOKIE['language'])) {
         .close-search-results:hover {
             background-color: #e0e0e0;
         }
-
-    /* Mobile-first responsive design for Rate My Teacher */
-
-    /* Base responsive viewport styles - add to the existing <head> */
-    @media screen and (max-width: 768px) {
-        /* General adjustments */
-        body {
-            font-size: 14px;
-        }
-
-        /* Header layout adjustments */
-        header {
-            flex-direction: column;
-            padding: 0.5rem;
-        }
-
-        .header-left, .header-center, .header-right {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-right {
-            flex-direction: column;
-        }
-
-        .auth-links {
-            margin: 0.5rem 0;
-        }
-
-        .welcome-message {
-            margin: 0.5rem 0;
-        }
-
-        .language-toggle {
-            justify-content: center;
-            margin-top: 0.5rem;
-        }
-
-        /* Search container adjustments */
-        .search-container {
-            padding: 1rem;
-        }
-
-        .search-bar {
-            width: 100%;
-            max-width: 100%;
-        }
-
-        /* Main content adjustments */
-        main {
-            flex-direction: column;
-            padding: 1rem;
-        }
-
-        .content-box {
-            margin: 0.5rem 0;
-        }
-
-        /* Modal adjustments */
-        .modal-content {
-            width: 90%;
-            margin: 5% auto;
-            padding: 15px;
-        }
-
-        /* Dropdown menu adjustments */
-        .dropdown-content {
-            min-width: 100%;
-            position: relative;
-        }
-
-        /* Search results adjustments */
-        .search-results {
-            max-height: 80vh;
-        }
-
-        .search-item {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .search-item-rating {
-            align-items: flex-start;
-            margin-top: 0.5rem;
-        }
-    }
-
-    /* Small phone specific adjustments */
-    @media screen and (max-width: 480px) {
-        .logo h1 {
-            font-size: 1.3rem;
-        }
-
-        .professor-item, .course-item {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .rating {
-            margin-left: 0;
-            margin-top: 0.5rem;
-        }
-
-        .dropdown {
-            width: 100%;
-        }
-
-        .dropbtn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* Make language toggle buttons more touch-friendly */
-        .language-toggle a {
-            padding: 10px 20px;
-        }
-
-        /* Search button improvements for touch */
-        .search-bar button {
-            padding: 0.7rem 1rem;
-        }
-
-        /* Mobile-optimized modals */
-        .modal-content {
-            width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-    }
-
-    /* Hamburger menu for very small screens */
-    @media screen and (max-width: 400px) {
-        .header-center {
-            order: -1; /* Move logo to top */
-        }
-
-        .header-left {
-            width: 100%;
-        }
-
-        .dropbtn {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        /* Enhance touch targets for all buttons */
-        button, .language-toggle a, .auth-links a {
-            min-height: 44px; /* Minimum touch target size */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .search-item {
-            padding: 15px;
-        }
-    }
     </style>
 </head>
 <body>
@@ -1076,6 +917,7 @@ elseif (!isset($_COOKIE['language'])) {
                     //$professorsLabel = $currentLang == 'ja' ? '教授一覧' : 'Professors';
                     $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
                     //$coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
+                    $SFC_FOOD_GUIDE_Label = $currentLang == 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
                     ?>
@@ -1090,6 +932,7 @@ elseif (!isset($_COOKIE['language'])) {
                         <?php endif; ?>
                         <a href="#popular-professors"><?php echo $topProfessorsLabel; ?></a>
                         <a href="#top-courses"><?php echo $topCoursesLabel; ?></a>
+                        <a href="SFCGUIDE.php"><?php echo $SFC_FOOD_GUIDE_Label; ?></a>
                         <a href="tipsandtricks.php"><?php echo $tipsLabel; ?></a>
                         <?php if ($isLoggedIn): ?>
                             <a href="delete_account.php" class="delete-account"><?php echo $deleteAccountLabel; ?></a>
@@ -1146,7 +989,41 @@ elseif (!isset($_COOKIE['language'])) {
                 </div>
             </div>
         </div>
-    
+        
+        <main style="flex: 1; display: flex; padding: 2rem;">
+            <div id="popular-professors" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
+                <div class="professor-list">
+                    <?php foreach ($topProfessors as $professor): ?>
+                    <?php
+                    // Replace spaces with plus signs for consistent URL handling
+                    $nameForUrl = str_replace(' ', '+', $professor['english_name']);
+                    ?>
+                    <a href="professor_page_template.php?name=<?php echo $nameForUrl; ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                        <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
+                            <div>
+                                <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
+                                <p><?php echo htmlspecialchars($professor['department'] ?? 'Unknown Department'); ?></p>
+                            </div>
+                            <div class="rating">
+                                <?php 
+                                if ($professor['avg_rating'] !== 'N/A' && $professor['avg_rating'] > 0) {
+                                    $fullStars = floor($professor['avg_rating']);
+                                    $hasHalfStar = $professor['avg_rating'] - $fullStars >= 0.5;
+                                    echo str_repeat('★', $fullStars);
+                                    echo $hasHalfStar ? '½' : '';
+                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                                    echo ' <span>' . $professor['avg_rating'] . '</span>';
+                                } else {
+                                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
             
             <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
@@ -1162,7 +1039,7 @@ elseif (!isset($_COOKIE['language'])) {
         continue;
     }
     ?>
-<a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['english_professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+<a href="course.php?course_code=<?php echo urlencode($course['course_code']); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>" data-course-code="<?php echo htmlspecialchars($course['course_code']); ?>">
             <div>
                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
                 <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
@@ -1332,7 +1209,7 @@ elseif (!isset($_COOKIE['language'])) {
             const hasCourses = data.courses && data.courses.length > 0;
             
             if (!hasProfessors && !hasCourses) {
-                searchResultsDiv.innerHTML = `<div class="no-results">No results found for "${searchTerm}"</div>`;
+                searchResultsDiv.innerHTML = `<div class="no-results">${labels.noResults}</div>`;
                 searchResultsDiv.style.display = 'block'; // Ensure dropdown is visible
                 return;
             }
@@ -1341,32 +1218,62 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasProfessors) {
                 const profSection = document.createElement('div');
                 profSection.className = 'search-section';
-                profSection.innerHTML = `<h3>Professors (${data.professors.length})</h3>`;
+                
+                // Remove duplicate professors by ID
+                const uniqueProfessors = [];
+                const profIds = new Set();
+                
+                data.professors.forEach(prof => {
+                    // Skip if we've already seen this professor ID
+                    if (profIds.has(prof.id)) return;
+                    
+                    // Add to unique set
+                    profIds.add(prof.id);
+                    uniqueProfessors.push(prof);
+                });
+                
+                profSection.innerHTML = `<h3>${labels.professors} (${uniqueProfessors.length})</h3>`;
                 
                 const profList = document.createElement('div');
                 profList.className = 'search-list professor-search-list';
                 
-                data.professors.forEach(prof => {
+                uniqueProfessors.forEach(prof => {
                     const profItem = document.createElement('div');
                     profItem.className = 'search-item professor-search-item';
                     profItem.setAttribute('data-id', prof.id);
 
+                    // Use the appropriate language name based on current language
+                    const displayName = currentLang === 'ja' && prof.name_ja ? prof.name_ja : prof.name;
+                    const displayDepartment = currentLang === 'ja' && prof.department_ja ? prof.department_ja : prof.department;
+                    
+                    // Store both English and Japanese names as data attributes
+                    profItem.setAttribute('data-name-en', prof.name_en || prof.name);
+                    profItem.setAttribute('data-name-ja', prof.name_ja || prof.name);
+
                     const ratingHtml = generateStarRating(prof.avg_rating);
                     profItem.innerHTML = `
                         <div class="search-item-info">
-                            <h4>${prof.name}</h4>
-                            <p>${prof.department || 'Department not specified'}</p>
+                            <h4>${displayName}</h4>
+                            <p>${displayDepartment || labels.departmentNotSpecified}</p>
                         </div>
-
+                        <div class="search-item-rating">
+                            ${ratingHtml}
+                            ${prof.review_count ? `<div class="rating-count">${prof.review_count} ${prof.review_count !== 1 ? labels.reviews : labels.review}</div>` : ''}
+                        </div>
                     `;
                     
                     // Add click event to view professor page
                     profItem.addEventListener('click', () => {
-                        // Redirect to professor page
-                        const nameForUrl = prof.english_name ? prof.english_name.replace(/\s+/g, '') : prof.name.replace(/\s+/g, '');
-
-                        window.location.href = `professor_page_template.php?name=${encodeURIComponent(prof.name)}&lang=${currentLang}`;
-                        debug(`Navigating to professor: ${nameForUrl}`);
+                        // Use name_no_spaces if available, otherwise replace spaces with '+' in the name
+                        let nameForUrl;
+                        if (prof.name_no_spaces) {
+                            nameForUrl = prof.name_no_spaces;
+                        } else {
+                            nameForUrl = (prof.name_en || prof.name).replace(/\s+/g, '+');
+                        }
+                        
+                        window.location.href = `professor_page_template.php?name=${nameForUrl}&lang=${currentLang}`;
+                        console.log(`Navigating to professor: ${nameForUrl}`);
                     });
                     
                     profList.appendChild(profItem);
@@ -1380,43 +1287,62 @@ elseif (!isset($_COOKIE['language'])) {
             if (hasCourses) {
                 const courseSection = document.createElement('div');
                 courseSection.className = 'search-section';
-                courseSection.innerHTML = `<h3>Courses (${data.courses.length})</h3>`;
+                
+                // Remove duplicate courses by course_code
+                const uniqueCourses = [];
+                const courseCodes = new Set();
+                
+                data.courses.forEach(course => {
+                    const courseCode = course.course_code || course.course_id;
+                    
+                    // Skip if we've already seen this course code
+                    if (!courseCode || courseCodes.has(courseCode)) return;
+                    
+                    // Add to unique set
+                    courseCodes.add(courseCode);
+                    uniqueCourses.push(course);
+                });
+                
+                courseSection.innerHTML = `<h3>${labels.courses} (${uniqueCourses.length})</h3>`;
                 
                 const courseList = document.createElement('div');
                 courseList.className = 'search-list course-search-list';
                 
-                data.courses.forEach(course => {
+                uniqueCourses.forEach(course => {
                     const courseItem = document.createElement('div');
                     courseItem.className = 'search-item course-search-item';
                     courseItem.setAttribute('data-id', course.id);
                     
+                    // Use appropriate language for display
+                    const displayName = currentLang === 'ja' && course.name_ja ? course.name_ja : course.name;
+                    const displayProfessor = currentLang === 'ja' && course.professor_name_ja ? course.professor_name_ja : course.professor_name;
+                    
+                    // Store both language versions as data attributes
+                    courseItem.setAttribute('data-name-en', course.name_en || course.name);
+                    courseItem.setAttribute('data-name-ja', course.name_ja || course.name);
+                    
                     const ratingHtml = generateStarRating(course.avg_rating);
                     courseItem.innerHTML = `
                         <div class="search-item-info">
-                            <h4>${course.name}</h4>
-                            <p>${course.professor_name ? `Professor: ${course.professor_name}` : ''} ${course.course_code ? `· Code: ${course.course_code}` : ''}</p>
+                            <h4>${displayName}</h4>
+                            <p>${displayProfessor ? `${labels.professor}: ${displayProfessor}` : ''} ${course.course_code ? `· ${labels.code}: ${course.course_code}` : ''}</p>
                         </div>
                         <div class="search-item-rating">
                             ${ratingHtml}
-                            ${course.review_count ? `<div class="rating-count">${course.review_count} review${course.review_count !== 1 ? 's' : ''}</div>` : ''}
+                            ${course.review_count ? `<div class="rating-count">${course.review_count} ${course.review_count !== 1 ? labels.reviews : labels.review}</div>` : ''}
                         </div>
                     `;
                     
                     // Add click event to view course page
                     courseItem.addEventListener('click', () => {
-                        const nameForUrl = course.english_course_name || course.name;
-
-                        let url = `course.php?course=${encodeURIComponent(nameForUrl)}`;
-                        if (course.english_professor_name || course.professor_name) {
-                            // Remove spaces from professor name for URL
-                            const profNameForUrl = (course.english_professor_name || course.professor_name);
-
-                            url += `&professor=${encodeURIComponent(profNameForUrl)}`;
-                        }
+                        // Use course_code for URL instead of course name
+                        const courseCode = course.course_code || course.course_id || '';
+                        
+                        // Use course code parameter instead of course name
+                        let url = `course.php?course_code=${encodeURIComponent(courseCode)}`;
                         url += `&lang=${currentLang}`;
                         window.location.href = url;
-                        debug(`Navigating to course: ${nameForUrl}`);
-
+                        console.log(`Navigating to course code: ${courseCode}`);
                     });
                     
                     courseList.appendChild(courseItem);
@@ -1487,8 +1413,11 @@ elseif (!isset($_COOKIE['language'])) {
                         const profName = item.querySelector('h3').textContent;
                         console.log("Professor name from HTML:", profName);
                         
+                        // Replace spaces with plus signs for consistent URL format
+                        const profNameForUrl = profName.replace(/\s+/g, '+');
+                        
                         // Create the redirect URL with the current language - no ID needed
-                        const redirectUrl = `professor_page_template.php?name=${encodeURIComponent(profName)}&lang=${currentLang}`;
+                        const redirectUrl = `professor_page_template.php?name=${profNameForUrl}&lang=${currentLang}`;
                         console.log("Redirecting to:", redirectUrl);
                         
                         // Perform the redirect
@@ -1533,9 +1462,12 @@ elseif (!isset($_COOKIE['language'])) {
                         const courseName = item.querySelector('h3').textContent;
                         console.log("Course name from HTML:", courseName);
                         
-                        // Create the redirect URL with the current language - using course.php instead
-                        const redirectUrl = `course.php?course=${encodeURIComponent(courseName)}&lang=${currentLang}`;
-                        console.log("Redirecting to:", redirectUrl);
+                        // Get course_code from data-course-code attribute if available
+                        const courseCode = item.getAttribute('data-course-code') || '';
+                        
+                        // Create the redirect URL with course_code
+                        const redirectUrl = `course.php?course_code=${encodeURIComponent(courseCode)}&lang=${currentLang}`;
+                        console.log("Redirecting to course code:", courseCode);
                         
                         // Perform the redirect
                         location.href = redirectUrl;
@@ -2020,89 +1952,6 @@ elseif (!isset($_COOKIE['language'])) {
             }
         });
     });
-
-        // Mobile-specific interaction enhancements
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Detect if device is mobile
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
-    if (isMobile) {
-        // Enhance dropdown menu behavior on mobile
-        const dropdownButton = document.querySelector('.dropbtn');
-        const dropdownContent = document.querySelector('.dropdown-content');
-        
-        if (dropdownButton && dropdownContent) {
-            // Change dropdown to work with click instead of hover on mobile
-            document.querySelector('.dropdown').addEventListener('click', function(e) {
-                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-                e.stopPropagation();
-            });
-            
-            // Close dropdown when clicking elsewhere on the page
-            document.addEventListener('click', function() {
-                dropdownContent.style.display = 'none';
-            });
-
-            // Prevent dropdown links from immediately closing the dropdown
-            dropdownContent.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        }
-
-        // Make search bar more mobile-friendly
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            // Increase font size for better visibility on mobile
-            searchInput.style.fontSize = '16px';
-            
-            // Add focus and blur handlers to improve mobile experience
-            searchInput.addEventListener('focus', function() {
-                // Scroll to ensure the search bar is visible when keyboard appears
-                setTimeout(() => this.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-            });
-        }
-
-        // Enhance touch targets for all interactive elements
-        document.querySelectorAll('.professor-item, .course-item, .search-item, .close-modal').forEach(item => {
-            // Add additional padding to make touch targets larger
-            item.style.padding = '12px';
-        });
-
-        // Improve modal scrolling on mobile
-        document.querySelectorAll('.modal-content').forEach(modal => {
-            modal.addEventListener('touchmove', function(e) {
-                e.stopPropagation();
-            });
-        });
-        
-        // Add mobile-specific pull-to-refresh capability
-        let touchStartY = 0;
-        document.addEventListener('touchstart', function(e) {
-            touchStartY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchmove', function(e) {
-            const touchY = e.touches[0].clientY;
-            const touchDiff = touchY - touchStartY;
-            
-            // If we're at the top of the page and pulling down, show refresh indicator
-            if (window.scrollY === 0 && touchDiff > 70) {
-                // Implement visual indicator for refresh if needed
-            }
-        });
-    }
-    
-    // Handle window resize to adapt dynamically without refresh
-    window.addEventListener('resize', function() {
-        const isMobileNow = window.matchMedia('(max-width: 768px)').matches;
-        
-        // Reset display properties when transitioning between mobile and desktop
-        if (isMobileNow !== isMobile) {
-            location.reload(); // Simple approach - reload the page on major width changes
-        }
-    });
-});
     </script>
 </body>
 </html>
