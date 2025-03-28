@@ -898,6 +898,165 @@ elseif (!isset($_COOKIE['language'])) {
         .close-search-results:hover {
             background-color: #e0e0e0;
         }
+
+    /* Mobile-first responsive design for Rate My Teacher */
+
+    /* Base responsive viewport styles - add to the existing <head> */
+    @media screen and (max-width: 768px) {
+        /* General adjustments */
+        body {
+            font-size: 14px;
+        }
+
+        /* Header layout adjustments */
+        header {
+            flex-direction: column;
+            padding: 0.5rem;
+        }
+
+        .header-left, .header-center, .header-right {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-right {
+            flex-direction: column;
+        }
+
+        .auth-links {
+            margin: 0.5rem 0;
+        }
+
+        .welcome-message {
+            margin: 0.5rem 0;
+        }
+
+        .language-toggle {
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        /* Search container adjustments */
+        .search-container {
+            padding: 1rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Main content adjustments */
+        main {
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .content-box {
+            margin: 0.5rem 0;
+        }
+
+        /* Modal adjustments */
+        .modal-content {
+            width: 90%;
+            margin: 5% auto;
+            padding: 15px;
+        }
+
+        /* Dropdown menu adjustments */
+        .dropdown-content {
+            min-width: 100%;
+            position: relative;
+        }
+
+        /* Search results adjustments */
+        .search-results {
+            max-height: 80vh;
+        }
+
+        .search-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .search-item-rating {
+            align-items: flex-start;
+            margin-top: 0.5rem;
+        }
+    }
+
+    /* Small phone specific adjustments */
+    @media screen and (max-width: 480px) {
+        .logo h1 {
+            font-size: 1.3rem;
+        }
+
+        .professor-item, .course-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .rating {
+            margin-left: 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown {
+            width: 100%;
+        }
+
+        .dropbtn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Make language toggle buttons more touch-friendly */
+        .language-toggle a {
+            padding: 10px 20px;
+        }
+
+        /* Search button improvements for touch */
+        .search-bar button {
+            padding: 0.7rem 1rem;
+        }
+
+        /* Mobile-optimized modals */
+        .modal-content {
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    }
+
+    /* Hamburger menu for very small screens */
+    @media screen and (max-width: 400px) {
+        .header-center {
+            order: -1; /* Move logo to top */
+        }
+
+        .header-left {
+            width: 100%;
+        }
+
+        .dropbtn {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Enhance touch targets for all buttons */
+        button, .language-toggle a, .auth-links a {
+            min-height: 44px; /* Minimum touch target size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-item {
+            padding: 15px;
+        }
+    }
     </style>
 </head>
 <body>
@@ -1861,6 +2020,89 @@ elseif (!isset($_COOKIE['language'])) {
             }
         });
     });
+
+        // Mobile-specific interaction enhancements
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Detect if device is mobile
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    if (isMobile) {
+        // Enhance dropdown menu behavior on mobile
+        const dropdownButton = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+        
+        if (dropdownButton && dropdownContent) {
+            // Change dropdown to work with click instead of hover on mobile
+            document.querySelector('.dropdown').addEventListener('click', function(e) {
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+                e.stopPropagation();
+            });
+            
+            // Close dropdown when clicking elsewhere on the page
+            document.addEventListener('click', function() {
+                dropdownContent.style.display = 'none';
+            });
+
+            // Prevent dropdown links from immediately closing the dropdown
+            dropdownContent.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Make search bar more mobile-friendly
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            // Increase font size for better visibility on mobile
+            searchInput.style.fontSize = '16px';
+            
+            // Add focus and blur handlers to improve mobile experience
+            searchInput.addEventListener('focus', function() {
+                // Scroll to ensure the search bar is visible when keyboard appears
+                setTimeout(() => this.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+            });
+        }
+
+        // Enhance touch targets for all interactive elements
+        document.querySelectorAll('.professor-item, .course-item, .search-item, .close-modal').forEach(item => {
+            // Add additional padding to make touch targets larger
+            item.style.padding = '12px';
+        });
+
+        // Improve modal scrolling on mobile
+        document.querySelectorAll('.modal-content').forEach(modal => {
+            modal.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            });
+        });
+        
+        // Add mobile-specific pull-to-refresh capability
+        let touchStartY = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            const touchY = e.touches[0].clientY;
+            const touchDiff = touchY - touchStartY;
+            
+            // If we're at the top of the page and pulling down, show refresh indicator
+            if (window.scrollY === 0 && touchDiff > 70) {
+                // Implement visual indicator for refresh if needed
+            }
+        });
+    }
+    
+    // Handle window resize to adapt dynamically without refresh
+    window.addEventListener('resize', function() {
+        const isMobileNow = window.matchMedia('(max-width: 768px)').matches;
+        
+        // Reset display properties when transitioning between mobile and desktop
+        if (isMobileNow !== isMobile) {
+            location.reload(); // Simple approach - reload the page on major width changes
+        }
+    });
+});
     </script>
 </body>
 </html>
