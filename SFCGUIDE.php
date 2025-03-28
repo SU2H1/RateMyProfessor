@@ -49,8 +49,8 @@ $restaurants = [
         'hours_ja' => 'ランチ 11:00～15:00、土日祝にランチバイキング 11:00～15:00、ディナー 17:00～22:00',
         'closed' => 'N/A',
         'closed_ja' => '無し',
-        'photo' => 'ratemyteachersfc.com/public_html/Images/Sati_Photo',
-        'photo_dish' => 'ratemyteachersfc.com/public_html/Images/Sati_Dish'
+        'photo' => 'Images/Sati_Photo.png',
+        'photo_dish' => 'Images/Sati_Dish.png'
     ],
     
     // Restaurant 2 
