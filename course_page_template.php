@@ -130,6 +130,18 @@ error_log("Year: " . ($year ?? 'none'));
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'ja';
 // Convert "jp" to "ja" for internal consistency
 if ($lang === 'jp') $lang = 'ja';
+// Define menu labels based on current language
+$menuLabel = $lang === 'ja' ? 'メニュー' : 'Menu';
+$accountLabel = $lang === 'ja' ? 'マイアカウント' : 'My Account';
+$logoutLabel = $lang === 'ja' ? 'ログアウト' : 'Logout';
+$loginLabel = $lang === 'ja' ? 'ログイン' : 'Login';
+$registerLabel = $lang === 'ja' ? '登録' : 'Register';
+$topProfessorsLabel = $lang === 'ja' ? '人気の教授' : 'Top Professors';
+$professorsLabel = $lang === 'ja' ? '教授' : 'Professors';
+$topCoursesLabel = $lang === 'ja' ? '人気のコース' : 'Top Courses';
+$coursesLabel = $lang === 'ja' ? 'コース' : 'Courses';
+$tipsLabel = $lang === 'ja' ? '裏ワザ' : 'Tips and Tricks';
+$SFC_FOOD_GUIDE_Label = $lang === 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE';
 
 // We need at least course name or course code
 if (!$courseParam && !$courseCodeParam) {
@@ -2030,21 +2042,22 @@ $sampleReviews = [];
     <header style="background-color: #1e3a8a; color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; height: 60px;">
         <div class="header-left" style="width: 25%;">
             <div class="dropdown" style="position: relative; display: inline-block;">
-                <button class="dropbtn" style="background-color: transparent; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center;">Menu <span style="margin-left: 5px; font-size: 12px;">▼</span></button>
-                <div class="dropdown-content" style="position: absolute; background-color: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; display: none;">
-                    <?php if ($isLoggedIn): ?>
-                        <a href="account-section.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">My Account</a>
-                        <a href="logout.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Logout</a>
-                    <?php else: ?>
-                        <a href="login.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Login</a>
-                        <a href="register.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Register</a>
-                    <?php endif; ?>
-                    <a href="home.php#popular-professors" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Professors</a>
-                    <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Professors</a>
-                    <a href="home.php#top-courses" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Top Courses</a>
-                    <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Courses</a>
-                    <a href="tipsandtricks.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;">Tips and Tricks</a>
-                </div>
+            <button class="dropbtn" style="background-color: transparent; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center;"><?php echo $menuLabel; ?> <span style="margin-left: 5px; font-size: 12px;">▼</span></button>
+            <div class="dropdown-content" style="position: absolute; background-color: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; display: none;">
+    <?php if ($isLoggedIn): ?>
+        <a href="account-section.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $accountLabel; ?></a>
+        <a href="logout.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $logoutLabel; ?></a>
+    <?php else: ?>
+        <a href="login.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $loginLabel; ?></a>
+        <a href="register.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $registerLabel; ?></a>
+    <?php endif; ?>
+    <a href="home.php#popular-professors" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $topProfessorsLabel; ?></a>
+    <a href="ratemyteacher-instructions.php?section=professors&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $professorsLabel; ?></a>
+    <a href="home.php#top-courses" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $topCoursesLabel; ?></a>
+    <a href="ratemyteacher-instructions.php?section=courses&lang=<?php echo $lang; ?>" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $coursesLabel; ?></a>
+    <a href="SFCGUIDE.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $SFC_FOOD_GUIDE_Label; ?></a>
+    <a href="tipsandtricks.php" style="color: black; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #f1f1f1;"><?php echo $tipsLabel; ?></a>
+        </div>
             </div>
         </div>
         
