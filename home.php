@@ -773,6 +773,10 @@ elseif (!isset($_COOKIE['language'])) {
                     $loginLabel = $currentLang == 'ja' ? 'ログイン' : 'Login';
                     $registerLabel = $currentLang == 'ja' ? '登録' : 'Register';
                     $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
+<<<<<<< HEAD
+=======
+                    //$coursesLabel = $currentLang == 'ja' ? 'コース一覧' : 'Courses';
+>>>>>>> 288fd66e0352dbe0c14b4a05a7d7528a44445f6a
                     $SFC_FOOD_GUIDE_Label = $currentLang == 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
@@ -845,6 +849,7 @@ elseif (!isset($_COOKIE['language'])) {
             </div>
         </div>
         
+<<<<<<< HEAD
         <main style="flex: 1; display: flex; padding: 2rem; justify-content: center;">
             <div id="top-courses" class="content-box">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
@@ -880,6 +885,82 @@ elseif (!isset($_COOKIE['language'])) {
                         </div>
                     </a>
                     <?php endforeach; ?>
+=======
+        <main style="flex: 1; display: flex; padding: 2rem;">
+            <div id="popular-professors" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h2><?php echo $currentLang == 'ja' ? '人気の教授' : 'Popular Professors'; ?></h2>
+                <div class="professor-list">
+                    <?php foreach ($topProfessors as $professor): ?>
+                    <?php
+                    // Replace spaces with plus signs for consistent URL handling
+                    $nameForUrl = str_replace(' ', '+', $professor['english_name']);
+                    ?>
+                    <a href="professor_page_template.php?name=<?php echo $nameForUrl; ?>&lang=<?php echo $currentLang; ?>" style="text-decoration: none; color: inherit;">
+                        <div class="professor-item" data-id="<?php echo $isLoggedIn ? $professor['id'] : 'login-required'; ?>">
+                            <div>
+                                <h3><?php echo htmlspecialchars($professor['name']); ?></h3>
+                                <p><?php echo htmlspecialchars($professor['department'] ?? 'Unknown Department'); ?></p>
+                            </div>
+                            <div class="rating">
+                                <?php 
+                                if ($professor['avg_rating'] !== 'N/A' && $professor['avg_rating'] > 0) {
+                                    $fullStars = floor($professor['avg_rating']);
+                                    $hasHalfStar = $professor['avg_rating'] - $fullStars >= 0.5;
+                                    echo str_repeat('★', $fullStars);
+                                    echo $hasHalfStar ? '½' : '';
+                                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                                    echo ' <span>' . $professor['avg_rating'] . '</span>';
+                                } else {
+                                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            
+            <div id="top-courses" class="content-box" style="flex: 1; background-color: white; margin: 1rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
+                <div class="course-list">
+
+
+
+<?php foreach ($topCourses as $course): ?>
+    <?php 
+    // Skip placeholder courses or courses without reviews
+    if (isset($course['is_placeholder']) || 
+        (!isset($course['avg_rating']) || $course['avg_rating'] === 'N/A' || $course['avg_rating'] <= 0)) {
+        continue;
+    }
+    ?>
+<a href="course.php?course_code=<?php echo urlencode($course['course_code']); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>" data-course-code="<?php echo htmlspecialchars($course['course_code']); ?>">
+            <div>
+                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
+                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+            </div>
+            <div class="rating">
+                <?php 
+                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
+                    $fullStars = floor($course['avg_rating']);
+                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
+                    echo str_repeat('★', $fullStars);
+                    echo $hasHalfStar ? '½' : '';
+                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                    echo ' <span>' . $course['avg_rating'] . '</span>';
+                } else {
+                    echo '☆☆☆☆☆ <span>No ratings</span>';
+                }
+                ?>
+            </div>
+        </div>
+    </a>
+<?php endforeach; ?>
+
+
+                    
+>>>>>>> 288fd66e0352dbe0c14b4a05a7d7528a44445f6a
                 </div>
             </div>
         </main>
@@ -1147,8 +1228,62 @@ elseif (!isset($_COOKIE['language'])) {
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded");
             
+<<<<<<< HEAD
             // Test click events on courses
             console.log("Adding test click handlers to courses");
+=======
+            // Test click events on professors and courses
+            console.log("Adding test click handlers to professors and courses");
+            
+            const profItems = document.querySelectorAll('.professor-item');
+            console.log(`Found ${profItems.length} professor items`);
+            profItems.forEach((item, i) => {
+                console.log(`Professor item ${i+1} id: ${item.getAttribute('data-id')}`);
+                
+                // Add click event handler
+                item.addEventListener('click', (event) => {
+                    const profId = item.getAttribute('data-id');
+                    console.log("Professor clicked, ID:", profId);
+                    
+                    // Check if login is required
+                    if (profId === 'login-required') {
+                        event.preventDefault();
+                        event.stopPropagation(); // Stop event propagation
+                        setTimeout(() => {
+                            showLoginPrompt();
+                        }, 10);
+                        return;
+                    }
+                    
+                    // Check if it's a real professor ID (numeric) or a placeholder
+                    if (!isNaN(profId)) {
+                        console.log("Redirecting professor with ID:", profId);
+                        
+                        // Get current language directly from the cookie instead of the variable
+                        const currentLang = document.cookie.split('; ')
+                            .find(row => row.startsWith('language='))
+                            ?.split('=')[1] || 'en';
+                        
+                        console.log("Language for redirect (from cookie):", currentLang);
+                        
+                        // Get professor name from the HTML
+                        const profName = item.querySelector('h3').textContent;
+                        console.log("Professor name from HTML:", profName);
+                        
+                        // Replace spaces with plus signs for consistent URL format
+                        const profNameForUrl = profName.replace(/\s+/g, '+');
+                        
+                        // Create the redirect URL with the current language - no ID needed
+                        const redirectUrl = `professor_page_template.php?name=${profNameForUrl}&lang=${currentLang}`;
+                        console.log("Redirecting to:", redirectUrl);
+                        
+                        // Perform the redirect
+                        window.location.href = redirectUrl;
+                        return;
+                    }
+                });
+            });
+>>>>>>> 288fd66e0352dbe0c14b4a05a7d7528a44445f6a
             
             const courseItems = document.querySelectorAll('.course-item');
             console.log(`Found ${courseItems.length} course items`);
