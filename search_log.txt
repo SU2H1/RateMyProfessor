@@ -17157,3 +17157,1615 @@ Found 9 matching professors
 Found 444 matching courses
 Displayed search results page
 
+Search started at 2025-03-20 21:07:19
+Direct access with query: Probabilit
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'pr' for more lenient matching
+Search query: 'probabilit', Normalized: 'probabilit'
+Searching through 1150 courses
+Match found in professor name: EN=veronica prieto m, JA=高畠　理恵
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea02(writing)
+Match found with short query in EN course name: project english a ea06(speaking a)
+Match found with short query in EN course name: project english a ea03(reading/discussion)
+Match found with short query in EN course name: project english a ea03(listening)
+Match found with short query in EN course name: project english b eb03(reading)
+Match found with short query in EN course name: project english c ec04(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(project)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: french skill (reading comprehension)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in EN course name: project english a (speaking a)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(presentation)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a ea01(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea01(presentation)
+Match found with short query in EN course name: project english a ea06(oral listening)
+Match found with short query in EN course name: project english b eb07(discussion/presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb07(discussion/presentation)
+Match found with short query in EN course name: project english b eb03(project)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb03(project)
+Match found with short query in EN course name: project english b eb02(oral listening)
+Match found with short query in EN course name: project english b eb03(listening)
+Match found with short query in EN course name: project english c ec01(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec04(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec04(presentation)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in EN course name: project english c (reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1](giga/gg/gi)
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1](giga/gg/gi)
+Match found in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: programming methodologies (giga/gg/gi)
+Match found with short query in EN course name: interpersonal communication: introduction and practice
+Match found with short query in EN course name: contemporary art practice
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: internship in social enterprises
+Match found with short query in EN course name: programming methodologies
+Match found with short query in EN course name: contemporary art practice [1st half of semester]
+Match found with short query in EN course name: social entrepreneurship [1st half of semester]
+Match found with short query in EN course name: policy making process
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: intellectual property system
+Match found with short query in EN course name: project evaluation
+Match found with short query in EN course name: practicing analytical framework for policy design
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: intellectual property system (giga/gg)
+Match found with short query in EN course name: system programming [2nd half of semester]
+Match found with short query in EN course name: quantum information processing (giga/gi)
+Match found with short query in EN course name: info-communication security and privacy (giga/gi)
+Match found with short query in EN course name: programming languages
+Match found with short query in EN course name: digital signal processing fundamentals (giga/gi)
+Match found with short query in EN course name: system programming [2nd half of semester](giga/gi)
+Match found with short query in EN course name: big data processing (giga/gi)
+Match found with short query in EN course name: impression management [2nd half of semester]
+Match found with short query in EN course name: functional programming
+Match found with short query in EN course name: quantum information processing
+Match found with short query in EN course name: info-communication security and privacy
+Match found with short query in EN course name: programming languages (giga/gi)
+Match found with short query in EN course name: digital signal processing fundamentals
+Match found with short query in EN course name: practical mental health
+Match found with short query in EN course name: entrepreneurship 1 (寄附講座)
+Match found with short query in EN course name: student build campus (sbc) practice (publication)
+Match found with short query in EN course name: entrepreneurship 1 (寄附講座)
+Match found with short query in EN course name: design principles with "tensho" of point-clouds (寄附講座)[1st half of semester]
+Match found with short query in EN course name: project english a ea04(translation)
+Match found with short query in EN course name: project english a ea04(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea04(presentation)
+Match found with short query in EN course name: project english a ea07(listening)
+Match found with short query in EN course name: project english a ea01(writing)
+Match found with short query in EN course name: project english a ea05(translation)
+Match found with short query in EN course name: project english a ea06(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea06(presentation)
+Match found with short query in EN course name: project english a ea07(project)
+Match found with short query in JA course name: プロジェクト英語Ａ ea07(project)
+Match found with short query in EN course name: project english a ea05(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea05(presentation)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea02(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea02(presentation)
+Match found with short query in EN course name: project english b eb04(listening + writing)
+Match found with short query in EN course name: project english b eb06(writing)
+Match found with short query in EN course name: project english b eb01(critical thinking)
+Match found with short query in EN course name: project english b eb07(writing)
+Match found with short query in EN course name: project english b eb05(writing)
+Match found with short query in EN course name: project english b eb02(presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(presentation)
+Match found with short query in EN course name: project english b eb04(project)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb04(project)
+Match found with short query in EN course name: project english b eb06(translation)
+Match found with short query in EN course name: project english b eb05(listening)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec07(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec06(translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (speaking)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec05(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec05(project)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec05(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c (creative writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec03(project)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec08(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec04(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec04(project)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec08(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec07(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec07(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec06(indie rock)(giga/gg/gi)
+Match found with short query in EN course name: language education practice (chinese) /chinese contents
+Match found with short query in EN course name: practical academic presentation (giga/gg/gi)/english contents
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (writing)
+Match found with short query in EN course name: project english a ea02(reading/discussion)
+Match found with short query in EN course name: project english a (debate)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a ea03(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea03(presentation)
+Match found with short query in EN course name: project english a ea01(listening)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea01(translation)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a ea03(writing)
+Match found with short query in EN course name: project english a (project)
+Match found with short query in JA course name: プロジェクト英語Ａ (project)
+Match found with short query in EN course name: project english a (listening)
+Match found with short query in EN course name: project english a (translation)
+Match found with short query in EN course name: project english b (translation)
+Match found with short query in EN course name: project english b (reading)
+Match found with short query in EN course name: project english b (project)
+Match found with short query in JA course name: プロジェクト英語Ｂ (project)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english b (discussion/presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ (discussion/presentation)
+Match found with short query in EN course name: project english b eb02(critical thinking)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in EN course name: project english b eb01(writing)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in EN course name: project english b (listening + writing)
+Match found with short query in EN course name: project english b (presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ (presentation)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english b eb02(writing)
+Match found with short query in EN course name: project english b (project)
+Match found with short query in JA course name: プロジェクト英語Ｂ (project)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: project english c (oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c (writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c (listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: project english c (translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (subcultures)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(heavy metal)(giga/gg/gi)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: practical academic writing (giga/gg/gi)/english contents
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found with short query in EN course name: fundamentals of system programming
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of object-oriented programming
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of system programming (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: multilingual communication practice
+Match found with short query in EN course name: interpersonal communication: introduction and practice
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: jurisprudence
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: management of non profit organizations [1st half of semester]
+Match found with short query in EN course name: strategic process of negotiation
+Match found with short query in EN course name: presentation technique
+Match found with short query in EN course name: basic product design
+Match found with short query in EN course name: basic product design (giga/gg/gi)
+Match found with short query in EN course name: management of social enterprise(museum) [2nd half of semester]
+Match found with short query in EN course name: enterprise law(corporate law)
+Match found with short query in EN course name: enterprise law(venture-related law)
+Match found with short query in EN course name: civil code(general provisions and real rights)
+Match found with short query in EN course name: geography of planning practice (giga/gg)/geography of planning practice
+Match found with short query in EN course name: civil law practice(corporate affairs)
+Match found with short query in EN course name: international enterprises [1st half of semester]
+Match found with short query in EN course name: policy practices related to diffusion of information and communications technologies
+Match found with short query in EN course name: protection of living environment (giga/gi)
+Match found with short query in EN course name: programming on mobile devices
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: proteomics (ttck)
+Match found with short query in EN course name: metabolome analysis laboratory practice (ttck)
+Match found with short query in EN course name: proteome analysis laboratory practice (ttck)
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: knowledge processing and discovery
+Match found with short query in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: notation and expression [2nd half of semester]
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found with short query in EN course name: digital art -introduction and practice
+Match found with short query in EN course name: student built campus (sbc) practice (landscape) [1st half of semester]
+Match found with short query in EN course name: workshops on practical business model analysis (寄附講座)
+Match found with short query in EN course name: student built campus (sbc) practice
+Match found with short query in EN course name: student built campus (sbc) practice (architecture a)
+Match found with short query in EN course name: basic exercise in protecting information systems against security threats
+Match found with short query in EN course name: practical customer-based digital transformation (寄附講座)
+Match found with short query in EN course name: workshops on practical marketing analysis (寄附講座)
+Match found with short query in EN course name: practical exercises of regional industry-government-academia collaboration <constructing "living" from agriculture>
+Found 1 matching professors
+Found 210 matching courses
+Displayed search results page
+
+Search started at 2025-03-20 21:07:25
+Direct access with query: Probability
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'pr' for more lenient matching
+Search query: 'probability', Normalized: 'probability'
+Searching through 1150 courses
+Match found in professor name: EN=veronica prieto m, JA=高畠　理恵
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea02(writing)
+Match found with short query in EN course name: project english a ea06(speaking a)
+Match found with short query in EN course name: project english a ea03(reading/discussion)
+Match found with short query in EN course name: project english a ea03(listening)
+Match found with short query in EN course name: project english b eb03(reading)
+Match found with short query in EN course name: project english c ec04(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(project)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: french skill (reading comprehension)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in EN course name: project english a (speaking a)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(presentation)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a ea01(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea01(presentation)
+Match found with short query in EN course name: project english a ea06(oral listening)
+Match found with short query in EN course name: project english b eb07(discussion/presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb07(discussion/presentation)
+Match found with short query in EN course name: project english b eb03(project)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb03(project)
+Match found with short query in EN course name: project english b eb02(oral listening)
+Match found with short query in EN course name: project english b eb03(listening)
+Match found with short query in EN course name: project english c ec01(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec04(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec04(presentation)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in EN course name: project english c (reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1](giga/gg/gi)
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1](giga/gg/gi)
+Match found in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: programming methodologies (giga/gg/gi)
+Match found with short query in EN course name: interpersonal communication: introduction and practice
+Match found with short query in EN course name: contemporary art practice
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: internship in social enterprises
+Match found with short query in EN course name: programming methodologies
+Match found with short query in EN course name: contemporary art practice [1st half of semester]
+Match found with short query in EN course name: social entrepreneurship [1st half of semester]
+Match found with short query in EN course name: policy making process
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: intellectual property system
+Match found with short query in EN course name: project evaluation
+Match found with short query in EN course name: practicing analytical framework for policy design
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: intellectual property system (giga/gg)
+Match found with short query in EN course name: system programming [2nd half of semester]
+Match found with short query in EN course name: quantum information processing (giga/gi)
+Match found with short query in EN course name: info-communication security and privacy (giga/gi)
+Match found with short query in EN course name: programming languages
+Match found with short query in EN course name: digital signal processing fundamentals (giga/gi)
+Match found with short query in EN course name: system programming [2nd half of semester](giga/gi)
+Match found with short query in EN course name: big data processing (giga/gi)
+Match found with short query in EN course name: impression management [2nd half of semester]
+Match found with short query in EN course name: functional programming
+Match found with short query in EN course name: quantum information processing
+Match found with short query in EN course name: info-communication security and privacy
+Match found with short query in EN course name: programming languages (giga/gi)
+Match found with short query in EN course name: digital signal processing fundamentals
+Match found with short query in EN course name: practical mental health
+Match found with short query in EN course name: entrepreneurship 1 (寄附講座)
+Match found with short query in EN course name: student build campus (sbc) practice (publication)
+Match found with short query in EN course name: entrepreneurship 1 (寄附講座)
+Match found with short query in EN course name: design principles with "tensho" of point-clouds (寄附講座)[1st half of semester]
+Match found with short query in EN course name: project english a ea04(translation)
+Match found with short query in EN course name: project english a ea04(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea04(presentation)
+Match found with short query in EN course name: project english a ea07(listening)
+Match found with short query in EN course name: project english a ea01(writing)
+Match found with short query in EN course name: project english a ea05(translation)
+Match found with short query in EN course name: project english a ea06(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea06(presentation)
+Match found with short query in EN course name: project english a ea07(project)
+Match found with short query in JA course name: プロジェクト英語Ａ ea07(project)
+Match found with short query in EN course name: project english a ea05(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea05(presentation)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea02(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea02(presentation)
+Match found with short query in EN course name: project english b eb04(listening + writing)
+Match found with short query in EN course name: project english b eb06(writing)
+Match found with short query in EN course name: project english b eb01(critical thinking)
+Match found with short query in EN course name: project english b eb07(writing)
+Match found with short query in EN course name: project english b eb05(writing)
+Match found with short query in EN course name: project english b eb02(presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(presentation)
+Match found with short query in EN course name: project english b eb04(project)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb04(project)
+Match found with short query in EN course name: project english b eb06(translation)
+Match found with short query in EN course name: project english b eb05(listening)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec07(oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec06(translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (speaking)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec05(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec05(project)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec05(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c (creative writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec03(project)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec08(reading)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec02(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec04(project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec04(project)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec08(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec07(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec07(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec06(indie rock)(giga/gg/gi)
+Match found with short query in EN course name: language education practice (chinese) /chinese contents
+Match found with short query in EN course name: practical academic presentation (giga/gg/gi)/english contents
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (writing)
+Match found with short query in EN course name: project english a ea02(reading/discussion)
+Match found with short query in EN course name: project english a (debate)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a ea03(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea03(presentation)
+Match found with short query in EN course name: project english a ea01(listening)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea01(translation)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a ea03(writing)
+Match found with short query in EN course name: project english a (project)
+Match found with short query in JA course name: プロジェクト英語Ａ (project)
+Match found with short query in EN course name: project english a (listening)
+Match found with short query in EN course name: project english a (translation)
+Match found with short query in EN course name: project english b (translation)
+Match found with short query in EN course name: project english b (reading)
+Match found with short query in EN course name: project english b (project)
+Match found with short query in JA course name: プロジェクト英語Ｂ (project)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english b (discussion/presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ (discussion/presentation)
+Match found with short query in EN course name: project english b eb02(critical thinking)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in EN course name: project english b eb01(writing)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in EN course name: project english b (listening + writing)
+Match found with short query in EN course name: project english b (presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ (presentation)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english b eb02(writing)
+Match found with short query in EN course name: project english b (project)
+Match found with short query in JA course name: プロジェクト英語Ｂ (project)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: project english c (oral listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c (writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(presentation)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ ec01(presentation)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c (listening)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec01(writing)(giga/gg/gi)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: project english c (translation)(giga/gg/gi)
+Match found with short query in EN course name: project english c (subcultures)(giga/gg/gi)
+Match found with short query in EN course name: project english c ec03(heavy metal)(giga/gg/gi)
+Match found with short query in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in JA course name: プロジェクト英語Ｃ (project)(giga/gg/gi)
+Match found with short query in EN course name: practical academic writing (giga/gg/gi)/english contents
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1]
+Match found in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found with short query in EN course name: fundamentals of system programming
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of object-oriented programming
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of system programming (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: multilingual communication practice
+Match found with short query in EN course name: interpersonal communication: introduction and practice
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: jurisprudence
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: management of non profit organizations [1st half of semester]
+Match found with short query in EN course name: strategic process of negotiation
+Match found with short query in EN course name: presentation technique
+Match found with short query in EN course name: basic product design
+Match found with short query in EN course name: basic product design (giga/gg/gi)
+Match found with short query in EN course name: management of social enterprise(museum) [2nd half of semester]
+Match found with short query in EN course name: enterprise law(corporate law)
+Match found with short query in EN course name: enterprise law(venture-related law)
+Match found with short query in EN course name: civil code(general provisions and real rights)
+Match found with short query in EN course name: geography of planning practice (giga/gg)/geography of planning practice
+Match found with short query in EN course name: civil law practice(corporate affairs)
+Match found with short query in EN course name: international enterprises [1st half of semester]
+Match found with short query in EN course name: policy practices related to diffusion of information and communications technologies
+Match found with short query in EN course name: protection of living environment (giga/gi)
+Match found with short query in EN course name: programming on mobile devices
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: proteomics (ttck)
+Match found with short query in EN course name: metabolome analysis laboratory practice (ttck)
+Match found with short query in EN course name: proteome analysis laboratory practice (ttck)
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: knowledge processing and discovery
+Match found with short query in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: notation and expression [2nd half of semester]
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found with short query in EN course name: digital art -introduction and practice
+Match found with short query in EN course name: student built campus (sbc) practice (landscape) [1st half of semester]
+Match found with short query in EN course name: workshops on practical business model analysis (寄附講座)
+Match found with short query in EN course name: student built campus (sbc) practice
+Match found with short query in EN course name: student built campus (sbc) practice (architecture a)
+Match found with short query in EN course name: basic exercise in protecting information systems against security threats
+Match found with short query in EN course name: practical customer-based digital transformation (寄附講座)
+Match found with short query in EN course name: workshops on practical marketing analysis (寄附講座)
+Match found with short query in EN course name: practical exercises of regional industry-government-academia collaboration <constructing "living" from agriculture>
+Found 1 matching professors
+Found 210 matching courses
+Displayed search results page
+
+Search started at 2025-03-21 15:41:34
+Direct access with query: 社会論
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '社会' for more lenient matching
+Search query: '社会論', Normalized: '社会論'
+Searching through 1150 courses
+Match found with short query in JA course name: 日独社会研究（ドイツ語圏） /ドイツ語コンテンツ
+Match found with short query in JA course name: 国際社会のデータサイエンス [ds2]
+Match found with short query in JA course name: 情報と社会のデータサイエンス [ds2]
+Match found with short query in JA course name: 仕事と社会 【学期前半】
+Match found with short query in JA course name: 生活者の社会参加 【学期前半】
+Match found with short query in JA course name: 社会起業インターンシップ
+Match found in JA course name: 創造社会論 【学期後半】(giga/gg/gi)
+Match found in JA course name: 創造社会論 【学期前半】
+Match found with short query in JA course name: 仕事と社会 【学期前半】
+Match found with short query in JA course name: 生活者の社会参加
+Match found with short query in JA course name: 社会起業論 【学期前半】
+Match found with short query in JA course name: 社会保障政策（医療・介護）
+Match found with short query in JA course name: 社会安全政策（治安）
+Match found with short query in JA course name: 現代社会理論
+Match found with short query in JA course name: 社会構造分析 (giga/gg)
+Match found with short query in JA course name: 地域と社会（欧州・ＣＩＳ）
+Match found with short query in JA course name: 地域と社会（米州） 【学期前半】
+Match found with short query in JA course name: 社会と健康
+Match found with short query in JA course name: 社会的組織の経営（ヘルスケア） 【学期後半】
+Match found in JA course name: 韓国社会論
+Match found in JA course name: マレー社会論１
+Match found with short query in JA course name: 社会保障政策（医療・介護）
+Match found with short query in JA course name: 社会安全政策（治安）
+Match found with short query in JA course name: 現代社会理論
+Match found with short query in JA course name: 社会科学のための計量分析 (giga/gg)
+Match found with short query in JA course name: 社会的組織の経営（ヘルスケア） 【学期後半】
+Match found with short query in JA course name: 地域と社会（米州）
+Match found with short query in JA course name: 触覚と社会 【学期前半】
+Match found with short query in JA course name: 衣食住を取り巻く社会課題とイノベーション
+Match found in JA course name: 社会論（フランス語圏） /フランス語コンテンツ
+Match found with short query in JA course name: 日独社会研究（ドイツ語圏） /ドイツ語コンテンツ
+Match found with short query in JA course name: イスラームと現代社会
+Match found with short query in JA course name: サブカルチャーと社会認識
+Match found with short query in JA course name: 生命現象と現実社会の比較論
+Match found with short query in JA course name: 社会安全政策（防災） 【学期後半】
+Match found with short query in JA course name: 社会安全政策（防災） (giga/gg)
+Match found with short query in JA course name: リスク社会の制度設計 【学期後半】(giga/gg)
+Match found with short query in JA course name: 社会的組織の経営（ミュージアム） 【学期後半】
+Match found in JA course name: ネットワーク社会論 【学期後半】
+Match found with short query in JA course name: 地域と社会（アジア・大洋州）
+Match found with short query in JA course name: 地域と社会（アジア・大洋州）
+Match found with short query in JA course name: 地域と社会（欧州・ＣＩＳ）
+Match found in JA course name: 多文化社会論
+Match found with short query in JA course name: 地域と社会（中東） (giga/gg)
+Match found with short query in JA course name: 社会動態論
+Match found with short query in JA course name: 企業の社会的責任と社会・経済の活性化
+Match found with short query in JA course name: 地域と社会（アジア・大洋州） (giga/gg)
+Match found with short query in JA course name: 宗教と現代社会
+Match found in JA course name: 多文化社会論 (giga/gg)
+Match found with short query in JA course name: データ・ドリブン社会の創発と戦略
+Match found with short query in JA course name: データ・ドリブン社会の創発と戦略（応用）
+Match found with short query in JA course name: データ・ドリブン社会の創発と戦略 (giga)
+Match found with short query in JA course name: ジェンダーと社会経済
+Found 0 matching professors
+Found 53 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 02:38:23
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 02:38:31
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 08:02:54
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 08:03:03
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 16:04:54
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 16:05:23
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-25 19:17:43
+Direct access with query: 政治
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Search query: '政治', Normalized: '政治'
+Searching through 1150 courses
+Match found in JA course name: 現代政治論
+Match found in JA course name: 政治哲学（近代）
+Match found in JA course name: 現代政治論 (giga/gg)
+Match found in JA course name: 政治哲学（現代）
+Found 0 matching professors
+Found 4 matching courses
+Displayed search results page
+
+Search started at 2025-03-26 19:01:50
+Direct access with query: design
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'de' for more lenient matching
+Search query: 'design', Normalized: 'design'
+Searching through 1150 courses
+Match found in professor name: EN=alberic derible, JA=ドリブル，　アルベリック
+Match found in professor name: EN=alberic derible, JA=ドリブル，　アルベリック
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found with short query in EN course name: modern culture (korean) /korean contents
+Match found in professor name: EN=sacha demazy, JA=ドマジ，　サシャ
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found with short query in EN course name: modern culture (korean) /korean contents
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found with short query in EN course name: mathematical models [ds2](giga/gg/gi)
+Match found in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found in EN course name: workshop on designing learning environments [2nd half of semester]
+Match found in EN course name: basic digital design
+Match found with short query in EN course name: academic writing
+Match found in EN course name: personal place design
+Match found with short query in EN course name: historical development of scientific thoughts
+Match found in EN course name: web design and management
+Match found in EN course name: basic digital design
+Match found with short query in EN course name: academic writing
+Match found with short query in EN course name: the government of modern japan: the japanese bureaucracy
+Match found in EN course name: personal place design [2nd half of semester]
+Match found in EN course name: workshops on designing policy
+Match found in EN course name: workshop on designing learning environments [1st half of semester]
+Match found in professor name: EN=yusuke hoshide, JA=星出　祐輔
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in EN course name: web design and management (giga/gg/gi)
+Match found with short query in EN course name: security policy in society(public order)
+Match found with short query in EN course name: modern social theory
+Match found with short query in EN course name: international development
+Match found in professor name: EN=hideo tarumi, JA=垂　秀夫
+Match found with short query in EN course name: state and defence
+Match found in professor name: EN=hideyuki takahashi, JA=高橋　秀行
+Match found with short query in EN course name: state and defence (giga/gg)
+Match found with short query in EN course name: modern history (giga/gg)
+Match found with short query in EN course name: evidence based health policy, management and communication (giga/gg)
+Match found in EN course name: analytical framework for policy design
+Match found with short query in EN course name: international development (giga/gg)
+Match found with short query in EN course name: development and the local community
+Match found in EN course name: practicing analytical framework for policy design
+Match found with short query in EN course name: security policy in society(public order)
+Match found with short query in EN course name: modern social theory
+Match found with short query in EN course name: evidence based health policy, management and communication (giga/gg)
+Match found with short query in EN course name: modern politics
+Match found with short query in EN course name: development and the local community (giga/gg)/development and the local community
+Match found with short query in EN course name: comparative political and economic systems
+Match found with short query in EN course name: state and defence
+Match found in professor name: EN=hideyuki takahashi, JA=高橋　秀行
+Match found with short query in EN course name: modern history
+Match found in EN course name: analytical framework for policy design (giga/gg)
+Match found in EN course name: analytical framework for policy design
+Match found in EN course name: design studio(housing and environment)
+Match found in professor name: EN=yoshihide asako, JA=浅子　佳英
+Match found in EN course name: human interface design
+Match found in EN course name: web information system design
+Match found in EN course name: designing with information technology (giga/gi)
+Match found in EN course name: design studio (architecture and urbanism)
+Match found in EN course name: architecture and environmental design (giga/gi)
+Match found in EN course name: reflective design [2nd half of semester]
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in EN course name: design studio(housing and environment)
+Match found in EN course name: human interface design (giga/gi)
+Match found in EN course name: web information system design
+Match found in EN course name: reflective design [1st half of semester]
+Match found in EN course name: design studio (architecture and urbanism)
+Match found with short query in EN course name: perceptual and cognitive models 1
+Match found in EN course name: design solution for extreme environment [1st half of semester](giga/gi)
+Match found with short query in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found in EN course name: ergonomic design and technology (giga)
+Match found in EN course name: green business design
+Match found in professor name: EN=hideki sunahara, JA=砂原　秀樹
+Match found with short query in EN course name: regional development through sports activities (寄附講座)
+Match found with short query in EN course name: agriculture and sustainable development
+Match found with short query in EN course name: student build campus (sbc) practice (publication)
+Match found with short query in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found in EN course name: context design [1st half of semester]
+Match found with short query in EN course name: cyber security attacks and defense (寄附講座)
+Match found in EN course name: ergonomic design and technology
+Match found in professor name: EN=hideki sunahara, JA=砂原　秀樹
+Match found with short query in EN course name: regional development through sports activities (寄附講座)
+Match found in EN course name: design principles with "tensho" of point-clouds (寄附講座)[1st half of semester]
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=sacha demazy, JA=ドマジ，　サシャ
+Match found with short query in EN course name: practical academic presentation (giga/gg/gi)/english contents
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=sacha demazy, JA=ドマジ，　サシャ
+Match found with short query in EN course name: project english a (debate)
+Match found with short query in JA course name: プロジェクト英語Ａ (debate)
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=simon bedelo m, JA=ベデロ，　サイモン
+Match found in professor name: EN=sacha demazy, JA=ドマジ，　サシャ
+Match found with short query in EN course name: practical academic writing (giga/gg/gi)/english contents
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in professor name: EN=hideyuki kawashima, JA=川島　英之
+Match found in EN course name: workshops on designing policy (giga/gg/gi)
+Match found in EN course name: design language [1st half of semester]
+Match found with short query in EN course name: leadership
+Match found with short query in EN course name: development of decision-making abilities
+Match found in EN course name: design observation [1st half of semester]
+Match found with short query in EN course name: modern history of japan
+Match found with short query in EN course name: jurisprudence
+Match found with short query in EN course name: islam and modern society
+Match found with short query in EN course name: personality development
+Match found in EN course name: basics of architectural computer-aided design(cad) [1st half of semester]
+Match found in EN course name: career design and talent management [1st half of semester]
+Match found in EN course name: basic design studio
+Match found with short query in EN course name: organizations for research and development
+Match found in EN course name: career design theory
+Match found in EN course name: design studies
+Match found in EN course name: basic product design
+Match found in EN course name: basic product design (giga/gg/gi)
+Match found in EN course name: design observation [1st half of semester](giga/gg/gi)
+Match found in EN course name: basic information design
+Match found in EN course name: algorithmic design (giga/gg/gi)
+Match found in EN course name: design research (giga/gg/gi)
+Match found in EN course name: workshop design [2nd half of the semester]
+Match found in EN course name: mapping image design [1st half of semester]
+Match found in EN course name: institutional design for risk society [2nd half of semester](giga/gg)
+Match found with short query in EN course name: evidence based health policy, management and communication [1st half of semester]
+Match found with short query in EN course name: modern political philosophy
+Match found with short query in EN course name: civil code(general provisions and real rights)
+Match found with short query in EN course name: civil code(family and inheritance)
+Match found with short query in EN course name: policy management(human security and international development) (giga/gg)/policy management(human security and international development)
+Match found with short query in EN course name: modern thought
+Match found with short query in EN course name: modern politics (giga/gg)
+Match found in professor name: EN=paul madden., JA=マデン，　ポール
+Match found with short query in EN course name: religion and modern society
+Match found with short query in EN course name: comparative political and economic systems
+Match found with short query in EN course name: civil code(contracts and torts)
+Match found with short query in EN course name: cities and environment
+Match found in EN course name: ecological design [2nd half of semester]
+Match found in EN course name: theory of earth system design [2nd half of semester]
+Match found in EN course name: design studio(landscape and architecture)
+Match found in professor name: EN=hidenori kasagi, JA=笠置　秀紀
+Match found in EN course name: architecture and environmental design [2nd half of semester](giga/gi)
+Match found in EN course name: urban rural re-design [1st half of semester](giga/gi)
+Match found with short query in EN course name: programming on mobile devices
+Match found in EN course name: design programming
+Match found in EN course name: computational design /design strategy(visualization)
+Match found with short query in EN course name: forest science and engineering (from supply side) (giga/gi)
+Match found with short query in EN course name: forest science and engineering (from demand side)
+Match found in EN course name: theory of earth system design [1st half of semester]
+Match found in EN course name: design programming
+Match found in EN course name: design and operation of the internet [2nd half of semester]
+Match found in EN course name: open design strategy [2nd half of semester](giga/gi)/design strategy(ambient media) [2nd half of semester]
+Match found in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: geometric modeling and computer graphics
+Match found in EN course name: human computer interaction /design strategy (spatial information systems and architecture)
+Match found with short query in EN course name: notation and expression [2nd half of semester]
+Match found in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: coaching in a leadership development
+Match found with short query in EN course name: work and gender
+Match found with short query in EN course name: student built campus (sbc) practice (landscape) [1st half of semester]
+Match found with short query in EN course name: environmental and energy economics [1st half of semester](giga)
+Match found in EN course name: real estate design 1 (寄附講座)
+Match found with short query in EN course name: workshops on practical business model analysis (寄附講座)
+Match found with short query in EN course name: student built campus (sbc) practice
+Match found with short query in EN course name: student built campus (sbc) practice (architecture a)
+Match found with short query in EN course name: work and gender (giga)
+Match found with short query in EN course name: advanced exercise in cyber security operations
+Match found in professor name: EN=hideki sunahara, JA=加藤　大弥
+Match found in professor name: EN=hideki sunahara, JA=加藤　大弥
+Match found with short query in EN course name: advanced exercise in incident handling
+Match found in professor name: EN=hideki sunahara, JA=加藤　大弥
+Match found in professor name: EN=hideki sunahara, JA=加藤　大弥
+Match found with short query in EN course name: urbanism ideas and architecture of fumihiko maki (寄附講座)
+Match found in EN course name: real estate design 2 (寄附講座)
+Match found with short query in EN course name: gender and the socio-economic impact
+Match found with short query in EN course name: practical exercises of regional industry-government-academia collaboration <constructing "living" from agriculture>
+Found 11 matching professors
+Found 136 matching courses
+Displayed search results page
+
+Search started at 2025-03-27 08:11:52
+Direct access with query: project english C
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'pr' for more lenient matching
+Search query: 'project english c', Normalized: 'projectenglishc'
+Searching through 1150 courses
+Match found in professor name: EN=veronica prieto m, JA=高畠　理恵
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea02(writing)
+Match found with short query in EN course name: project english a ea06(speaking a)
+Match found with short query in EN course name: project english a ea03(reading/discussion)
+Match found with short query in EN course name: project english a ea03(listening)
+Match found with short query in EN course name: project english b eb03(reading)
+Match found in EN course name: project english c ec04(oral listening)(giga/gg/gi)
+Match found in EN course name: project english c ec01(project)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: french skill (reading comprehension)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in EN course name: project english a (speaking a)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found with short query in EN course name: project english b (oral listening)
+Match found in EN course name: project english c (presentation)(giga/gg/gi)
+Match found in EN course name: project english c (translation)(giga/gg/gi)
+Match found in EN course name: project english c (presentation)(giga/gg/gi)
+Match found in EN course name: project english c ec02(reading)(giga/gg/gi)
+Match found in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a ea01(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea01(presentation)
+Match found with short query in EN course name: project english a ea06(oral listening)
+Match found with short query in EN course name: project english b eb07(discussion/presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb07(discussion/presentation)
+Match found with short query in EN course name: project english b eb03(project)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb03(project)
+Match found with short query in EN course name: project english b eb02(oral listening)
+Match found with short query in EN course name: project english b eb03(listening)
+Match found in EN course name: project english c ec01(oral listening)(giga/gg/gi)
+Match found in EN course name: project english c ec04(presentation)(giga/gg/gi)
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english b eb01(oral listening)
+Match found in EN course name: project english c (reading)(giga/gg/gi)
+Match found in EN course name: project english c ec02(translation)(giga/gg/gi)
+Match found in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found in EN course name: project english c (presentation)(giga/gg/gi)
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: programming methodologies (giga/gg/gi)
+Match found with short query in EN course name: interpersonal communication: introduction and practice
+Match found with short query in EN course name: contemporary art practice
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: internship in social enterprises
+Match found with short query in EN course name: programming methodologies
+Match found with short query in EN course name: contemporary art practice [1st half of semester]
+Match found with short query in EN course name: social entrepreneurship [1st half of semester]
+Match found with short query in EN course name: policy making process
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: intellectual property system
+Match found with short query in EN course name: project evaluation
+Match found with short query in EN course name: practicing analytical framework for policy design
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: intellectual property system (giga/gg)
+Match found with short query in EN course name: system programming [2nd half of semester]
+Match found with short query in EN course name: quantum information processing (giga/gi)
+Match found with short query in EN course name: info-communication security and privacy (giga/gi)
+Match found with short query in EN course name: programming languages
+Match found with short query in EN course name: digital signal processing fundamentals (giga/gi)
+Match found with short query in EN course name: system programming [2nd half of semester](giga/gi)
+Match found with short query in EN course name: big data processing (giga/gi)
+Match found with short query in EN course name: impression management [2nd half of semester]
+Match found with short query in EN course name: functional programming
+Match found with short query in EN course name: quantum information processing
+Match found with short query in EN course name: info-communication security and privacy
+Match found with short query in EN course name: programming languages (giga/gi)
+Match found with short query in EN course name: digital signal processing fundamentals
+Match found with short query in EN course name: practical mental health
+Match found with short query in EN course name: entrepreneurship 1 (寄附講座)
+Match found with short query in EN course name: student build campus (sbc) practice (publication)
+Match found with short query in EN course name: entrepreneurship 1 (寄附講座)
+Match found with short query in EN course name: design principles with "tensho" of point-clouds (寄附講座)[1st half of semester]
+Match found with short query in EN course name: project english a ea04(translation)
+Match found with short query in EN course name: project english a ea04(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea04(presentation)
+Match found with short query in EN course name: project english a ea07(listening)
+Match found with short query in EN course name: project english a ea01(writing)
+Match found with short query in EN course name: project english a ea05(translation)
+Match found with short query in EN course name: project english a ea06(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea06(presentation)
+Match found with short query in EN course name: project english a ea07(project)
+Match found with short query in JA course name: プロジェクト英語Ａ ea07(project)
+Match found with short query in EN course name: project english a ea05(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea05(presentation)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea02(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea02(presentation)
+Match found with short query in EN course name: project english b eb04(listening + writing)
+Match found with short query in EN course name: project english b eb06(writing)
+Match found with short query in EN course name: project english b eb01(critical thinking)
+Match found with short query in EN course name: project english b eb07(writing)
+Match found with short query in EN course name: project english b eb05(writing)
+Match found with short query in EN course name: project english b eb02(presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(presentation)
+Match found with short query in EN course name: project english b eb04(project)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb04(project)
+Match found with short query in EN course name: project english b eb06(translation)
+Match found with short query in EN course name: project english b eb05(listening)
+Match found with short query in EN course name: project english b (listening)
+Match found in EN course name: project english c (presentation)(giga/gg/gi)
+Match found in EN course name: project english c (presentation)(giga/gg/gi)
+Match found in EN course name: project english c ec07(oral listening)(giga/gg/gi)
+Match found in EN course name: project english c ec06(translation)(giga/gg/gi)
+Match found in EN course name: project english c (speaking)(giga/gg/gi)
+Match found in EN course name: project english c ec05(project)(giga/gg/gi)
+Match found in EN course name: project english c ec05(reading)(giga/gg/gi)
+Match found in EN course name: project english c ec02(listening)(giga/gg/gi)
+Match found in EN course name: project english c (creative writing)(giga/gg/gi)
+Match found in EN course name: project english c ec03(project)(giga/gg/gi)
+Match found in EN course name: project english c ec08(reading)(giga/gg/gi)
+Match found in EN course name: project english c ec02(presentation)(giga/gg/gi)
+Match found in EN course name: project english c ec04(project)(giga/gg/gi)
+Match found in EN course name: project english c ec08(writing)(giga/gg/gi)
+Match found in EN course name: project english c ec03(translation)(giga/gg/gi)
+Match found in EN course name: project english c ec07(presentation)(giga/gg/gi)
+Match found in EN course name: project english c ec01(presentation)(giga/gg/gi)
+Match found in EN course name: project english c ec06(indie rock)(giga/gg/gi)
+Match found with short query in EN course name: language education practice (chinese) /chinese contents
+Match found with short query in EN course name: practical academic presentation (giga/gg/gi)/english contents
+Match found in professor name: EN=veronica prieto m, JA=プリエト，　ベロニカ　Ｍ
+Match found with short query in EN course name: project english a (writing)
+Match found with short query in EN course name: project english a ea02(reading/discussion)
+Match found with short query in EN course name: project english a (debate)
+Match found with short query in EN course name: project english a (reading)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a ea03(presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ ea03(presentation)
+Match found with short query in EN course name: project english a ea01(listening)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a ea01(translation)
+Match found with short query in EN course name: project english a (presentation)
+Match found with short query in JA course name: プロジェクト英語Ａ (presentation)
+Match found with short query in EN course name: project english a (oral listening)
+Match found with short query in EN course name: project english a ea03(writing)
+Match found with short query in EN course name: project english a (project)
+Match found with short query in JA course name: プロジェクト英語Ａ (project)
+Match found with short query in EN course name: project english a (listening)
+Match found with short query in EN course name: project english a (translation)
+Match found with short query in EN course name: project english b (translation)
+Match found with short query in EN course name: project english b (reading)
+Match found with short query in EN course name: project english b (project)
+Match found with short query in JA course name: プロジェクト英語Ｂ (project)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english b (discussion/presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ (discussion/presentation)
+Match found with short query in EN course name: project english b eb02(critical thinking)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in EN course name: project english b eb01(writing)
+Match found with short query in EN course name: project english b (oral listening)
+Match found with short query in EN course name: project english b (listening + writing)
+Match found with short query in EN course name: project english b (presentation)
+Match found with short query in JA course name: プロジェクト英語Ｂ (presentation)
+Match found with short query in EN course name: project english b (writing)
+Match found with short query in EN course name: project english b (listening)
+Match found with short query in EN course name: project english b eb02(writing)
+Match found with short query in EN course name: project english b (project)
+Match found with short query in JA course name: プロジェクト英語Ｂ (project)
+Match found in EN course name: project english c (project)(giga/gg/gi)
+Match found in EN course name: project english c (project)(giga/gg/gi)
+Match found in EN course name: project english c (oral listening)(giga/gg/gi)
+Match found in EN course name: project english c (writing)(giga/gg/gi)
+Match found in EN course name: project english c ec01(presentation)(giga/gg/gi)
+Match found in EN course name: project english c ec03(writing)(giga/gg/gi)
+Match found in EN course name: project english c (listening)(giga/gg/gi)
+Match found in EN course name: project english c ec01(writing)(giga/gg/gi)
+Match found in EN course name: project english c (project)(giga/gg/gi)
+Match found in EN course name: project english c (translation)(giga/gg/gi)
+Match found in EN course name: project english c (subcultures)(giga/gg/gi)
+Match found in EN course name: project english c ec03(heavy metal)(giga/gg/gi)
+Match found in EN course name: project english c (project)(giga/gg/gi)
+Match found with short query in EN course name: practical academic writing (giga/gg/gi)/english contents
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1]
+Match found with short query in EN course name: probability [ds1](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found with short query in EN course name: fundamentals of system programming
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of object-oriented programming
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of system programming (giga/gg/gi)
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: multilingual communication practice
+Match found with short query in EN course name: interpersonal communication: introduction and practice
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: jurisprudence
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: network communication: introduction and practice
+Match found with short query in EN course name: management of non profit organizations [1st half of semester]
+Match found with short query in EN course name: strategic process of negotiation
+Match found with short query in EN course name: presentation technique
+Match found with short query in EN course name: basic product design
+Match found with short query in EN course name: basic product design (giga/gg/gi)
+Match found with short query in EN course name: management of social enterprise(museum) [2nd half of semester]
+Match found with short query in EN course name: enterprise law(corporate law)
+Match found with short query in EN course name: enterprise law(venture-related law)
+Match found with short query in EN course name: civil code(general provisions and real rights)
+Match found with short query in EN course name: geography of planning practice (giga/gg)/geography of planning practice
+Match found with short query in EN course name: civil law practice(corporate affairs)
+Match found with short query in EN course name: international enterprises [1st half of semester]
+Match found with short query in EN course name: policy practices related to diffusion of information and communications technologies
+Match found with short query in EN course name: protection of living environment (giga/gi)
+Match found with short query in EN course name: programming on mobile devices
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: proteomics (ttck)
+Match found with short query in EN course name: metabolome analysis laboratory practice (ttck)
+Match found with short query in EN course name: proteome analysis laboratory practice (ttck)
+Match found with short query in EN course name: design programming
+Match found with short query in EN course name: knowledge processing and discovery
+Match found with short query in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: notation and expression [2nd half of semester]
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found with short query in EN course name: digital art -introduction and practice
+Match found with short query in EN course name: student built campus (sbc) practice (landscape) [1st half of semester]
+Match found with short query in EN course name: workshops on practical business model analysis (寄附講座)
+Match found with short query in EN course name: student built campus (sbc) practice
+Match found with short query in EN course name: student built campus (sbc) practice (architecture a)
+Match found with short query in EN course name: basic exercise in protecting information systems against security threats
+Match found with short query in EN course name: practical customer-based digital transformation (寄附講座)
+Match found with short query in EN course name: workshops on practical marketing analysis (寄附講座)
+Match found with short query in EN course name: practical exercises of regional industry-government-academia collaboration <constructing "living" from agriculture>
+Found 1 matching professors
+Found 210 matching courses
+Displayed search results page
+
+Search started at 2025-03-27 08:12:30
+Direct access with query: theory of
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'th' for more lenient matching
+Search query: 'theory of', Normalized: 'theoryof'
+Searching through 1150 courses
+Match found with short query in EN course name: policy management studies [1st half of semester]
+Match found with short query in EN course name: environment and information studies [1st half of semester]
+Match found with short query in EN course name: policy management studies [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: environment and information studies [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: policy management studies [1st half of semester]
+Match found with short query in EN course name: environment and information studies [1st half of semester]
+Match found with short query in EN course name: policy management studies [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: environment and information studies [1st half of semester](giga/gg/gi)
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found with short query in EN course name: computer graphics and mathematics [ds2]
+Match found with short query in EN course name: statistical analysis [ds2][1st half of semester]
+Match found with short query in EN course name: algorithm science [ds2]
+Match found with short query in EN course name: mathematical models [ds2](giga/gg/gi)
+Match found with short query in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found with short query in EN course name: workshops on sensing technologies [1st half of semester]
+Match found with short query in EN course name: thinking with geospatial information (giga/gg/gi)
+Match found in EN course name: theory of global environment technology (giga/gg/gi)/theory of global environment technology
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found with short query in EN course name: introduction to the internet
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester]
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: programming methodologies (giga/gg/gi)
+Match found with short query in EN course name: fieldwork methods
+Match found with short query in EN course name: methodology study [2nd half of semester]
+Match found with short query in EN course name: mathematics for information science
+Match found in EN course name: theory of global environment technology
+Match found with short query in EN course name: introduction to the internet (giga/gg/gi)
+Match found with short query in EN course name: career and society [1st half of semester]
+Match found with short query in EN course name: lifelong learning and community participation [1st half of semester]
+Match found with short query in EN course name: historical development of scientific thoughts
+Match found with short query in EN course name: network architecture [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: introduction to integrated health research [1st half of semester]
+Match found in EN course name: theory of global environment technology (giga/gg/gi)/theory of global environment technology
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found with short query in EN course name: introduction to the internet
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: legislative method
+Match found with short query in EN course name: pattern language [1st half of semester]
+Match found with short query in EN course name: programming methodologies
+Match found with short query in EN course name: exploring creative society [1st half of semester]
+Match found with short query in EN course name: the government of modern japan: the japanese bureaucracy
+Match found with short query in EN course name: contemporary art practice [1st half of semester]
+Match found with short query in EN course name: workshops on future vision [1st half of semester]
+Match found with short query in EN course name: workshop on designing learning environments [1st half of semester]
+Match found with short query in EN course name: mutual interaction and intersubjectivity [2nd half of the semester]
+Match found in EN course name: theory of global environment technology
+Match found with short query in EN course name: introduction to the internet (giga/gg/gi)
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester](giga/gg/gi)
+Match found with short query in EN course name: human capital theory
+Match found with short query in EN course name: career and society [1st half of semester]
+Match found with short query in EN course name: creative systems theory [1st half of semester]
+Match found with short query in EN course name: network architecture [1st half of semester]
+Match found with short query in EN course name: mathematics for information science (giga/gg/gi)
+Match found with short query in EN course name: introduction to integrated health research [1st half of semester]
+Match found with short query in EN course name: social entrepreneurship [1st half of semester]
+Match found with short query in EN course name: modern social theory
+Match found with short query in EN course name: seminar on economic theory
+Match found with short query in EN course name: region and society (the americas) [1st half of semester]
+Match found with short query in EN course name: ethical science (giga/gg)/ethical science
+Match found with short query in EN course name: society and health
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: evidence based health policy, management and communication (giga/gg)
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: development and the local community
+Match found with short query in EN course name: modern social theory
+Match found with short query in EN course name: evidence based health policy, management and communication (giga/gg)
+Match found with short query in EN course name: development and the local community (giga/gg)/development and the local community
+Match found with short query in EN course name: japan-u.s. relations [1st half of semester](giga/gg)
+Match found with short query in EN course name: ethical science [1st half of semester](giga/gg)/ethical science [1st half of semester]
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: information technology and marketing [1st half of semester]
+Match found with short query in EN course name: community health care system
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: region and society (the americas)
+Match found in EN course name: theory of environmentally sustainable planning [2nd half of semester]
+Match found with short query in EN course name: music and the brain
+Match found with short query in EN course name: touch as social media [1st half of semester]
+Match found with short query in EN course name: designing with information technology (giga/gi)
+Match found with short query in EN course name: the epoch-making discoveries in cell biology (giga/gi)
+Match found with short query in EN course name: intelligence and life [1st half of semester]
+Match found with short query in EN course name: reflective design [1st half of semester]
+Match found with short query in EN course name: music and the brain [2nd half of semester]
+Match found in EN course name: theory of environmentally sustainable planning [1st half of semester]
+Match found with short query in EN course name: the epoch-making discoveries in cell biology
+Match found with short query in EN course name: design solution for extreme environment [1st half of semester](giga/gi)
+Match found with short query in EN course name: practical mental health
+Match found with short query in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found in EN course name: theory of service creation based on software technology (basic) (寄附講座)
+Match found with short query in EN course name: food, clothing, and shelter issue & innovation
+Match found with short query in EN course name: regional development through sports activities (寄附講座)
+Match found with short query in EN course name: theatre in our time (giga)/theatre in our time
+Match found with short query in EN course name: social business and reducing recidivism in the era of the sdgs (寄附講座)
+Match found with short query in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found in EN course name: theory of service creation based on software technology (basic) (寄附講座)
+Match found with short query in EN course name: environmental issues in polar regions [1st half of semester](giga)
+Match found with short query in EN course name: ecology of the microscopic world [1st half of semester]
+Match found with short query in EN course name: context design [1st half of semester]
+Match found with short query in EN course name: system and business architecture in digital healthcare (寄附講座)
+Match found with short query in EN course name: antarctic ecology [1st half of semester]
+Match found with short query in EN course name: emotion and communication (寄附講座)[1st half of semester]
+Match found with short query in EN course name: regional development through sports activities (寄附講座)
+Match found with short query in EN course name: design principles with "tensho" of point-clouds (寄附講座)[1st half of semester]
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found with short query in EN course name: project english b eb01(critical thinking)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb01(critical thinking)
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found with short query in EN course name: project english b eb02(critical thinking)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(critical thinking)
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found with short query in EN course name: optimization theory [ds2]
+Match found with short query in EN course name: mathematical analysis [ds2]
+Match found with short query in EN course name: data science for health care [ds2](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found with short query in EN course name: algorithm science [ds2](giga/gg/gi)
+Match found with short query in EN course name: mathematics in earth and planetary sciences [ds２]
+Match found with short query in EN course name: information theory [ds2]
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: design language [1st half of semester]
+Match found with short query in EN course name: strategic management [1st half of semester]
+Match found with short query in EN course name: life career theory
+Match found with short query in EN course name: design observation [1st half of semester]
+Match found with short query in EN course name: qualitative research methods [1st half of semester]
+Match found with short query in EN course name: introduction to sensory physiology and psychology [2nd half of the semester]
+Match found with short query in EN course name: basic biology on the metabolism
+Match found with short query in EN course name: molecular and cellular biology 1 [1st half of semester]
+Match found with short query in EN course name: basics of architectural computer-aided design(cad) [1st half of semester]
+Match found with short query in EN course name: career design and talent management [1st half of semester]
+Match found with short query in EN course name: workshops on legal thinking
+Match found with short query in EN course name: workshops on legal thinking [2nd half of semester](giga/gg/gi)
+Match found in professor name: EN=catharina maracke, JA=マラケ，　カタリナ
+Match found with short query in EN course name: management of non profit organizations [1st half of semester]
+Match found with short query in EN course name: management of emerging businesses [1st half of semester](giga/gg/gi)/management of emerging businesses [1st half of semester]
+Match found in EN course name: theory of games
+Match found with short query in EN course name: career design theory
+Match found with short query in EN course name: design observation [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: algorithmic design (giga/gg/gi)
+Match found with short query in EN course name: fieldwork methods
+Match found with short query in EN course name: workshop design [2nd half of the semester]
+Match found with short query in EN course name: methodology study
+Match found with short query in EN course name: comparison of the life phenomenon to the real world
+Match found with short query in EN course name: mapping image design [1st half of semester]
+Match found with short query in EN course name: introduction to the islamic world
+Match found with short query in EN course name: top sports theory [2nd half of semester]
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: public management [1st half of semester]
+Match found with short query in EN course name: social marketing [1st half of semester]
+Match found with short query in EN course name: network industries [1st half of semester](giga/gg)/network industries [1st half of semester]
+Match found with short query in EN course name: evidence based health policy, management and communication [1st half of semester]
+Match found with short query in EN course name: public choice theory
+Match found with short query in EN course name: international law [1st half of semester]
+Match found with short query in EN course name: region and culture (the americas)
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: modern thought
+Match found with short query in EN course name: corporate social responsibility and activation of the economy
+Match found with short query in EN course name: finance theory [1st half of semester]
+Match found with short query in EN course name: international enterprises [1st half of semester]
+Match found with short query in EN course name: multinational management [1st half of semester](giga/gg)
+Match found with short query in EN course name: reinvention and innovation of the social system and organization
+Match found with short query in EN course name: management innovation in it business [1st half of semester](giga/gg)/management innovation in it business [1st half of semester]
+Match found with short query in EN course name: field methods in ecology [1st half of semester]
+Match found with short query in EN course name: outline of earth environment
+Match found in EN course name: theory of earth system design [2nd half of semester]
+Match found with short query in EN course name: urban rural re-design [1st half of semester](giga/gi)
+Match found with short query in EN course name: introduction to sports science [1st half of semester](giga/gi)
+Match found with short query in EN course name: language and thought
+Match found with short query in EN course name: fundamental analytical chemistry (ttck)[1st half of semester]
+Match found with short query in EN course name: operating systems [1st half of semester]
+Match found with short query in EN course name: operating systems [1st half of semester](giga/gi)
+Match found with short query in EN course name: information ethics
+Match found with short query in EN course name: earth system a [1st half of semester]
+Match found with short query in EN course name: earth system b [2nd half of semester]
+Match found in EN course name: theory of environment sensing technology
+Match found in EN course name: theory of ecosystem evaluation
+Match found in EN course name: theory of earth system design [1st half of semester]
+Match found with short query in EN course name: building construction methods
+Match found with short query in EN course name: workshop on molecular health science
+Match found with short query in EN course name: molecular nutritional science for health (giga/gi)
+Match found with short query in EN course name: design and operation of the internet [2nd half of semester]
+Match found with short query in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: music and the brain (giga/gi)
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: environment and health science [1st half of semester]
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found with short query in EN course name: student built campus (sbc) practice (landscape) [1st half of semester]
+Match found in EN course name: theory of architecture as media
+Match found with short query in EN course name: the art of knowledge compilation-1 [2nd half of semester]
+Match found with short query in EN course name: environmental and energy economics [1st half of semester](giga)
+Match found with short query in EN course name: data business creation a [1st half of semester]
+Match found in EN course name: theory of service creation based on software technology (advanced) (寄附講座)
+Match found with short query in EN course name: occupational health psychology [2nd half of semester]
+Match found with short query in EN course name: basic exercise in protecting information systems against security threats
+Match found with short query in EN course name: advanced exercise in incident handling
+Match found with short query in EN course name: the art of knowledge compilation-2 [2nd half of semester]
+Match found with short query in EN course name: gender and the socio-economic impact
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Found 6 matching professors
+Found 185 matching courses
+Displayed search results page
+
+Search started at 2025-03-27 08:12:37
+Direct access without parameters
+
+Search started at 2025-03-27 08:12:41
+Direct access with query: theory of
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: 'th' for more lenient matching
+Search query: 'theory of', Normalized: 'theoryof'
+Searching through 1150 courses
+Match found with short query in EN course name: policy management studies [1st half of semester]
+Match found with short query in EN course name: environment and information studies [1st half of semester]
+Match found with short query in EN course name: policy management studies [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: environment and information studies [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: policy management studies [1st half of semester]
+Match found with short query in EN course name: environment and information studies [1st half of semester]
+Match found with short query in EN course name: policy management studies [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: environment and information studies [1st half of semester](giga/gg/gi)
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found with short query in EN course name: computer graphics and mathematics [ds2]
+Match found with short query in EN course name: statistical analysis [ds2][1st half of semester]
+Match found with short query in EN course name: algorithm science [ds2]
+Match found with short query in EN course name: mathematical models [ds2](giga/gg/gi)
+Match found with short query in EN course name: math for dad(data&ai, art and design)(statistics and probability theory) [ds2][2nd half of semester]
+Match found with short query in EN course name: workshops on sensing technologies [1st half of semester]
+Match found with short query in EN course name: thinking with geospatial information (giga/gg/gi)
+Match found in EN course name: theory of global environment technology (giga/gg/gi)/theory of global environment technology
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found with short query in EN course name: introduction to the internet
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester]
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: programming methodologies (giga/gg/gi)
+Match found with short query in EN course name: fieldwork methods
+Match found with short query in EN course name: methodology study [2nd half of semester]
+Match found with short query in EN course name: mathematics for information science
+Match found in EN course name: theory of global environment technology
+Match found with short query in EN course name: introduction to the internet (giga/gg/gi)
+Match found with short query in EN course name: career and society [1st half of semester]
+Match found with short query in EN course name: lifelong learning and community participation [1st half of semester]
+Match found with short query in EN course name: historical development of scientific thoughts
+Match found with short query in EN course name: network architecture [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: introduction to integrated health research [1st half of semester]
+Match found in EN course name: theory of global environment technology (giga/gg/gi)/theory of global environment technology
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Match found with short query in EN course name: introduction to the internet
+Match found with short query in EN course name: presentation technique [1st half of semester]
+Match found with short query in EN course name: legislative method
+Match found with short query in EN course name: pattern language [1st half of semester]
+Match found with short query in EN course name: programming methodologies
+Match found with short query in EN course name: exploring creative society [1st half of semester]
+Match found with short query in EN course name: the government of modern japan: the japanese bureaucracy
+Match found with short query in EN course name: contemporary art practice [1st half of semester]
+Match found with short query in EN course name: workshops on future vision [1st half of semester]
+Match found with short query in EN course name: workshop on designing learning environments [1st half of semester]
+Match found with short query in EN course name: mutual interaction and intersubjectivity [2nd half of the semester]
+Match found in EN course name: theory of global environment technology
+Match found with short query in EN course name: introduction to the internet (giga/gg/gi)
+Match found with short query in EN course name: financial and business plan construction methods [2nd half of semester](giga/gg/gi)
+Match found with short query in EN course name: human capital theory
+Match found with short query in EN course name: career and society [1st half of semester]
+Match found with short query in EN course name: creative systems theory [1st half of semester]
+Match found with short query in EN course name: network architecture [1st half of semester]
+Match found with short query in EN course name: mathematics for information science (giga/gg/gi)
+Match found with short query in EN course name: introduction to integrated health research [1st half of semester]
+Match found with short query in EN course name: social entrepreneurship [1st half of semester]
+Match found with short query in EN course name: modern social theory
+Match found with short query in EN course name: seminar on economic theory
+Match found with short query in EN course name: region and society (the americas) [1st half of semester]
+Match found with short query in EN course name: ethical science (giga/gg)/ethical science
+Match found with short query in EN course name: society and health
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: evidence based health policy, management and communication (giga/gg)
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: development and the local community
+Match found with short query in EN course name: modern social theory
+Match found with short query in EN course name: evidence based health policy, management and communication (giga/gg)
+Match found with short query in EN course name: development and the local community (giga/gg)/development and the local community
+Match found with short query in EN course name: japan-u.s. relations [1st half of semester](giga/gg)
+Match found with short query in EN course name: ethical science [1st half of semester](giga/gg)/ethical science [1st half of semester]
+Match found with short query in EN course name: management of social enterprise(healthcare) [2nd half of semester]
+Match found with short query in EN course name: information technology and marketing [1st half of semester]
+Match found with short query in EN course name: community health care system
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: region and society (the americas)
+Match found in EN course name: theory of environmentally sustainable planning [2nd half of semester]
+Match found with short query in EN course name: music and the brain
+Match found with short query in EN course name: touch as social media [1st half of semester]
+Match found with short query in EN course name: designing with information technology (giga/gi)
+Match found with short query in EN course name: the epoch-making discoveries in cell biology (giga/gi)
+Match found with short query in EN course name: intelligence and life [1st half of semester]
+Match found with short query in EN course name: reflective design [1st half of semester]
+Match found with short query in EN course name: music and the brain [2nd half of semester]
+Match found in EN course name: theory of environmentally sustainable planning [1st half of semester]
+Match found with short query in EN course name: the epoch-making discoveries in cell biology
+Match found with short query in EN course name: design solution for extreme environment [1st half of semester](giga/gi)
+Match found with short query in EN course name: practical mental health
+Match found with short query in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found in EN course name: theory of service creation based on software technology (basic) (寄附講座)
+Match found with short query in EN course name: food, clothing, and shelter issue & innovation
+Match found with short query in EN course name: regional development through sports activities (寄附講座)
+Match found with short query in EN course name: theatre in our time (giga)/theatre in our time
+Match found with short query in EN course name: social business and reducing recidivism in the era of the sdgs (寄附講座)
+Match found with short query in EN course name: introduction to student built campus(sbc) [1st half of semester]
+Match found in EN course name: theory of service creation based on software technology (basic) (寄附講座)
+Match found with short query in EN course name: environmental issues in polar regions [1st half of semester](giga)
+Match found with short query in EN course name: ecology of the microscopic world [1st half of semester]
+Match found with short query in EN course name: context design [1st half of semester]
+Match found with short query in EN course name: system and business architecture in digital healthcare (寄附講座)
+Match found with short query in EN course name: antarctic ecology [1st half of semester]
+Match found with short query in EN course name: emotion and communication (寄附講座)[1st half of semester]
+Match found with short query in EN course name: regional development through sports activities (寄附講座)
+Match found with short query in EN course name: design principles with "tensho" of point-clouds (寄附講座)[1st half of semester]
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found with short query in EN course name: project english b eb01(critical thinking)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb01(critical thinking)
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found with short query in EN course name: project english b eb02(critical thinking)
+Match found with short query in JA course name: プロジェクト英語Ｂ eb02(critical thinking)
+Match found in professor name: EN=keith olfers, JA=オルファーズ，　キース
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found with short query in EN course name: optimization theory [ds2]
+Match found with short query in EN course name: mathematical analysis [ds2]
+Match found with short query in EN course name: data science for health care [ds2](giga/gg/gi)
+Match found with short query in EN course name: mathematical literacy for problem finding and solving [ds2]
+Match found in professor name: EN=jonathan trace w, JA=トレース，　ジョナサン　Ｗ
+Match found with short query in EN course name: algorithm science [ds2](giga/gg/gi)
+Match found with short query in EN course name: mathematics in earth and planetary sciences [ds２]
+Match found with short query in EN course name: information theory [ds2]
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester]
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found with short query in EN course name: fundamentals of programming with script languages (giga/gg/gi)
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found in professor name: EN=achmad thamrin h, JA=タムリン，　アフマッド・フスニ
+Match found with short query in EN course name: fundamentals of object-oriented programming [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: fundamentals of programming with script languages
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: design language [1st half of semester]
+Match found with short query in EN course name: strategic management [1st half of semester]
+Match found with short query in EN course name: life career theory
+Match found with short query in EN course name: design observation [1st half of semester]
+Match found with short query in EN course name: qualitative research methods [1st half of semester]
+Match found with short query in EN course name: introduction to sensory physiology and psychology [2nd half of the semester]
+Match found with short query in EN course name: basic biology on the metabolism
+Match found with short query in EN course name: molecular and cellular biology 1 [1st half of semester]
+Match found with short query in EN course name: basics of architectural computer-aided design(cad) [1st half of semester]
+Match found with short query in EN course name: career design and talent management [1st half of semester]
+Match found with short query in EN course name: workshops on legal thinking
+Match found with short query in EN course name: workshops on legal thinking [2nd half of semester](giga/gg/gi)
+Match found in professor name: EN=catharina maracke, JA=マラケ，　カタリナ
+Match found with short query in EN course name: management of non profit organizations [1st half of semester]
+Match found with short query in EN course name: management of emerging businesses [1st half of semester](giga/gg/gi)/management of emerging businesses [1st half of semester]
+Match found in EN course name: theory of games
+Match found with short query in EN course name: career design theory
+Match found with short query in EN course name: design observation [1st half of semester](giga/gg/gi)
+Match found with short query in EN course name: algorithmic design (giga/gg/gi)
+Match found with short query in EN course name: fieldwork methods
+Match found with short query in EN course name: workshop design [2nd half of the semester]
+Match found with short query in EN course name: methodology study
+Match found with short query in EN course name: comparison of the life phenomenon to the real world
+Match found with short query in EN course name: mapping image design [1st half of semester]
+Match found with short query in EN course name: introduction to the islamic world
+Match found with short query in EN course name: top sports theory [2nd half of semester]
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: public management [1st half of semester]
+Match found with short query in EN course name: social marketing [1st half of semester]
+Match found with short query in EN course name: network industries [1st half of semester](giga/gg)/network industries [1st half of semester]
+Match found with short query in EN course name: evidence based health policy, management and communication [1st half of semester]
+Match found with short query in EN course name: public choice theory
+Match found with short query in EN course name: international law [1st half of semester]
+Match found with short query in EN course name: region and culture (the americas)
+Match found in professor name: EN=le thao chi vu, JA=ヴ，　レ　タオ　チ
+Match found with short query in EN course name: modern thought
+Match found with short query in EN course name: corporate social responsibility and activation of the economy
+Match found with short query in EN course name: finance theory [1st half of semester]
+Match found with short query in EN course name: international enterprises [1st half of semester]
+Match found with short query in EN course name: multinational management [1st half of semester](giga/gg)
+Match found with short query in EN course name: reinvention and innovation of the social system and organization
+Match found with short query in EN course name: management innovation in it business [1st half of semester](giga/gg)/management innovation in it business [1st half of semester]
+Match found with short query in EN course name: field methods in ecology [1st half of semester]
+Match found with short query in EN course name: outline of earth environment
+Match found in EN course name: theory of earth system design [2nd half of semester]
+Match found with short query in EN course name: urban rural re-design [1st half of semester](giga/gi)
+Match found with short query in EN course name: introduction to sports science [1st half of semester](giga/gi)
+Match found with short query in EN course name: language and thought
+Match found with short query in EN course name: fundamental analytical chemistry (ttck)[1st half of semester]
+Match found with short query in EN course name: operating systems [1st half of semester]
+Match found with short query in EN course name: operating systems [1st half of semester](giga/gi)
+Match found with short query in EN course name: information ethics
+Match found with short query in EN course name: earth system a [1st half of semester]
+Match found with short query in EN course name: earth system b [2nd half of semester]
+Match found in EN course name: theory of environment sensing technology
+Match found in EN course name: theory of ecosystem evaluation
+Match found in EN course name: theory of earth system design [1st half of semester]
+Match found with short query in EN course name: building construction methods
+Match found with short query in EN course name: workshop on molecular health science
+Match found with short query in EN course name: molecular nutritional science for health (giga/gi)
+Match found with short query in EN course name: design and operation of the internet [2nd half of semester]
+Match found with short query in EN course name: practice of open design [1st half of semester]/design strategy(interaction) [1st half of semester]
+Match found with short query in EN course name: music and the brain (giga/gi)
+Match found with short query in EN course name: text processing in the age of data x ai, art and design
+Match found with short query in EN course name: environment and health science [1st half of semester]
+Match found with short query in EN course name: japan and african global connection (a process to realize sustainable collaboration for the future)
+Match found with short query in EN course name: student built campus (sbc) practice (landscape) [1st half of semester]
+Match found in EN course name: theory of architecture as media
+Match found with short query in EN course name: the art of knowledge compilation-1 [2nd half of semester]
+Match found with short query in EN course name: environmental and energy economics [1st half of semester](giga)
+Match found with short query in EN course name: data business creation a [1st half of semester]
+Match found in EN course name: theory of service creation based on software technology (advanced) (寄附講座)
+Match found with short query in EN course name: occupational health psychology [2nd half of semester]
+Match found with short query in EN course name: basic exercise in protecting information systems against security threats
+Match found with short query in EN course name: advanced exercise in incident handling
+Match found with short query in EN course name: the art of knowledge compilation-2 [2nd half of semester]
+Match found with short query in EN course name: gender and the socio-economic impact
+Match found in professor name: EN=catherine munroe hotes, JA=マンロー・ホーテス，　キャサリン
+Found 6 matching professors
+Found 185 matching courses
+Displayed search results page
+
+Search started at 2025-03-28 20:27:54
+Direct access without parameters
+
+Search started at 2025-03-29 13:40:45
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-29 13:40:47
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-29 13:41:38
+Direct access with query: ${encodeURIComponent(searchTerm)}'
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}'', Normalized: '${encodeuricomponent(searchterm)}''
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-29 13:41:47
+Direct access with query: ${encodeURIComponent(searchTerm)}'
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}'', Normalized: '${encodeuricomponent(searchterm)}''
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
+Search started at 2025-03-29 13:41:49
+Direct access with query: ${encodeURIComponent(searchTerm)}
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '${' for more lenient matching
+Search query: '${encodeuricomponent(searchterm)}', Normalized: '${encodeuricomponent(searchterm)}'
+Searching through 1150 courses
+Found 0 matching professors
+Found 0 matching courses
+Displayed search results page
+
