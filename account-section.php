@@ -311,7 +311,7 @@ include_once "header.php";
             <h2>My Reviews</h2>
             
             <?php if (isset($_GET['debug']) && $_GET['debug'] == '1'): ?>
-                <div class="debug-info" style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-family: monospace; font-size: 12px;">
+                <div class="debug-info">
                     <h3>Debug Information</h3>
                     <p>Reviews Count: <?php echo $reviews_count; ?></p>
                     <p>User ID: <?php echo $user_id; ?></p>
@@ -325,54 +325,60 @@ include_once "header.php";
             
             <?php if (count($reviews) > 0): ?>
                 <div class="reviews-list">
-                    <?php foreach ($reviews as $review): ?>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <h3><?php echo htmlspecialchars($review["course_name"]); ?> (<?php echo htmlspecialchars($review["course_code"]); ?>)</h3>
-                                <span class="review-date"><?php echo date("M j, Y", strtotime($review["created_at"])); ?></span>
-                            </div>
-                            
-                            <div class="review-ratings">
-                                <div class="rating-item">
-                                    <span class="rating-label">Content Quality:</span>
-                                    <span class="rating-value"><?php echo $review["content_quality"]; ?>/5</span>
-                                </div>
-                                <div class="rating-item">
-                                    <span class="rating-label">Difficulty:</span>
-                                    <span class="rating-value"><?php echo $review["difficulty"]; ?>/5</span>
-                                </div>
-                                <?php if (isset($review["takes_attendance"])): ?>
-                                <div class="rating-item">
-                                    <span class="rating-label">Takes Attendance:</span>
-                                    <span class="rating-value"><?php echo htmlspecialchars($review["takes_attendance"]); ?></span>
-                                </div>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <?php 
-                            // Check for comments in different possible fields
-                            $reviewText = '';
-                            if (!empty($review["comments"])) {
-                                $reviewText = $review["comments"];
-                            } elseif (!empty($review["comment"])) {
-                                $reviewText = $review["comment"];
-                            } elseif (!empty($review["review_text"])) {
-                                $reviewText = $review["review_text"];
-                            }
-                            
-                            if (!empty($reviewText)): 
-                            ?>
-                                <div class="review-comment">
-                                    <p><?php echo htmlspecialchars($reviewText); ?></p>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <div class="review-actions">
-                            <a href="course.php?course=<?php echo urlencode($review["course_name"]); ?>&professor=<?php echo isset($review["professor_name"]) ? urlencode($review["professor_name"]) : ''; ?>" class="btn-secondary">View Course</a>                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
+                <?php foreach ($reviews as $review): ?>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <h3><?php echo htmlspecialchars($review["course_name"]); ?> (<?php echo htmlspecialchars($review["course_code"]); ?>)</h3>
+                            <span class="review-date"><?php echo date("M j, Y", strtotime($review["created_at"])); ?></span>
                         </div>
-                    <?php endforeach; ?>
+                        
+                        <div class="review-ratings">
+                            <div class="rating-item">
+                                <span class="rating-label">Content Quality:</span>
+                                <span class="rating-value"><?php echo $review["content_quality"]; ?>/5</span>
+                            </div>
+                            <div class="rating-item">
+                                <span class="rating-label">Difficulty:</span>
+                                <span class="rating-value"><?php echo $review["difficulty"]; ?>/5</span>
+                            </div>
+                            <?php if (isset($review["takes_attendance"])): ?>
+                            <div class="rating-item">
+                                <span class="rating-label">Takes Attendance:</span>
+                                <span class="rating-value"><?php echo htmlspecialchars($review["takes_attendance"]); ?></span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <?php 
+                        // Check for comments in different possible fields
+                        $reviewText = '';
+                        if (!empty($review["comments"])) {
+                            $reviewText = $review["comments"];
+                        } elseif (!empty($review["comment"])) {
+                            $reviewText = $review["comment"];
+                        } elseif (!empty($review["review_text"])) {
+                            $reviewText = $review["review_text"];
+                        }
+                        
+                        if (!empty($reviewText)): 
+                        ?>
+                            <div class="review-comment">
+                                <p><?php echo htmlspecialchars($reviewText); ?></p>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="review-actions">
+                            <a href="course.php?course=<?php echo urlencode($review["course_name"]); ?>&professor=<?php echo isset($review["professor_name"]) ? urlencode($review["professor_name"]) : ''; ?>" class="btn-secondary">View Course</a>
+                            <!-- Debug info to check IDs -->
+                            <?php if (isset($_GET['debug']) && $_GET['debug'] == '1'): ?>
+                                <small>ID: <?php echo isset($review["id"]) ? $review["id"] : 'missing'; ?></small>
+                            <?php endif; ?>
+                            <button type="button" class="delete-review" data-review-id="<?php echo isset($review["id"]) ? $review["id"] : ''; ?>">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
                 </div>
             <?php else: ?>
                 <div class="empty-state">
@@ -382,8 +388,6 @@ include_once "header.php";
                 </div>
             <?php endif; ?>
         </div>
-        
-        <!-- Notification settings section removed -->
         
         <!-- Delete Account Section -->
         <div id="delete-account" class="account-section">
@@ -415,6 +419,7 @@ include_once "header.php";
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    height: auto;
 }
 
 /* Sidebar Styles */
@@ -490,6 +495,7 @@ include_once "header.php";
     padding: 30px;
     background-color: #f8f9fa;
     overflow-y: auto;
+    max-width: calc(100% - 280px);
 }
 
 .account-section {
@@ -508,6 +514,7 @@ include_once "header.php";
     border-bottom: 2px solid #e9ecef;
 }
 
+/* Settings Cards */
 .settings-card {
     background-color: #fff;
     border-radius: 8px;
@@ -570,6 +577,7 @@ include_once "header.php";
     border-radius: 4px;
     font-size: 16px;
     transition: border-color 0.2s;
+    box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -583,6 +591,7 @@ include_once "header.php";
     margin-top: 5px;
     display: block;
 }
+
 
 .success-message {
     background-color: #d4edda;
@@ -618,16 +627,14 @@ include_once "header.php";
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.2s;
+    display: inline-block;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
     background-color: #152a60;
 }
 
-.btn-primary[disabled] {
-    background-color: #92a3cc;
-    cursor: not-allowed;
-}
 
 .btn-secondary {
     background-color: #6c757d;
@@ -637,9 +644,9 @@ include_once "header.php";
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    transition: background-color 0.2s;
     text-decoration: none;
     display: inline-block;
-    transition: background-color 0.2s;
 }
 
 .btn-secondary:hover {
@@ -649,11 +656,11 @@ include_once "header.php";
 .btn-danger {
     background-color: #dc3545;
     color: white;
-    padding: 8px 15px;
+    padding: 12px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: background-color 0.2s;
     text-decoration: none;
     display: inline-block;
@@ -671,8 +678,9 @@ include_once "header.php";
 /* Reviews Styles */
 .reviews-list {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    width: 100%;
 }
 
 .review-card {
@@ -680,6 +688,11 @@ include_once "header.php";
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .review-header {
@@ -687,21 +700,26 @@ include_once "header.php";
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 15px;
+    width: 100%;
 }
 
 .review-header h3 {
     margin: 0;
     font-size: 16px;
     color: #1e3a8a;
+    flex: 1;
+    padding-right: 10px;
 }
 
 .review-date {
     font-size: 12px;
     color: #6c757d;
+    white-space: nowrap;
 }
 
 .review-ratings {
     margin-bottom: 15px;
+    width: 100%;
 }
 
 .rating-item {
@@ -720,6 +738,8 @@ include_once "header.php";
     background-color: #f8f9fa;
     border-radius: 4px;
     margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .review-comment p {
@@ -732,6 +752,9 @@ include_once "header.php";
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+    width: 100%;
 }
 
 .delete-review {
@@ -773,6 +796,15 @@ include_once "header.php";
     color: #495057;
 }
 
+.debug-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
 @keyframes fadeOut {
     from { opacity: 1; }
     to { opacity: 0; transform: translateY(-10px); }
@@ -792,6 +824,7 @@ include_once "header.php";
     
     .account-content {
         padding: 20px;
+        max-width: 100%;
     }
     
     .reviews-list {
@@ -856,11 +889,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Delete review with confirmation
+    // Delete review with confirmation - FIXED VERSION
     const deleteReviewBtns = document.querySelectorAll('.delete-review');
+    console.log('Found ' + deleteReviewBtns.length + ' delete buttons');
+    
     deleteReviewBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const reviewId = this.getAttribute('data-review-id');
+            console.log('Delete clicked for review ID: ' + reviewId);
             const reviewCard = this.closest('.review-card');
 
             // Create a custom confirmation dialog
@@ -885,9 +921,11 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             document.body.appendChild(confirmDialog);
             
-            // Add the CSS for the dialog
-            document.head.insertAdjacentHTML('beforeend', `
-                <style>
+            // Add the CSS for the dialog if not already present
+            if (!document.querySelector('style#confirm-dialog-style')) {
+                const styleTag = document.createElement('style');
+                styleTag.id = 'confirm-dialog-style';
+                styleTag.textContent = `
                     .confirm-dialog {
                         position: fixed;
                         top: 0;
@@ -1012,18 +1050,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     .confirm-btn:hover {
                         background-color: #c82333;
                     }
-                    
-                    @keyframes fadeIn {
-                        from { opacity: 0; }
-                        to { opacity: 1; }
-                    }
-                    
-                    @keyframes slideUp {
-                        from { transform: translateY(20px); }
-                        to { transform: translateY(0); }
-                    }
-                </style>
-            `);
+                `;
+                document.head.appendChild(styleTag);
+            }
             
             // Animate the dialog appearing
             setTimeout(() => {
@@ -1048,27 +1077,41 @@ document.addEventListener('DOMContentLoaded', function() {
             closeBtn.addEventListener('click', closeDialog);
             
             confirmBtn.addEventListener('click', function() {
-                // Show loading state on button
-                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-                confirmBtn.disabled = true;
-                
-                // Create form data
-                const formData = new FormData();
-                formData.append('review_id', reviewId);
-                
-                // Send fetch request
-                fetch('delete_review.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Server responded with status: ' + response.status);
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    console.log('Success:', data);
+                    // Show loading state on button
+                    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                    confirmBtn.disabled = true;
+
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('review_id', reviewId);
+
+                    console.log('Sending delete request for review ID: ' + reviewId);
+
+                    // First, check if we can properly display all the review IDs
+                    console.log('All review IDs on page:');
+                    document.querySelectorAll('.delete-review').forEach(btn => {
+                        console.log('Button: ', btn.getAttribute('data-review-id'));
+                    });
+
+                    // Send fetch request with detailed debugging
+                    fetch('delete_review.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin' // Important: Include credentials
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        return response.text().then(text => {
+                            console.log('Response text:', text);
+                            if (!response.ok) {
+                                throw new Error('Server responded with status: ' + response.status + '. Message: ' + text);
+                            }
+                            return text;
+                        });
+                    })
+                    .then(data => {
+                        console.log('Delete successful:', data);
                     
                     // Close the dialog
                     closeDialog();
@@ -1085,8 +1128,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.appendChild(toast);
                     
                     // Style the toast
-                    document.head.insertAdjacentHTML('beforeend', `
-                        <style>
+                    if (!document.querySelector('style#toast-style')) {
+                        const toastStyle = document.createElement('style');
+                        toastStyle.id = 'toast-style';
+                        toastStyle.textContent = `
                             .toast {
                                 position: fixed;
                                 bottom: 20px;
@@ -1130,8 +1175,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 from { opacity: 1; }
                                 to { opacity: 0; transform: translateY(-10px); }
                             }
-                        </style>
-                    `);
+                            
+                            .error-toast {
+                                border-left: 4px solid #dc3545;
+                            }
+                            
+                            .error-toast i {
+                                color: #dc3545;
+                            }
+                        `;
+                        document.head.appendChild(toastStyle);
+                    }
                     
                     // Remove toast after 3 seconds
                     setTimeout(() => {
@@ -1168,7 +1222,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 300);
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Delete error:', error);
                     
                     // Re-enable button
                     confirmBtn.innerHTML = 'Delete';
@@ -1187,19 +1241,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     document.body.appendChild(toast);
-                    
-                    // Style the error toast
-                    document.head.insertAdjacentHTML('beforeend', `
-                        <style>
-                            .error-toast {
-                                border-left: 4px solid #dc3545;
-                            }
-                            
-                            .error-toast i {
-                                color: #dc3545;
-                            }
-                        </style>
-                    `);
                     
                     // Remove toast after 3 seconds
                     setTimeout(() => {
