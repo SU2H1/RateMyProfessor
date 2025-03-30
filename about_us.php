@@ -46,7 +46,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title><?php echo $currentLang == 'ja' ? '私たちについて - Rate My Teacher' : 'About Us - Rate My Teacher'; ?></title>
+    <title><?php echo $currentLang == 'ja' ? '私たちについて - Gaku Neko' : 'About Us - Gaku Neko'; ?></title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -295,7 +295,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;">Gaku Neko</a></h1>
                 </div>
             </div>
             
@@ -347,12 +347,12 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     <div class="about-section">
                         <h2>私たちのミッション</h2>
                         <p style="font-style: italic; text-align: center; margin: 20px 0; font-size: 1.1em;">「学生の、学生による、学生のための」プロジェクト</p>
-                        <p>リンカーン大統領の有名な言葉「人民の、人民による、人民のための政治」にインスピレーションを受け、Rate My Teacherは学生コミュニティのために設計されました。このプラットフォームは、慶應義塾大学湘南藤沢キャンパス（SFC）の学生が教授やコースについて有益な情報を共有し、アクセスできるよう作られています。</p>
+                        <p>リンカーン大統領の有名な言葉「人民の、人民による、人民のための政治」にインスピレーションを受け、Gaku Nekoは学生コミュニティのために設計されました。このプラットフォームは、慶應義塾大学湘南藤沢キャンパス（SFC）の学生が教授やコースについて有益な情報を共有し、アクセスできるよう作られています。</p>
                     </div>
                     
                     <div class="about-section">
                         <h2>プロジェクトについて</h2>
-                        <p>Rate My Teacherは、日本人学生とGIGA（Global Information and Governance Academic）プログラムの国際学生が協力して開発した独立したプラットフォームです。このウェブサイトは、学生が自分に最適な教授やコースを見つけるための情報に基づいた選択をサポートするために作成されました。</p>
+                        <p>Gaku Nekoは、日本人学生とGIGA（Global Information and Governance Academic）プログラムの国際学生が協力して開発した独立したプラットフォームです。このウェブサイトは、学生が自分に最適な教授やコースを見つけるための情報に基づいた選択をサポートするために作成されました。</p>
                         <p>学生は履修登録の期間に、どの教授を選ぶべきか、どのコースが自分の学習スタイルに合っているかを知る必要があります。私たちは、この重要な決断をするための透明性と信頼できる情報を提供することを目指しています。</p>
                     </div>
                     
@@ -374,12 +374,12 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     <div class="about-section">
                         <h2>Our Mission</h2>
                         <p style="font-style: italic; text-align: center; margin: 20px 0; font-size: 1.1em;">"A project of the Student, By the Student, For the Student"</p>
-                        <p>Inspired by Lincoln's famous words "government of the people, by the people, for the people," Rate My Teacher was designed with the student community in mind. This platform was created to allow students at Keio University's Shonan Fujisawa Campus (SFC) to share and access valuable information about professors and courses.</p>
+                        <p>Inspired by Lincoln's famous words "government of the people, by the people, for the people," Gaku Neko was designed with the student community in mind. This platform was created to allow students at Keio University's Shonan Fujisawa Campus (SFC) to share and access valuable information about professors and courses.</p>
                     </div>
                     
                     <div class="about-section">
                         <h2>About the Project</h2>
-                        <p>Rate My Teacher is an independent platform developed collaboratively by Japanese students and international students from the GIGA (Global Information and Governance Academic) program. This website was created to support students in making informed choices about which professors and courses best suit their educational needs.</p>
+                        <p>Gaku Neko is an independent platform developed collaboratively by Japanese students and international students from the GIGA (Global Information and Governance Academic) program. This website was created to support students in making informed choices about which professors and courses best suit their educational needs.</p>
                         <p>During course registration periods, students need to know which professors to select and which courses align with their learning style. We aim to provide transparency and reliable information for this important decision-making process.</p>
                     </div>
                     
@@ -393,7 +393,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
         </main>
         
         <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
-            <p>2025 Rate My Teacher</p>
+            <p>2025 Gaku Neko</p>
             <p style="margin-top: 10px;">
                 <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline; margin-right: 20px;">
                     <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>

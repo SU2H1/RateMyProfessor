@@ -46,7 +46,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title><?php echo $currentLang == 'ja' ? 'プライバシーポリシー - Rate My Teacher' : 'Privacy Policy - Rate My Teacher'; ?></title>
+    <title><?php echo $currentLang == 'ja' ? 'プライバシーポリシー - Gaku Neko' : 'Privacy Policy - Gaku Neko'; ?></title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -279,7 +279,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;">Gaku Neko</a></h1>
                 </div>
             </div>
             
@@ -326,7 +326,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 <?php if ($currentLang == 'ja'): ?>
                     <!-- Japanese Content -->
                     <h3>1. 収集する情報</h3>
-                    <p>RateMyTeacherSFC.comは、アカウント作成時に以下の情報を収集することがあります：</p>
+                    <p>gakuneko.comは、アカウント作成時に以下の情報を収集することがあります：</p>
                     <ul>
                         <li>Keioメールアドレス（確認用）</li>
                         <li>ユーザー名（実名は必要ありません）</li>
@@ -380,7 +380,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 <?php else: ?>
                     <!-- English Content -->
                     <h3>1. Information We Collect</h3>
-                    <p>RateMyTeacherSFC.com may collect the following information when you create an account:</p>
+                    <p>gakuneko.com may collect the following information when you create an account:</p>
                     <ul>
                         <li>Keio email address (for verification purposes)</li>
                         <li>Username (real names are not required)</li>
@@ -405,7 +405,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                     </ul>
 
                     <h3>3. Information Sharing</h3>
-                    <p>RateMyTeacherSFC.com does not share your personal information with third parties except in the following circumstances:</p>
+                    <p>gakuneko.com does not share your personal information with third parties except in the following circumstances:</p>
                     <ul>
                         <li>To comply with legal requirements</li>
                         <li>To investigate violations of our terms</li>
@@ -439,7 +439,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
     
     <!-- Footer outside the container to make it full width -->
     <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
-        <p>2025 Rate My Teacher</p>
+        <p>2025 Gaku Neko</p>
         <p style="margin-top: 10px;">
             <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
                 <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>

@@ -47,7 +47,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $currentLang == 'ja' ? '利用規約 - Rate My Teacher' : 'Terms and Conditions - Rate My Teacher'; ?></title>
+    <title><?php echo $currentLang == 'ja' ? '利用規約 - Gaku Neko' : 'Terms and Conditions - Gaku Neko'; ?></title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -295,7 +295,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;">Gaku Neko</a></h1>
                 </div>
             </div>
             
@@ -342,7 +342,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>1. はじめに</h2>
-                    <p>Rate My Teacher（以下「当サイト」）へようこそ。当サイトをご利用いただくことにより、ユーザーは以下の利用規約に同意したものとみなされます。これらの規約をよくお読みください。</p>
+                    <p>Gaku Neko（以下「当サイト」）へようこそ。当サイトをご利用いただくことにより、ユーザーは以下の利用規約に同意したものとみなされます。これらの規約をよくお読みください。</p>
                 </div>
                 
                 <div class="terms-section">
@@ -415,7 +415,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
                 
                 <div class="terms-section">
                     <h2>1. Introduction</h2>
-                    <p>Welcome to Rate My Teacher ("the Site"). By using the Site, users agree to be bound by the following terms and conditions. Please read them carefully.</p>
+                    <p>Welcome to Gaku Neko ("the Site"). By using the Site, users agree to be bound by the following terms and conditions. Please read them carefully.</p>
                 </div>
                 
                 <div class="terms-section">
@@ -483,7 +483,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
         </div>
         
         <footer>
-            <p>2025 Rate My Teacher</p>
+            <p>2025 Gaku Neko</p>
         </footer>
     </div>
     
