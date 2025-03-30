@@ -2352,10 +2352,6 @@ $sampleReviews = [];
                         }
                     }
                     ?>
-                    <div class="professor-rating">
-                        <div class="stars" style="color: #ffc107; font-size: 16px;"><?php echo $profStars; ?></div>
-                        <span><?php echo $profRating; ?></span>
-                    </div>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -2784,6 +2780,19 @@ $sampleReviews = [];
                             <option value="3"><?php echo $lang === 'ja' ? '普通' : 'Average'; ?></option>
                             <option value="2"><?php echo $lang === 'ja' ? '簡単' : 'Easy'; ?></option>
                             <option value="1"><?php echo $lang === 'ja' ? '非常に簡単' : 'Very Easy'; ?></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                            <?php echo $lang === 'ja' ? 'Overall Rating JP:' : 'Overall Rating'; ?>
+                        </label>
+                        <select name="rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
+                            <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
+                            <option value="5"><?php echo $lang === 'ja' ? '5 Stars JP' : '5 Stars'; ?></option>
+                            <option value="4"><?php echo $lang === 'ja' ? '4 Stars JP' : '4 Stars'; ?></option>
+                            <option value="3"><?php echo $lang === 'ja' ? '3 Stars JP' : '3 Stars'; ?></option>
+                            <option value="2"><?php echo $lang === 'ja' ? '2 Stars JP' : '2 Stars'; ?></option>
+                            <option value="1"><?php echo $lang === 'ja' ? '1 Star JP' : '1 Star'; ?></option>
                         </select>
                     </div>
                 </div>

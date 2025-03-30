@@ -109,7 +109,7 @@ function calculateProfessorRatings($professor_id, $db) {
             // Calculate overall rating: high content quality is good, high difficulty is bad
             // Convert difficulty to an inverted score (5 - difficulty) so lower difficulty becomes higher score
             // Then average with content quality - this ensures overall rating reflects that easier courses are better
-            $invertedDifficulty = 5 - $result['difficulty'];
+            $invertedDifficulty = 6 - $result['difficulty'];
             // Make sure the inverted difficulty doesn't go below 0
             $invertedDifficulty = max(0, $invertedDifficulty);
             
@@ -189,7 +189,7 @@ function calculateCourseRatings($course_id, $db) {
             // Calculate overall rating: high content quality is good, high difficulty is bad
             // Convert difficulty to an inverted score (5 - difficulty) so lower difficulty becomes higher score
             // Then average with content quality - this ensures overall rating reflects that easier courses are better
-            $invertedDifficulty = 5 - $result['difficulty'];
+            $invertedDifficulty = 6 - $result['difficulty'];
             // Make sure the inverted difficulty doesn't go below 0
             $invertedDifficulty = max(0, $invertedDifficulty);
             
