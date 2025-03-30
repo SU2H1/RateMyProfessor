@@ -135,7 +135,16 @@ if ($professor_id > 0) {
 } 
 // If not found by ID, try using professor name
 else if (!empty($professor_name)) {
-    if (strcasecmp($professor_name, 'JinMitsugi') == 0) {
+    // Process the professor name by removing + signs to get the plain name
+    $professor_name_plain = str_replace('+', ' ', $professor_name);
+    
+    // Normalize by removing spaces for comparison with the old format
+    $professor_name_no_spaces = str_replace(' ', '', $professor_name_plain);
+    
+    // Check for both formats: with plus signs and with no spaces
+    if (strcasecmp($professor_name, 'Jin+Mitsugi') == 0 || 
+        strcasecmp($professor_name_plain, 'Jin Mitsugi') == 0 || 
+        strcasecmp($professor_name_no_spaces, 'JinMitsugi') == 0) {
         echo '<div class="professor-info">
             <h2>' . ($language == 'ja' ? '三次 仁' : 'Jin Mitsugi') . '</h2>
             <p>' . ($language == 'ja' ? '学部' : 'Department') . ': ' . ($language == 'ja' ? 'データサイエンス' : 'Data Science') . '</p>
@@ -143,7 +152,9 @@ else if (!empty($professor_name)) {
             <p>' . ($language == 'ja' ? '連絡先' : 'Contact') . ': mitsugi@example.com</p>
         </div>';
         $found = true;
-    } elseif (strcasecmp($professor_name, 'TomokiKamo') == 0) {
+    } elseif (strcasecmp($professor_name, 'Tomoki+Kamo') == 0 || 
+              strcasecmp($professor_name_plain, 'Tomoki Kamo') == 0 || 
+              strcasecmp($professor_name_no_spaces, 'TomokiKamo') == 0) {
         echo '<div class="professor-info">
             <h2>' . ($language == 'ja' ? '加茂 具樹' : 'Tomoki Kamo') . '</h2>
             <p>' . ($language == 'ja' ? '学部' : 'Department') . ': ' . ($language == 'ja' ? '政策管理学' : 'Policy Management') . '</p>
@@ -151,7 +162,9 @@ else if (!empty($professor_name)) {
             <p>' . ($language == 'ja' ? '連絡先' : 'Contact') . ': kamo@example.com</p>
         </div>';
         $found = true;
-    } elseif (strcasecmp($professor_name, 'TakumiShimizu') == 0) {
+    } elseif (strcasecmp($professor_name, 'Takumi+Shimizu') == 0 || 
+              strcasecmp($professor_name_plain, 'Takumi Shimizu') == 0 || 
+              strcasecmp($professor_name_no_spaces, 'TakumiShimizu') == 0) {
         echo '<div class="professor-info">
             <h2>' . ($language == 'ja' ? '清水 匠' : 'Takumi Shimizu') . '</h2>
             <p>' . ($language == 'ja' ? '学部' : 'Department') . ': ' . ($language == 'ja' ? '政策管理学' : 'Policy Management') . '</p>
@@ -159,7 +172,9 @@ else if (!empty($professor_name)) {
             <p>' . ($language == 'ja' ? '連絡先' : 'Contact') . ': shimizu@example.com</p>
         </div>';
         $found = true;
-    } elseif (strcasecmp($professor_name, 'TateKihara') == 0) {
+    } elseif (strcasecmp($professor_name, 'Tate+Kihara') == 0 || 
+              strcasecmp($professor_name_plain, 'Tate Kihara') == 0 || 
+              strcasecmp($professor_name_no_spaces, 'TateKihara') == 0) {
         echo '<div class="professor-info">
             <h2>' . ($language == 'ja' ? '木原 盾' : 'Tate Kihara') . '</h2>
             <p>' . ($language == 'ja' ? '学部' : 'Department') . ': ' . ($language == 'ja' ? '政策管理学' : 'Policy Management') . '</p>
@@ -167,7 +182,9 @@ else if (!empty($professor_name)) {
             <p>' . ($language == 'ja' ? '連絡先' : 'Contact') . ': kihara@example.com</p>
         </div>';
         $found = true;
-    } elseif (strcasecmp($professor_name, 'HaruoSuzuki') == 0) {
+    } elseif (strcasecmp($professor_name, 'Haruo+Suzuki') == 0 || 
+              strcasecmp($professor_name_plain, 'Haruo Suzuki') == 0 || 
+              strcasecmp($professor_name_no_spaces, 'HaruoSuzuki') == 0) {
         echo '<div class="professor-info">
             <h2>' . ($language == 'ja' ? '鈴木 治夫' : 'Haruo Suzuki') . '</h2>
             <p>' . ($language == 'ja' ? '学部' : 'Department') . ': ' . ($language == 'ja' ? '環境情報学' : 'Environment and Information') . '</p>
@@ -175,7 +192,9 @@ else if (!empty($professor_name)) {
             <p>' . ($language == 'ja' ? '連絡先' : 'Contact') . ': suzuki@example.com</p>
         </div>';
         $found = true;
-    } elseif (strcasecmp($professor_name, 'HiroyaTanaka') == 0) {
+    } elseif (strcasecmp($professor_name, 'Hiroya+Tanaka') == 0 || 
+              strcasecmp($professor_name_plain, 'Hiroya Tanaka') == 0 || 
+              strcasecmp($professor_name_no_spaces, 'HiroyaTanaka') == 0) {
         echo '<div class="professor-info">
             <h2>' . ($language == 'ja' ? '田中 浩也' : 'Hiroya Tanaka') . '</h2>
             <p>' . ($language == 'ja' ? '学部' : 'Department') . ': ' . ($language == 'ja' ? '環境情報学' : 'Environment and Information') . '</p>

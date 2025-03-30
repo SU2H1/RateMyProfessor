@@ -184,7 +184,7 @@ function search($query) {
                             'id' => $profId,
                             'name' => $professor['name']['en'],
                             'name_ja' => $professor['name']['ja'],
-                            'name_no_spaces' => str_replace(' ', '', $professor['name']['en']),
+                            'name_no_spaces' => str_replace(' ', '+', $professor['name']['en']),
                             'department' => $professor['department']['en'],
                             'department_ja' => $professor['department']['ja'],
                             'bio' => '',

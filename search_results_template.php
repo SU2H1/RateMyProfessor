@@ -335,10 +335,13 @@
                         <div class="result-card">
                             <div class="result-title">
                                 <?php 
-                                    $profNameForUrl = isset($professor['name_no_spaces']) ? $professor['name_no_spaces'] : str_replace(' ', '', $professor['name']);
+                                    // Use name_no_spaces if available, otherwise replace spaces with + signs
+                                    $profNameForUrl = isset($professor['name_no_spaces']) 
+                                        ? $professor['name_no_spaces'] 
+                                        : str_replace(' ', '+', $professor['name']);
                                     $profNameDisplay = $lang === 'ja' && isset($professor['name_ja']) ? $professor['name_ja'] : $professor['name'];
                                 ?>
-                                <a href="professor.php?name=<?php echo urlencode($profNameForUrl); ?>&lang=<?php echo $lang; ?>">
+                                <a href="professor.php?name=<?php echo $profNameForUrl; ?>&lang=<?php echo $lang; ?>">
                                     <?php echo htmlspecialchars($profNameDisplay); ?>
                                 </a>
                                 <!-- Debug info -->
@@ -378,12 +381,14 @@
                                     $profNameForUrl = !empty($course['professor_name_no_spaces']) ? $course['professor_name_no_spaces'] : 
                                         (!empty($course['professor_name']) ? str_replace(' ', '', $course['professor_name']) : '');
                                     $courseNameDisplay = $lang === 'ja' && isset($course['name_ja']) ? $course['name_ja'] : $course['name'];
+                                    $courseCode = !empty($course['course_code']) ? $course['course_code'] : '';
                                 ?>
-                                <a href="course_page_template.php?course=<?php echo urlencode($courseNameForUrl); ?><?php if ($profNameForUrl): ?>&professor=<?php echo urlencode($profNameForUrl); ?><?php endif; ?>&lang=<?php echo $lang; ?>">
+                                <a href="course_page_template.php?course_code=<?php echo urlencode($courseCode); ?>&lang=<?php echo $lang; ?>">
                                     <?php echo htmlspecialchars($courseNameDisplay); ?>
                                 </a>
                                 <!-- Debug info -->
                                 <div style="font-size: 10px; color: #999; margin-top: 4px;">
+                                    Course code: <?php echo htmlspecialchars($courseCode); ?> |
                                     Course: <?php echo htmlspecialchars($courseNameForUrl); ?> | 
                                     Professor: <?php echo htmlspecialchars($profNameForUrl); ?> | 
                                     EN: <?php echo htmlspecialchars($course['name']); ?> | 
@@ -393,7 +398,7 @@
                             <div class="result-meta">
                                 <?php if (!empty($course['professor_name'])): ?>
                                     <?php echo $lang === 'ja' ? '担当教員: ' : 'Taught by: '; ?>
-                                    <a href="professor.php?name=<?php echo urlencode(!empty($course['professor_name_no_spaces']) ? $course['professor_name_no_spaces'] : str_replace(' ', '', $course['professor_name'])); ?>&lang=<?php echo $lang; ?>">
+                                    <a href="professor.php?name=<?php echo !empty($course['professor_name_no_spaces']) ? $course['professor_name_no_spaces'] : str_replace(' ', '+', $course['professor_name']); ?>&lang=<?php echo $lang; ?>">
                                         <?php echo htmlspecialchars($lang === 'ja' && isset($course['professor_name_ja']) ? $course['professor_name_ja'] : $course['professor_name']); ?>
                                     </a>
                                 <?php endif; ?>
