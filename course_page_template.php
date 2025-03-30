@@ -2153,10 +2153,7 @@ $sampleReviews = [];
                         }
                     }
                     ?>
-                    <div class="professor-rating">
-                        <div class="stars" style="color: #ffc107; font-size: 16px;"><?php echo $profStars; ?></div>
-                        <span><?php echo $profRating; ?></span>
-                    </div>
+                    
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -2560,6 +2557,25 @@ $sampleReviews = [];
 
                 <!-- Content and Difficulty Ratings -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                            <?php echo $lang === 'ja' ? 'Overall Rating JP:' : 'Overall Rating'; ?>
+                        </label>
+                        <select name="rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background-color: white; font-size: 16px;" required>
+                            <option value=""><?php echo $lang === 'ja' ? '選択してください' : 'Select...'; ?></option>
+                            <option value="5"><?php echo $lang === 'ja' ? '★★★★★' : '★★★★★'; ?></option>
+                            <option value="4"><?php echo $lang === 'ja' ? '★★★★' : '★★★★'; ?></option>
+                            <option value="3"><?php echo $lang === 'ja' ? '★★★' : '★★★'; ?></option>
+                            <option value="2"><?php echo $lang === 'ja' ? '★★' : '★★'; ?></option>
+                            <option value="1"><?php echo $lang === 'ja' ? '★' : '★'; ?></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        
+                    </div>
+
                     <div>
                         <label style="display: block; margin-bottom: 10px; font-weight: 500;">
                             <?php echo $lang === 'ja' ? '授業の質:' : 'Content Quality:'; ?>
@@ -2603,6 +2619,7 @@ $sampleReviews = [];
                             <option value="1"><?php echo $lang === 'ja' ? '非常に簡単' : 'Very Easy'; ?></option>
                         </select>
                     </div>
+                    
                 </div>
                 
                 <!-- Attendance -->

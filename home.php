@@ -61,7 +61,7 @@ function getTopCourses($limit = 5) {
                     SELECT c.id, c.name as course_name, c.course_code,
                         COALESCE(c.avg_content_quality, 0) as avg_content_quality,
                         COALESCE(c.avg_difficulty, 0) as avg_difficulty,
-                        (COALESCE(c.avg_content_quality, 0) + (5 - COALESCE(c.avg_difficulty, 0))) / 2 as avg_rating,
+                        COALESCE(c.overall_rating, 0) as avg_rating,
                         COALESCE(c.review_count, 0) as review_count,
                         p.name as professor_name
                     FROM courses c
@@ -159,7 +159,7 @@ $currentLang = isset($_COOKIE['language']) && $_COOKIE['language'] == 'ja' ? 'ja
 error_log("Current language from cookie: " . $currentLang);
 
 // Get data for the page
-$topCourses = getTopCourses(5);
+$topCourses = getTopCourses(6);
 
 foreach ($topCourses as &$course) {
     // Save the original English course name
@@ -851,16 +851,34 @@ elseif (!isset($_COOKIE['language'])) {
             <div id="top-courses" class="content-box">
                 <h2><?php echo $currentLang == 'ja' ? '人気のコース' : 'Top Courses'; ?></h2>
                 <div class="course-list">
-                    <?php foreach ($topCourses as $course): ?>
-                        <?php 
+
+
+                <?php 
+                    // Here's the fixed code that should replace your current course list loop
+                    // This needs to be placed where the course list is being displayed in your HTML
+            
+                    // First, we need to create a tracking array to prevent duplicates
+                    $displayedCourses = [];
+            
+                    // Now iterate through courses
+                    foreach ($topCourses as $course): 
                         // Skip placeholder courses or courses without reviews
                         if (isset($course['is_placeholder']) || 
                             (!isset($course['avg_rating']) || $course['avg_rating'] === 'N/A' || $course['avg_rating'] <= 0)) {
                             continue;
                         }
-                        ?>
-                    <a href="course.php?course_code=<?php echo urlencode($course['course_code']); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      
-                        <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>" data-course-code="<?php echo htmlspecialchars($course['course_code']); ?>">
+                        
+                        // Check if this course has already been displayed
+                        $courseIdentifier = $course['english_course_name'] . '|' . ($course['english_professor_name'] ?? '');
+                        if (in_array($courseIdentifier, $displayedCourses)) {
+                            continue; // Skip this iteration if we've already shown this course
+                        }
+                        
+                        // Add this course to our tracking array
+                        $displayedCourses[] = $courseIdentifier;
+                    ?>
+                    <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['english_professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
+                        <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
                             <div>
                                 <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
                                 <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
@@ -881,7 +899,8 @@ elseif (!isset($_COOKIE['language'])) {
                             </div>
                         </div>
                     </a>
-                    <?php endforeach; ?>
+                <?php endforeach; ?>
+
                 </div>
             </div>
         </main>
