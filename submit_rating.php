@@ -79,7 +79,9 @@ $attendanceCheck = isset($_POST['attendance_check']) ? $_POST['attendance_check'
 $isAnonymous = isset($_POST['is_anonymous']) ? (bool)$_POST['is_anonymous'] : false;
 
 // Calculate the overall rating from content and difficulty
-$rating = round(($contentRating + (5 - $difficultyRating)) / 2);
+//$rating = round(($contentRating + (5 - $difficultyRating)) / 2);
+$rating = $rating;
+
 
 // Log anonymous status for debugging
 error_log("Review is anonymous: " . ($isAnonymous ? 'Yes' : 'No'));

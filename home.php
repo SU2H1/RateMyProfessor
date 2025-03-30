@@ -423,36 +423,38 @@ elseif (!isset($_COOKIE['language'])) {
             width: 100%;
             display: flex;
             justify-content: center;
-            padding: 2rem;
+            padding: 1.5rem; /* Reduced padding to allow the search bar to be bigger */
             background-color: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
+
         .search-bar {
-            width: 60%;
-            max-width: 600px;
+            width: 95%; /* Increased from 80% to 95% */
+            max-width: 1200px; /* Increased from 800px to 1200px */
             position: relative !important;
         }
-        
+
         .search-bar input {
             width: 100%;
-            padding: 1rem;
-            border: 2px solid #ff0000;
+            padding: 2rem 6rem 2rem 2rem; /* Much larger padding for height and space for button */
+            border: 2.5px solid #ff0000; /* Slightly thicker border */
             border-radius: 50px;
-            font-size: 1.1rem;
+            font-size: 1.3rem; /* Larger font size */
         }
-        
+
         .search-bar button {
             position: absolute;
-            right: 10px;
+            right: 15px; /* Moved slightly more right */
             top: 50%;
             transform: translateY(-50%);
             background-color: #1e3a8a;
             color: white;
             border: none;
-            border-radius: 50px;
-            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            padding: 1rem 2rem; /* Much larger button */
             cursor: pointer;
+            font-size: 1.2rem; /* Larger button text */
+            font-weight: bold; /* Make text bold for better visibility */
         }
         
         main {

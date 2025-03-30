@@ -18769,3 +18769,52 @@ Found 0 matching professors
 Found 0 matching courses
 Displayed search results page
 
+<<<<<<< Updated upstream
+=======
+Search started at 2025-03-30 19:18:31
+Direct access with query: 地域と
+Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
+JSON data loaded successfully
+Created short query: '地域' for more lenient matching
+Search query: '地域と', Normalized: '地域と'
+Searching through 1150 courses
+Match found with short query in JA course name: 地域論（ドイツ語圏） /ドイツ語コンテンツ
+Match found in JA course name: 地域と文化（スペイン語圏） /スペイン語コンテンツ
+Match found with short query in JA course name: 地域論（ドイツ語圏） /ドイツ語コンテンツ
+Match found in JA course name: 地域と文化（スペイン語圏） /スペイン語コンテンツ
+Match found in JA course name: 地域と社会（欧州・ＣＩＳ）
+Match found in JA course name: 地域と社会（米州） 【学期前半】
+Match found in JA course name: 地域と文化（アジア・大洋州） (giga/gg)
+Match found with short query in JA course name: アジア・大洋州地域論 (giga/gg)
+Match found in JA course name: 地域と文化（アジア・大洋州） (giga/gg)
+Match found with short query in JA course name: 地域政策
+Match found in JA course name: 地域と文化（欧州・ＣＩＳ）
+Match found with short query in JA course name: アジア・大洋州地域論
+Match found with short query in JA course name: インドネシア地域論
+Match found with short query in JA course name: 地域医療システム
+Match found in JA course name: 地域と社会（米州）
+Match found with short query in JA course name: スポーツによる地域振興 (寄附講座)
+Match found with short query in JA course name: スポーツによる地域振興 (寄附講座)
+Match found with short query in JA course name: 地域論（フランス語圏） /フランス語コンテンツ
+Match found in JA course name: スペイン語コンテンツ /地域と文化（スペイン語圏）
+Match found with short query in JA course name: 都市と地域の未来
+Match found in JA course name: 地域と社会（アジア・大洋州）
+Match found in JA course name: 地域と社会（アジア・大洋州）
+Match found in JA course name: 地域と社会（欧州・ＣＩＳ）
+Match found in JA course name: 地域と文化（米州）
+Match found in JA course name: 地域と社会（中東） (giga/gg)
+Match found in JA course name: 地域と文化（アラビア語圏）
+Match found with short query in JA course name: 地域計画実践論 (giga/gg)/地域計画実践論
+Match found in JA course name: 地域と社会（アジア・大洋州） (giga/gg)
+Match found in JA course name: 地域と文化（欧州・ＣＩＳ） (giga/gg)
+Match found with short query in JA course name: 韓国地域論
+Match found with short query in JA course name: 地域協働とフィールドワーク (寄附講座)
+Match found with short query in JA course name: 地域産官学連携実践演習＜農から「生きる」を構築する＞
+Found 0 matching professors
+Found 32 matching courses
+Displayed search results page
+
+Search started at 2025-03-30 20:35:15
+Direct access without parameters
+
+>>>>>>> Stashed changes

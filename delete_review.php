@@ -1,11 +1,18 @@
 <?php
 // delete_review.php - Handler for deleting user reviews
+require_once "session_config.php";
 session_start();
+
+// Debug information
+error_log("Delete review request received");
+error_log("Session data: " . print_r($_SESSION, true));
+error_log("POST data: " . print_r($_POST, true));
 
 // Check if user is logged in
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("HTTP/1.1 401 Unauthorized");
     echo "You must be logged in to delete a review.";
+    error_log("User not logged in - session check failed");
     exit;
 }
 
@@ -13,13 +20,17 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 if (!isset($_POST["review_id"]) || empty($_POST["review_id"])) {
     header("HTTP/1.1 400 Bad Request");
     echo "Review ID is required.";
+    error_log("No review_id provided in POST request");
     exit;
 }
 
 require_once "config.php";
+//require_once 'session_config.php'; //NEW
 
-$review_id = $_POST["review_id"];
+$review_id = intval($_POST["review_id"]); // Convert to integer to ensure proper type
 $user_id = $_SESSION["id"];
+
+error_log("Processing delete for review_id: $review_id and user_id: $user_id");
 
 try {
     // Verify that the review belongs to the current user and get course/professor info BEFORE deleting
@@ -30,7 +41,22 @@ try {
     $result = $check_stmt->execute();
     $review_info_row = $result->fetchArray(SQLITE3_ASSOC);
     
+    error_log("Query result: " . ($review_info_row ? "Found review" : "No review found"));
+    
     if (!$review_info_row) {
+        // Additional debugging for when review is not found
+        $all_reviews_sql = "SELECT id, user_id FROM ratings WHERE id = :review_id";
+        $all_stmt = $conn->prepare($all_reviews_sql);
+        $all_stmt->bindValue(':review_id', $review_id, SQLITE3_INTEGER);
+        $all_result = $all_stmt->execute();
+        $all_row = $all_result->fetchArray(SQLITE3_ASSOC);
+        
+        if ($all_row) {
+            error_log("Review exists but belongs to user_id: " . $all_row['user_id'] . ", not current user: " . $user_id);
+        } else {
+            error_log("Review with ID $review_id does not exist in database");
+        }
+        
         header("HTTP/1.1 403 Forbidden");
         echo "You do not have permission to delete this review.";
         exit;
