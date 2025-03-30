@@ -18769,8 +18769,6 @@ Found 0 matching professors
 Found 0 matching courses
 Displayed search results page
 
-<<<<<<< Updated upstream
-=======
 Search started at 2025-03-30 19:18:31
 Direct access with query: 地域と
 Loading JSON from: /home/rmtsfc2025/ratemyteachersfc.com/public_html/sfc_courses.json
@@ -18817,4 +18815,3 @@ Displayed search results page
 Search started at 2025-03-30 20:35:15
 Direct access without parameters
 
->>>>>>> Stashed changes
