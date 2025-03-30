@@ -3,7 +3,7 @@
     <footer>
         <div class="footer-container">
             <div class="footer-info">
-                <h3>Rate My Teacher</h3>
+                <h3>Gaku Neko</h3>
                 <p>A platform for students to rate and review courses and professors.</p>
             </div>
             
@@ -17,7 +17,7 @@
             </div>
             
             <div class="footer-legal">
-                <p>&copy; <?php echo date("Y"); ?> Rate My Teacher. All rights reserved.</p>
+                <p>&copy; <?php echo date("Y"); ?> Gaku Neko. All rights reserved.</p>
                 <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
             </div>
         </div>

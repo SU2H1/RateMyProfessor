@@ -254,7 +254,7 @@ elseif (!isset($_COOKIE['language'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title>Rate My Teacher - Public Testing</title>
+    <title>Gaku Neko - Public Testing</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         * {
@@ -800,7 +800,7 @@ elseif (!isset($_COOKIE['language'])) {
             
             <div class="header-center">
                 <div class="logo">
-                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Rate My Teacher' : 'Rate My Teacher'; ?></a></h1>
+                    <h1><a href="home.php" style="color: white; text-decoration: none;"><?php echo $currentLang == 'ja' ? 'Gaku Neko' : 'Gaku Neko'; ?></a></h1>
                 </div>
             </div>
             
@@ -990,7 +990,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
-            <p>2025 Rate My Teacher</p>
+            <p>2025 Gaku Neko</p>
             <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 15px; gap: 25px;">
                 <a href="ToS.php?lang=<?php echo $currentLang; ?>" style="color: white; text-decoration: underline;">
                     <?php echo $currentLang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>
@@ -1343,7 +1343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginRequired: "You need to be logged in to view this content.",
                 loginButton: "Login",
                 registerButton: "Register",
-                footer: "© 2025 Rate My Teacher. All rights reserved.",
+                footer: "© 2025 Gaku Neko. All rights reserved.",
                 viewDetails: "View Details",
                 close: "Close",
                 reviews: "Reviews",

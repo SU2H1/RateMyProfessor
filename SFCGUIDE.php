@@ -501,7 +501,7 @@ function getLangSwitchUrl($currentLang) {
         <p>&copy; 2025 <?php echo $lang === 'ja' ? 'SFCグルメガイド' : 'SFC Food Guide'; ?></p>
         <p style="margin-top: 10px;">
             <a href="home.php" style="color: #666; text-decoration: underline;">
-                <?php echo $lang === 'ja' ? 'Rate My Teacherに戻る' : 'Back to Rate My Teacher'; ?>
+                <?php echo $lang === 'ja' ? 'Gaku Nekoに戻る' : 'Back to Gaku Neko'; ?>
             </a>
         </p>
     </footer>

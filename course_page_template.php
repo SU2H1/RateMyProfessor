@@ -1315,7 +1315,7 @@ $sampleReviews = [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1649331460122770"
     crossorigin="anonymous"></script>
-    <title><?php echo $pageTitle; ?> - Rate My Teacher</title>
+    <title><?php echo $pageTitle; ?> - Gaku Neko</title>
     <style>
         * {
             margin: 0;
@@ -2050,7 +2050,7 @@ $sampleReviews = [];
         
         <div class="header-center" style="width: 50%; text-align: center;">
             <div class="logo" style="display: flex; flex-direction: column; align-items: center;">
-                <h1 style="font-size: 1.5rem; margin: 0;"><a href="home.php" style="color: white; text-decoration: none;">Rate My Teacher</a></h1>
+                <h1 style="font-size: 1.5rem; margin: 0;"><a href="home.php" style="color: white; text-decoration: none;">Gaku Neko</a></h1>
             </div>
         </div>
         
@@ -2895,7 +2895,7 @@ $sampleReviews = [];
 
     <!-- 2. Replace the footer with this implementation that sits outside any containers -->
     <footer style="background-color: #1e3a8a; color: white; text-align: center; padding: 1rem; width: 100%;">
-        <p>2025 Rate My Teacher</p>
+        <p>2025 Gaku Neko</p>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 15px; gap: 25px;">
             <a href="ToS.php?lang=<?php echo $lang; ?>" style="color: white; text-decoration: underline;">
                 <?php echo $lang == 'ja' ? '利用規約' : 'Terms and Conditions'; ?>

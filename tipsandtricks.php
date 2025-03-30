@@ -34,10 +34,10 @@ else {
 // Define translations
 $translations = [
     'en' => [
-        'title' => 'Tips and Tricks - Rate My Teacher',
+        'title' => 'Tips and Tricks - Gaku Neko',
         'header' => 'Tips and Tricks',
         'description' => 'Helpful resources compiled for students',
-        'back_link' => '← Back to Rate My Teacher',
+        'back_link' => '← Back to Gaku Neko',
         'footer_text' => 'This website contains resources compiled for students.',
         'disclaimer' => 'Note: Some links are provided purely for educational purposes.',
         
@@ -111,10 +111,10 @@ $translations = [
         'unethical_note' => '← Not Recommended due to Unethical Business Practices.'
     ],
     'ja' => [
-        'title' => 'ヒントとコツ - Rate My Teacher',
+        'title' => 'ヒントとコツ - Gaku Neko',
         'header' => 'ヒントとコツ',
         'description' => '学生のために集められた役立つリソース',
-        'back_link' => '← Rate My Teacherに戻る',
+        'back_link' => '← Gaku Nekoに戻る',
         'footer_text' => 'このウェブサイトには学生のために集めたリソースが含まれています。',
         'disclaimer' => '注：一部のリンクは教育目的のためだけに提供されています。',
         
