@@ -169,11 +169,12 @@ function calculateCourseRatings($course_id, $db) {
         // Always prioritize content_rating in the ratings table as that's what submit_rating.php uses
         $contentField = $hasContentRating ? 'content_rating' : ($hasContentQuality ? 'content_quality' : 'rating');
         $difficultyField = $hasDifficultyRating ? 'difficulty_rating' : ($hasDifficulty ? 'difficulty' : 'rating');
-        
+
         $stmt = $db->prepare("
             SELECT 
                 AVG(r.$contentField) as avg_content_quality,
                 AVG(r.$difficultyField) as avg_difficulty,
+                AVG(r.rating) as avg_overall,
                 COUNT(r.id) as rating_count
             FROM ratings r
             WHERE r.course_id = :course_id
@@ -195,7 +196,8 @@ function calculateCourseRatings($course_id, $db) {
             
             // Overall is the average of content quality and inverted difficulty
             // Higher content quality and lower difficulty both result in higher overall score
-            $result['overall'] = round(($result['content_quality'] + $invertedDifficulty) / 2, 1);
+            //$result['overall'] = round(($result['content_quality'] + $invertedDifficulty) / 2, 1);
+            $result['overall'] = round($ratings['avg_overall'], 1);
             $result['review_count'] = $ratings['rating_count'];
         }
         
