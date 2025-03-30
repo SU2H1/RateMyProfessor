@@ -278,7 +278,7 @@ error_log("Current language from cookie: " . $currentLang);
 
 // Get data for the page
 $topProfessors = getTopProfessors(5);
-$topCourses = getTopCourses(5);
+$topCourses = getTopCourses(6);
 
 // Store original English names before translation
 foreach ($topProfessors as &$professor) {
@@ -995,36 +995,53 @@ elseif (!isset($_COOKIE['language'])) {
 
 
 
-<?php foreach ($topCourses as $course): ?>
-    <?php 
-    // Skip placeholder courses or courses without reviews
-    if (isset($course['is_placeholder']) || 
-        (!isset($course['avg_rating']) || $course['avg_rating'] === 'N/A' || $course['avg_rating'] <= 0)) {
-        continue;
-    }
-    ?>
-<a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['english_professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">      <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
-            <div>
-                <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
-                <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+        <?php 
+        // Here's the fixed code that should replace your current course list loop
+        // This needs to be placed where the course list is being displayed in your HTML
+
+        // First, we need to create a tracking array to prevent duplicates
+        $displayedCourses = [];
+
+        // Now iterate through courses
+        foreach ($topCourses as $course): 
+            // Skip placeholder courses or courses without reviews
+            if (isset($course['is_placeholder']) || 
+                (!isset($course['avg_rating']) || $course['avg_rating'] === 'N/A' || $course['avg_rating'] <= 0)) {
+                continue;
+            }
+            
+            // Check if this course has already been displayed
+            $courseIdentifier = $course['english_course_name'] . '|' . ($course['english_professor_name'] ?? '');
+            if (in_array($courseIdentifier, $displayedCourses)) {
+                continue; // Skip this iteration if we've already shown this course
+            }
+            
+            // Add this course to our tracking array
+            $displayedCourses[] = $courseIdentifier;
+        ?>
+        <a href="course.php?course=<?php echo urlencode($course['english_course_name']); ?>&professor=<?php echo urlencode($course['english_professor_name'] ?? ''); ?>&lang=<?php echo $currentLang;?>" style="text-decoration: none; color: inherit;">
+            <div class="course-item" data-id="<?php echo $isLoggedIn ? $course['id'] : 'login-required'; ?>">
+                <div>
+                    <h3><?php echo htmlspecialchars($course['course_name'] ?? $course['name']); ?></h3>
+                    <p><strong>Professor:</strong> <?php echo htmlspecialchars($course['professor_name'] ?? 'Unknown Professor'); ?></p>
+                </div>
+                <div class="rating">
+                    <?php 
+                    if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
+                        $fullStars = floor($course['avg_rating']);
+                        $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
+                        echo str_repeat('★', $fullStars);
+                        echo $hasHalfStar ? '½' : '';
+                        echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
+                        echo ' <span>' . $course['avg_rating'] . '</span>';
+                    } else {
+                        echo '☆☆☆☆☆ <span>No ratings</span>';
+                    }
+                    ?>
+                </div>
             </div>
-            <div class="rating">
-                <?php 
-                if ($course['avg_rating'] !== 'N/A' && $course['avg_rating'] > 0) {
-                    $fullStars = floor($course['avg_rating']);
-                    $hasHalfStar = $course['avg_rating'] - $fullStars >= 0.5;
-                    echo str_repeat('★', $fullStars);
-                    echo $hasHalfStar ? '½' : '';
-                    echo str_repeat('☆', 5 - $fullStars - ($hasHalfStar ? 1 : 0));
-                    echo ' <span>' . $course['avg_rating'] . '</span>';
-                } else {
-                    echo '☆☆☆☆☆ <span>No ratings</span>';
-                }
-                ?>
-            </div>
-        </div>
-    </a>
-<?php endforeach; ?>
+        </a>
+        <?php endforeach; ?>
 
 
                     
