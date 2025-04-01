@@ -349,7 +349,7 @@ elseif (!isset($_COOKIE['language'])) {
             
             <div class="articles-grid">
                 <!-- Article Card 1 -->
-                <a href="articles_template.php?id=1&lang=<?php echo $currentLang; ?>" class="article-card">
+                <a href="article_template.php?id=1&lang=<?php echo $currentLang; ?>" class="article-card">
                     <div class="article-image">
                         <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
                     </div>
@@ -367,7 +367,7 @@ elseif (!isset($_COOKIE['language'])) {
                 </a>
                 
                 <!-- Article Card 2 -->
-                <a href="articles_template.php?id=2&lang=<?php echo $currentLang; ?>" class="article-card">
+                <a href="article_template.php?id=2&lang=<?php echo $currentLang; ?>" class="article-card">
                     <div class="article-image">
                         <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
                     </div>
@@ -385,7 +385,7 @@ elseif (!isset($_COOKIE['language'])) {
                 </a>
                 
                 <!-- Article Card 3 -->
-                <a href="articles_template.php?id=3&lang=<?php echo $currentLang; ?>" class="article-card">
+                <a href="article_template.php?id=3&lang=<?php echo $currentLang; ?>" class="article-card">
                     <div class="article-image">
                         <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
                     </div>
@@ -403,7 +403,7 @@ elseif (!isset($_COOKIE['language'])) {
                 </a>
                 
                 <!-- Article Card 4 -->
-                <a href="articles_template.php?id=4&lang=<?php echo $currentLang; ?>" class="article-card">
+                <a href="article_template.php?id=4&lang=<?php echo $currentLang; ?>" class="article-card">
                     <div class="article-image">
                         <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
                     </div>
@@ -421,7 +421,7 @@ elseif (!isset($_COOKIE['language'])) {
                 </a>
                 
                 <!-- Article Card 5 -->
-                <a href="articles_template.php?id=5&lang=<?php echo $currentLang; ?>" class="article-card">
+                <a href="article_template.php?id=5&lang=<?php echo $currentLang; ?>" class="article-card">
                     <div class="article-image">
                         <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
                     </div>
@@ -439,7 +439,7 @@ elseif (!isset($_COOKIE['language'])) {
                 </a>
                 
                 <!-- Article Card 6 -->
-                <a href="articles_template.php?id=6&lang=<?php echo $currentLang; ?>" class="article-card">
+                <a href="article_template.php?id=6&lang=<?php echo $currentLang; ?>" class="article-card">
                     <div class="article-image">
                         <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
                     </div>

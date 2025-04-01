@@ -283,7 +283,7 @@ elseif (!isset($_COOKIE['language'])) {
         
         <div class="content-container">
             <!-- Content area for the articles page -->
-            <h1><?php echo $currentLang == 'ja' ? '記事' : 'Articles'; ?></h1>
+            <h1><?php echo $currentLang == 'ja' ? '記事' : 'Article_template_test'; ?></h1>
             <!-- Article content will be added later -->
         </div>
         
