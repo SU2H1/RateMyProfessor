@@ -777,6 +777,7 @@ elseif (!isset($_COOKIE['language'])) {
                     $topCoursesLabel = $currentLang == 'ja' ? '人気のコース' : 'Top Courses';
                     $SFC_FOOD_GUIDE_Label = $currentLang == 'ja' ? 'SFCグルメガイド' : 'SFC FOOD GUIDE';
                     $tipsLabel = $currentLang == 'ja' ? '裏ワザ' : 'Tips and Tricks';
+                    $articles = $currentLang == 'ja' ? '記事' : 'Articles';
                     $deleteAccountLabel = $currentLang == 'ja' ? 'アカウント削除' : 'Delete Account';
                     ?>
                     <button class="dropbtn"><?php echo $menuLabel; ?></button>
@@ -790,6 +791,7 @@ elseif (!isset($_COOKIE['language'])) {
                         <?php endif; ?>
                         <a href="#top-courses"><?php echo $topCoursesLabel; ?></a>
                         <a href="SFCGUIDE.php"><?php echo $SFC_FOOD_GUIDE_Label; ?></a>
+                        <a href="articles.php"><?php echo $articles; ?></a>
                         <a href="tipsandtricks.php"><?php echo $tipsLabel; ?></a>
                         <?php if ($isLoggedIn): ?>
                             <a href="delete_account.php" class="delete-account"><?php echo $deleteAccountLabel; ?></a>
