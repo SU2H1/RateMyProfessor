@@ -228,6 +228,7 @@ elseif (!isset($_COOKIE['language'])) {
             justify-content: center;
             color: #888;
             font-size: 14px;
+            overflow: hidden;
         }
         
         .article-content {
@@ -255,6 +256,17 @@ elseif (!isset($_COOKIE['language'])) {
         
         .article-date {
             font-style: italic;
+        }
+        
+        .no-articles {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            color: #666;
+            font-size: 1.1rem;
         }
         
         footer {
@@ -348,113 +360,64 @@ elseif (!isset($_COOKIE['language'])) {
             <h1><?php echo $currentLang == 'ja' ? '記事' : 'Articles'; ?></h1>
             
             <div class="articles-grid">
-                <!-- Article Card 1 -->
-                <a href="article_template.php?id=1&lang=<?php echo $currentLang; ?>" class="article-card">
-                    <div class="article-image">
-                        <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
-                    </div>
-                    <div class="article-content">
-                        <h3 class="article-title"><?php echo $currentLang == 'ja' ? '効果的な学習戦略：総合政策学部の成功への鍵' : 'Effective Study Strategies: Keys to Success in Policy Management'; ?></h3>
-                        <div class="article-meta">
-                            <div class="article-author">
-                                <?php echo $currentLang == 'ja' ? '著者: 田中 啓介' : 'By: Keisuke Tanaka'; ?>
-                            </div>
-                            <div class="article-date">
-                                <?php echo $currentLang == 'ja' ? '2025年3月15日' : 'Mar 15, 2025'; ?>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                <?php
+                // Load articles from JSON file
+                $articles = [];
+                $jsonFile = 'articles.json';
                 
-                <!-- Article Card 2 -->
-                <a href="article_template.php?id=2&lang=<?php echo $currentLang; ?>" class="article-card">
-                    <div class="article-image">
-                        <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
-                    </div>
-                    <div class="article-content">
-                        <h3 class="article-title"><?php echo $currentLang == 'ja' ? '慶應義塾大学のキャンパスライフを最大限に活用する方法' : 'How to Make the Most of Your Campus Life at Keio University'; ?></h3>
-                        <div class="article-meta">
-                            <div class="article-author">
-                                <?php echo $currentLang == 'ja' ? '著者: 佐藤 優香' : 'By: Yuka Sato'; ?>
-                            </div>
-                            <div class="article-date">
-                                <?php echo $currentLang == 'ja' ? '2025年3月10日' : 'Mar 10, 2025'; ?>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                if (file_exists($jsonFile)) {
+                    $jsonData = json_decode(file_get_contents($jsonFile), true);
+                    if (isset($jsonData['articles']) && is_array($jsonData['articles'])) {
+                        $articles = $jsonData['articles'];
+                    }
+                }
                 
-                <!-- Article Card 3 -->
-                <a href="article_template.php?id=3&lang=<?php echo $currentLang; ?>" class="article-card">
-                    <div class="article-image">
-                        <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
-                    </div>
-                    <div class="article-content">
-                        <h3 class="article-title"><?php echo $currentLang == 'ja' ? '臨床心理学者になるためのキャリアパス: 先輩からのアドバイス' : 'Career Path to Becoming a Clinical Psychologist: Advice from Seniors'; ?></h3>
-                        <div class="article-meta">
-                            <div class="article-author">
-                                <?php echo $currentLang == 'ja' ? '著者: 山田 健太' : 'By: Kenta Yamada'; ?>
+                // Check if we have articles to display
+                if (count($articles) > 0) {
+                    // Sort articles by date (newest first)
+                    usort($articles, function($a, $b) {
+                        return strtotime($b['date']) - strtotime($a['date']);
+                    });
+                    
+                    // Display each article as a card
+                    foreach ($articles as $article) {
+                        // Format the date based on language
+                        $date = new DateTime($article['date']);
+                        if ($currentLang == 'ja') {
+                            $formattedDate = $date->format('Y年n月j日');
+                        } else {
+                            $formattedDate = $date->format('M j, Y');
+                        }
+                        
+                        // Generate article card
+                        ?>
+                        <a href="article_template.php?id=<?php echo $article['id']; ?>&lang=<?php echo $currentLang; ?>" class="article-card">
+                            <div class="article-image">
+                                <?php if (!empty($article['image']) && file_exists($article['image'])): ?>
+                                    <img src="<?php echo htmlspecialchars($article['image']); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                <?php else: ?>
+                                    <span><?php echo $currentLang == 'ja' ? '画像が見つかりません' : 'Image not found'; ?></span>
+                                <?php endif; ?>
                             </div>
-                            <div class="article-date">
-                                <?php echo $currentLang == 'ja' ? '2025年3月5日' : 'Mar 5, 2025'; ?>
+                            <div class="article-content">
+                                <h3 class="article-title"><?php echo htmlspecialchars($article['title']); ?></h3>
+                                <div class="article-meta">
+                                    <div class="article-author">
+                                        <?php echo $currentLang == 'ja' ? '著者: ' : 'By: '; ?><?php echo htmlspecialchars($article['author']); ?>
+                                    </div>
+                                    <div class="article-date">
+                                        <?php echo $formattedDate; ?>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Article Card 4 -->
-                <a href="article_template.php?id=4&lang=<?php echo $currentLang; ?>" class="article-card">
-                    <div class="article-image">
-                        <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
-                    </div>
-                    <div class="article-content">
-                        <h3 class="article-title"><?php echo $currentLang == 'ja' ? 'インターンシップの見つけ方と最大限に活用する方法' : 'How to Find and Make the Most of Internships'; ?></h3>
-                        <div class="article-meta">
-                            <div class="article-author">
-                                <?php echo $currentLang == 'ja' ? '著者: 鈴木 大輔' : 'By: Daisuke Suzuki'; ?>
-                            </div>
-                            <div class="article-date">
-                                <?php echo $currentLang == 'ja' ? '2025年2月28日' : 'Feb 28, 2025'; ?>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Article Card 5 -->
-                <a href="article_template.php?id=5&lang=<?php echo $currentLang; ?>" class="article-card">
-                    <div class="article-image">
-                        <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
-                    </div>
-                    <div class="article-content">
-                        <h3 class="article-title"><?php echo $currentLang == 'ja' ? '留学の準備: 計画から出発までのガイド' : 'Preparing for Study Abroad: A Guide from Planning to Departure'; ?></h3>
-                        <div class="article-meta">
-                            <div class="article-author">
-                                <?php echo $currentLang == 'ja' ? '著者: 小林 美咲' : 'By: Misaki Kobayashi'; ?>
-                            </div>
-                            <div class="article-date">
-                                <?php echo $currentLang == 'ja' ? '2025年2月20日' : 'Feb 20, 2025'; ?>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Article Card 6 -->
-                <a href="article_template.php?id=6&lang=<?php echo $currentLang; ?>" class="article-card">
-                    <div class="article-image">
-                        <span><?php echo $currentLang == 'ja' ? '画像プレースホルダー' : 'Image Placeholder'; ?></span>
-                    </div>
-                    <div class="article-content">
-                        <h3 class="article-title"><?php echo $currentLang == 'ja' ? '心理学研究の方法論: 学部生のための基本ガイド' : 'Research Methods in Psychology: A Basic Guide for Undergraduates'; ?></h3>
-                        <div class="article-meta">
-                            <div class="article-author">
-                                <?php echo $currentLang == 'ja' ? '著者: 伊藤 直樹' : 'By: Naoki Ito'; ?>
-                            </div>
-                            <div class="article-date">
-                                <?php echo $currentLang == 'ja' ? '2025年2月15日' : 'Feb 15, 2025'; ?>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                        </a>
+                        <?php
+                    }
+                } else {
+                    // Display message if no articles exist
+                    echo '<p class="no-articles">' . ($currentLang == 'ja' ? '記事がまだありません。' : 'No articles available yet.') . '</p>';
+                }
+                ?>
             </div>
         </div>
         
